@@ -29,7 +29,7 @@ class UserRegisterListener implements ShouldQueue
     {
         // 邮件发送
 //        $this->dispatch(new MailJob());
-//        MailJob::dispatch();
+        MailJob::dispatch('name');
     }
 
     /**

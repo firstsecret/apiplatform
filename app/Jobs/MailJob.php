@@ -25,14 +25,17 @@ class MailJob implements ShouldQueue
      */
 
     public  $timeout=30;
+
+    protected $data;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($name)
     {
         //
+        $this->data= $name;
     }
 
     /**
@@ -44,6 +47,6 @@ class MailJob implements ShouldQueue
     {
         //
 //        sleep(1);
-        var_dump('邮件发送');
+        var_dump('邮件发送' . $this->data);
     }
 }
