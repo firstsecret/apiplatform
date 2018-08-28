@@ -35,7 +35,7 @@ app('api.exception')->register(function (Exception $exception) {
     } else {
         $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
         $err_message = $exception->getMessage() == '' ? '请求失败' : $exception->getMessage();
-        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'data' => ''], 400);
+        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'data' => ''], $status_code);
     }
 });
 
