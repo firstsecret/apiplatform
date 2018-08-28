@@ -62,6 +62,8 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
             });
 
             $api->get('test', ShowController::class . '@index');
+
+            $api->get('testEvent', ShowController::class . '@testEvent');
         });
 
         // 授权的 api

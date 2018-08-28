@@ -13,6 +13,19 @@ class MailJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * 任务最大尝试次数
+     *
+     * @var int
+     */
+    public $tries = 3;
+
+
+    /**
+     * 执行任务的最长时间
+     */
+
+    public  $timeout=30;
+    /**
      * Create a new job instance.
      *
      * @return void
@@ -30,5 +43,7 @@ class MailJob implements ShouldQueue
     public function handle()
     {
         //
+//        sleep(1);
+        var_dump('邮件发送');
     }
 }

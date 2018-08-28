@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\UserRegisterEvent;
+use App\Jobs\MailJob;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -26,7 +27,9 @@ class UserRegisterListener implements ShouldQueue
      */
     public function handle(UserRegisterEvent $event)
     {
-        //
+        // 邮件发送
+//        $this->dispatch(new MailJob());
+//        MailJob::dispatch();
     }
 
     /**
