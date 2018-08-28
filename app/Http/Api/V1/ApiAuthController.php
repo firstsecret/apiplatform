@@ -2,10 +2,10 @@
 
 namespace App\Http\Api\V1;
 
+use App\Http\Api\BaseController;
 use App\Models\AppUser;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Redis;
+//use Illuminate\Support\Facades\Redis;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
@@ -13,7 +13,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
  * Class ApiAuthController
  * @package App\Http\Api\V1
  */
-class ApiAuthController extends Controller
+class ApiAuthController extends BaseController
 {
     //\
     public function test()
@@ -43,6 +43,8 @@ class ApiAuthController extends Controller
         ])->find(1)->user;
 
         $token = JWTAuth::fromUser($user);
+        // 获取过期时间
+        $express_in = '';
 //        dd($token);
 //        $token = bcrypt($app_key . $app_secret);
 
@@ -55,7 +57,7 @@ class ApiAuthController extends Controller
 //        }catch (\Exception $e){
 //            return Response()->json(['status_code'=>500,'msg'=>'token生成失败']);
 //        }
-        return Response()->json(['status_code' => 200, 'msg' => 'token生成成功', 'data' => ['access_token' => $token]]);
+        return Response()->json(['status_code' => 200, 'msg' => 'token生成成功', 'data' => ['access_token' => $token,'express_in'=>$express_in]]);
         // return
     }
 

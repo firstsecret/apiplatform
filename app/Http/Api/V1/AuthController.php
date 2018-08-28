@@ -2,14 +2,14 @@
 
 namespace App\Http\Api\V1;
 
+use App\Http\Api\BaseController;
 use App\Http\Requests\UserRule;
 use App\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
     /**
      * 登录

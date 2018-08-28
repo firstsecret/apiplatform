@@ -9,12 +9,10 @@
 namespace App\Http\Api\V1;
 
 
-use Dingo\Api\Routing\Helpers;
+use App\Http\Api\BaseController;
 
-class ShowController
+class ShowController extends BaseController
 {
-    use Helpers;
-
     /**
      *  测试
      */
@@ -25,7 +23,8 @@ class ShowController
 //        $appsecret = urlencode('');
 
         // curl
-        $url = 'http://laravelapi.local/api/token?app_key='.$appkey . '&$app_secret=' . $appsecret;
+
+        $url = 'http://laravelapi.local/api/cli/token?app_key='.$appkey . '&$app_secret=' . $appsecret;
 
 //        $ch = curl_init();
 //        curl_setopt($ch,CURLOPT_URL,$url);
@@ -45,7 +44,7 @@ class ShowController
 //        $dispatcher = app('Dingo\Api\Dispatcher');
 //
 //        $dispatcher->get();
-        $res = $this->api->get('token?app_key=' . $appkey . '&app_secret=' . $appsecret);
+        $res = $this->api->get('cli/token?app_key=' . $appkey . '&app_secret=' . $appsecret);
 
         var_dump($res);die;
     }
