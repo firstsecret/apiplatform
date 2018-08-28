@@ -3,7 +3,6 @@
 namespace App\Http\Api\V1;
 
 use App\Http\Api\BaseController;
-use App\Http\Requests\UserRule;
 use App\User;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -34,7 +33,7 @@ class AuthController extends BaseController
     /**
      *  注册
      */
-    public function register(UserRule $request)
+    public function register(\App\Http\Requests\V1\UserRule $request)
     {
         $data = $request->all();
 

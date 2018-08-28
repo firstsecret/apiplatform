@@ -76,8 +76,5 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                 $api->get('refreshToken', ApiAuthController::class . '@refreshAccessToken');
             });
         });
-
-
-
     });
 });
