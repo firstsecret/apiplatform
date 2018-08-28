@@ -29,11 +29,13 @@ app('api.exception')->register(function (Exception $exception) {
 //    return Response()->json(['status_code'=>$exception->getStatusCode(),'message'=>$exception->validator->errors(),'data'=>''],$exception->getStatusCode());
 //    var_dump($exception);
     if ($exception instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
-        return Response()->json(['status_code' => $exception->getStatusCode(), 'message' => $exception->validator->errors(), 'data' => ''], $exception->getStatusCode());
+        return Response()->json(['status_code' => $exception->getStatusCode(), 'message' => $exception->getMessage(), 'data' => ''], $exception->getStatusCode());
     } else if (get_class($exception) == 'Illuminate\Validation\ValidationException') {
         return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'data' => ''], 422);
     } else {
-        return Response()->json(['status_code' => $exception->getCode(), 'message' => $exception->getMessage(), 'data' => ''], 500);
+        $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
+        $err_message  = $exception->getMessage() == '' ? '请求失败' : $exception->getMessage();
+        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'data' => ''], 400);
     }
 });
 

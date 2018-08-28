@@ -23,7 +23,10 @@ class ApiAuthController extends BaseController
 
     public function uInfo()
     {
-        echo '通过了授权了可以调用api';
+        var_dump('okkkk');die;
+        $user=JWTAuth::user()->toArray();
+
+        return Response()->jons(['status_code'=>200,'msg'=>'获取成功','data'=>$user]);
     }
 
     /**
@@ -63,8 +66,12 @@ class ApiAuthController extends BaseController
 
     public function refreshAccessToken()
     {
-        $newtoken = JWTAuth::refresh(true, true);
 
-        return Response()->json(['status_code' => 200, 'msg' => '刷新成功', 'data' => ['access_token' => $newtoken]]);
+        $old_token = JWTAuth::getToken();//
+        $token = JWTAuth::refresh($old_token);//利用旧token生成新的token
+        JWTAuth::invalidate($token);
+        //将旧的token放入黑名单
+//        return response()->json(['status_code' => 0, 'message' => '', 'data' => $token]);
+        return Response()->json(['status_code' => 200, 'msg' => '刷新成功', 'data' => ['access_token' => $token]]);
     }
 }
