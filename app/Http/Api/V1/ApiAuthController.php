@@ -3,6 +3,7 @@
 namespace App\Http\Api\V1;
 
 use App\Http\Api\BaseController;
+use App\Http\TransForm\UsersTransformer;
 use App\Models\AppUser;
 use Illuminate\Http\Request;
 //use Illuminate\Support\Facades\Redis;
@@ -21,10 +22,12 @@ class ApiAuthController extends BaseController
         echo '需要授权';
     }
 
-    public function uInfo()
+    public function uInfo(UsersTransformer $trans)
     {
 //        var_dump('okkkk');die;
         $user=JWTAuth::user()->toArray();
+//        var_dump($user);die;
+        $user = $trans->transform($user);
 
         return Response()->json(['status_code'=>200,'msg'=>'获取成功','data'=>$user]);
     }

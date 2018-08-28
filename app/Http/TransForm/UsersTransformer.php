@@ -18,8 +18,14 @@ use League\Fractal\TransformerAbstract;
  */
 class UsersTransformer extends TransformerAbstract
 {
+    /**
+     * 单个转换
+     * @param $data
+     * @return array
+     */
     public function transform($data)
     {
+//        dd($data);
         return [
             'user_name' => $data['name'],
             'user_email' => $data['email']

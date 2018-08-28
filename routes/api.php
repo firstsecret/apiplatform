@@ -34,7 +34,7 @@ app('api.exception')->register(function (Exception $exception) {
         return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'data' => ''], 422);
     } else {
         $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
-        $err_message  = $exception->getMessage() == '' ? '请求失败' : $exception->getMessage();
+        $err_message = $exception->getMessage() == '' ? '请求失败' : $exception->getMessage();
         return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'data' => ''], 400);
     }
 });
@@ -45,28 +45,39 @@ $api = app('Dingo\Api\Routing\Router');
 //    return $request->user();
 //});
 //
-$api->version('v1', [ 'middleware' => 'api.throttle', 'limit' => 10, 'expires' => 1,'namespace' => '\App\Http\Api\V1'], function ($api) {
-    $api->group(['prefix'=>'cli'], function ($api) {
+$api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
+    $api->group(['prefix' => 'cli'], function ($api) {
+        // 非授权api
+        $api->group([], function($api){
 
-        $api->post('login', AuthController::class . '@login');
+            $api->group(['limit'=>300,'expires'=>5], function($api){
+                $api->post('login', AuthController::class . '@login');
 
-        $api->post('register', AuthController::class . '@register');
+                $api->post('register', AuthController::class . '@register');
+            });
+
+            $api->group(['limit'=>200,'expires'=>10], function($api){
+                // 生成 access_token
+                $api->get('token', ApiAuthController::class . '@getAccessToken')->middleware('checkAppKeySecret');
+            });
+
+            $api->get('test', ShowController::class . '@index');
+        });
 
         // 授权的 api
         $api->group(['middleware' => ['jwt.auth']], function ($api) {
-            $api->get('showauth', ApiAuthController::class . '@test');
-            $api->get('getUserInfo', ApiAuthController::class . '@uInfo');
-            $api->get('refreshToken', ApiAuthController::class . '@refreshAccessToken');
+            $api->group(['limit' => 10, 'expires' => 1], function ($api) {
+                $api->get('showauth', ApiAuthController::class . '@test');
+                $api->get('getUserInfo', ApiAuthController::class . '@uInfo');
+            });
+
+            $api->group(['limit' => 300, 'expires' => 5], function ($api) {
+                // 刷新token
+                $api->get('refreshToken', ApiAuthController::class . '@refreshAccessToken');
+            });
         });
 
-        $api->get('test', ShowController::class . '@index');
-        // 生成 access_token
-        $api->get('token', ApiAuthController::class . '@getAccessToken')->middleware('checkAppKeySecret');
 
-        // 刷新token
-//        $api->group(['middleware'=>['api.throttle','jwt.auth']], function ($api){
-//
-//        });
 
     });
 });
