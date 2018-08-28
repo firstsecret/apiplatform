@@ -61,7 +61,7 @@ class ApiAuthController extends Controller
 
     public function refreshAccessToken()
     {
-        $newtoken = JWTAuth::refresh();
+        $newtoken = JWTAuth::refresh(true, true);
 
         return Response()->json(['status_code' => 200, 'msg' => '刷新成功', 'data' => ['access_token' => $newtoken]]);
     }

@@ -6,7 +6,7 @@
  * Time: 10:46
  */
 
-namespace App\Http\Api\Transformers;
+namespace App\Http\TransForm;
 
 
 use League\Fractal\TransformerAbstract;
