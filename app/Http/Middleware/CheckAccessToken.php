@@ -19,7 +19,7 @@ class CheckAccessToken
         // 获取 header头
 
 //        var_dump($request->header('app-token'));die;
-
+        // token 是否过期
         return $next($request);
     }
 }

@@ -48,7 +48,6 @@ $api = app('Dingo\Api\Routing\Router');
 $api->version('v1', [ 'middleware' => 'api.throttle', 'limit' => 10, 'expires' => 1,'namespace' => '\App\Http\Api\V1'], function ($api) {
     $api->group(['prefix'=>'cli'], function ($api) {
 
-
         $api->post('login', AuthController::class . '@login');
 
         $api->post('register', AuthController::class . '@register');

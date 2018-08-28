@@ -23,10 +23,10 @@ class ApiAuthController extends BaseController
 
     public function uInfo()
     {
-        var_dump('okkkk');die;
+//        var_dump('okkkk');die;
         $user=JWTAuth::user()->toArray();
 
-        return Response()->jons(['status_code'=>200,'msg'=>'获取成功','data'=>$user]);
+        return Response()->json(['status_code'=>200,'msg'=>'获取成功','data'=>$user]);
     }
 
     /**
@@ -47,7 +47,7 @@ class ApiAuthController extends BaseController
 
         $token = JWTAuth::fromUser($user);
         // 获取过期时间
-        $express_in = '';
+        $express_in = config('jwt.ttl') * 60; // second
 //        dd($token);
 //        $token = bcrypt($app_key . $app_secret);
 
@@ -60,13 +60,12 @@ class ApiAuthController extends BaseController
 //        }catch (\Exception $e){
 //            return Response()->json(['status_code'=>500,'msg'=>'token生成失败']);
 //        }
-        return Response()->json(['status_code' => 200, 'msg' => 'token生成成功', 'data' => ['access_token' => $token,'express_in'=>$express_in]]);
+        return Response()->json(['status_code' => 200, 'msg' => 'token生成成功', 'data' => ['access_token' => 'Bearer' . $token,'express_in'=>$express_in]]);
         // return
     }
 
     public function refreshAccessToken()
     {
-
         $old_token = JWTAuth::getToken();//
         $token = JWTAuth::refresh($old_token);//利用旧token生成新的token
         JWTAuth::invalidate($token);
