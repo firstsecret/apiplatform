@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+
 use App\Http\Middleware\CheckAccessToken;
 use App\Http\Middleware\CheckAppKeySecret;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -65,5 +66,6 @@ class Kernel extends HttpKernel
         'checkAppKeySecret' => CheckAppKeySecret::class,
         // app access token check
         'checkAccessToken' => CheckAccessToken::class,
+        'admin' =>  \App\Http\Middleware\Admin::class,
     ];
 }
