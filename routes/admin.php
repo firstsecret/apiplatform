@@ -19,8 +19,11 @@ Route::group([], function (){
         dd('这里是后台首页');
     });
 
-    Route::get('/web',function(){
-        var_dump('web show');
+    // 验证权限
+    Route::group(['middleware' =>'admin.role:admin,operations|admins'], function(){
+        Route::get('/web',function(){
+            var_dump('web show');
+        });
     });
 
     Route::get('/login', function(){
