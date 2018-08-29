@@ -19,7 +19,6 @@ class Admin
         // check admin
         if(!in_array($request->getRequestUri(), config('admin.noNeedLogin'))){
             // check
-            var_dump('验证是否登陆');
             if (!Auth::guard('admin')->check()) { //专门检查后台有没有登录
                 return redirect('/admin/login');
             }
