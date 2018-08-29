@@ -30,10 +30,16 @@ Route::group(['namespace'=> 'App\Http\Controllers\Admin','middleware'=>['admin']
         Route::get('/web',function(){
             var_dump('web show');
         });
+
+        // role
+        Route::match(['get','post'], '/roleAdd','Manage\RoleController@add')->name('admin/roleAdd');
+
+        Route::get('roleMsg', 'Manage\RoleController@index');
+
     });
 
     Route::get('login', 'LoginController@showLoginForm')->name('admin/login');
     Route::post('login', 'LoginController@login');
 
-    Route::get('logout', 'LoginController@logout');
+    Route::match(['get','post'], 'logout', 'LoginController@logout')->name('admin/logout');
 });

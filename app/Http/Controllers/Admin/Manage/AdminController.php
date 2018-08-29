@@ -24,7 +24,7 @@ class AdminController extends Controller
                 'password' => bcrypt('123456')
             ]);
         }catch (\Exception $e){
-            throw new \Exception('创建失败');
+            throw new \Exception('创建失败' . $e->getMessage());
         }
 
         dd('创建成功');
