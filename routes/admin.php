@@ -36,6 +36,9 @@ Route::group(['namespace'=> 'App\Http\Controllers\Admin','middleware'=>['admin']
 
         Route::get('roleMsg', 'Manage\RoleController@index');
 
+        // permission
+        Route::match(['get','post'],'/permissionAdd', 'Manage\PermissionController@add')->name('admin/permissionAdd');
+
     });
 
     Route::get('login', 'LoginController@showLoginForm')->name('admin/login');
