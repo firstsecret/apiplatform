@@ -213,5 +213,4 @@ return [
         'APIRoute' => Dingo\Api\Facade\Route::class,
         'API' => Dingo\Api\Facade\API::class
     ],
-
 ];

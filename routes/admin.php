@@ -11,10 +11,19 @@
 |
 */
 
-Route::get('/', function () {
-   dd('这里是后台首页');
-});
 
-Route::get('/web',function(){
-   var_dump('web show');
+
+
+Route::group([], function (){
+    Route::get('/', function () {
+        dd('这里是后台首页');
+    });
+
+    Route::get('/web',function(){
+        var_dump('web show');
+    });
+
+    Route::get('/login', function(){
+       var_dump('登录页面');
+    });
 });
