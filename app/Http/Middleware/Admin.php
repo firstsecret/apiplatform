@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class Admin
 {
@@ -18,7 +19,9 @@ class Admin
         // check admin
         if(!in_array($request->getRequestUri(), config('admin.noNeedLogin'))){
             // check
-            var_dump('need auth');
+            if (!Auth::guard('admin')->check()) { //专门检查后台有没有登录
+                return redirect('/admin/login');
+            }
         }
         return $next($request);
     }

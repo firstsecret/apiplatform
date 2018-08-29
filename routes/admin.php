@@ -14,10 +14,12 @@
 
 
 
-Route::group([], function (){
-    Route::get('/', function () {
+Route::group(['namespace'=> 'App\Http\Controllers\Admin'], function (){
+    Route::get('/index', function () {
         dd('这里是后台首页');
     });
+
+    Route::get('/adminAdd', \Manage\AdminController::class . '@add');
 
     // 验证权限
     Route::group(['middleware' =>'admin.role:admin,operations|admins'], function(){
@@ -26,7 +28,6 @@ Route::group([], function (){
         });
     });
 
-    Route::get('/login', function(){
-       var_dump('登录页面');
-    });
+    Route::get('login', 'LoginController@showLoginForm')->name('admin/login');
+    Route::post('login', 'LoginController@login');
 });
