@@ -18,3 +18,7 @@ Route::get('/', function () {
 Route::get('/web',function(){
    var_dump('web show');
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

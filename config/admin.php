@@ -8,6 +8,7 @@
 
 return [
   'noNeedLogin' => env('NO_NEED_LOGIN',  [
-      '/admin/login'
+      '/admin/login',
+      '/admin/logout'
   ])
 ];

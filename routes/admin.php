@@ -14,10 +14,14 @@
 
 
 
-Route::group(['namespace'=> 'App\Http\Controllers\Admin'], function (){
+Route::group(['namespace'=> 'App\Http\Controllers\Admin','middleware'=>['admin']], function (){
     Route::get('/index', function () {
         dd('这里是后台首页');
     });
+
+    Route::get('/register', function(){
+       echo '<script>alert(\'未开通\')</script>';
+    })->name('admin/register');
 
     Route::get('/adminAdd', \Manage\AdminController::class . '@add');
 
@@ -30,4 +34,6 @@ Route::group(['namespace'=> 'App\Http\Controllers\Admin'], function (){
 
     Route::get('login', 'LoginController@showLoginForm')->name('admin/login');
     Route::post('login', 'LoginController@login');
+
+    Route::get('logout', 'LoginController@logout');
 });
