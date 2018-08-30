@@ -26,10 +26,10 @@ trait AppTool
         static $sortMenu = [];
         foreach ($menus as $menu) {
             if ($menu['parent_id'] == $pId) {
-                $menu['deep']  = $deep;
-                $flag          = str_repeat('└―', $deep);
+                $menu['deep'] = $deep;
+                $flag = str_repeat('└―', $deep);
                 $menu['label'] = $flag . $menu['name'];
-                $sortMenu[]    = $menu;
+                $sortMenu[] = $menu;
                 $this->sortWithDeep($menus, $menu['id'], $deep + 1);
             }
         }
@@ -53,11 +53,11 @@ trait AppTool
         foreach ($menus as $k => $menu) {
 
             if ($menu['parent_id'] == $pId) {
-                $menu['deep']  = $deep;
+                $menu['deep'] = $deep;
                 $menu['label'] = str_repeat('└―', $deep) . $menu['name'];
                 unset($menus[$k]);
 
-                $key_name        = 'children';
+                $key_name = 'children';
                 $menu[$key_name] = $this->treeSort($menus, $menu['id'], $deep + 1);
 
                 $treeMenu[] = $menu;

@@ -45,6 +45,13 @@ $api = app('Dingo\Api\Routing\Router');
 //    return $request->user();
 //});
 //
+// 项目 应用1
+$api->version('v1',[], function($api){
+    $api->get('showtest', \Show\Api\V1\IndexController::class . '@index');
+});
+//....
+
+
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
     $api->group(['prefix' => 'cli'], function ($api) {
         // 無需授权api
