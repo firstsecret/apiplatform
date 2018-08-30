@@ -9,14 +9,8 @@
 namespace App\Services;
 
 use App\Tool\AppTool;
-use Illuminate\Support\Facades\Cache;
 
 abstract class BaseService
 {
     use AppTool;
-
-    public function __construct()
-    {
-
-    }
 }

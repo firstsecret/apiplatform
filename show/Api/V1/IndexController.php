@@ -9,12 +9,19 @@
 namespace Show\Api\V1;
 
 
-use App\Http\Controllers\Controller;
+use App\Http\Api\BaseController;
+//use App\Http\Controllers\Controller;
+use Show\Services\IndexService;
 
-class IndexController extends Controller
+class IndexController extends BaseController
 {
+    public function __construct(IndexService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
-        echo '应用1服务类 接口';
+        $this->service->oneService();
     }
 }

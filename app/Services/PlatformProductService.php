@@ -14,10 +14,6 @@ use App\Models\PlatformProductCategory;
 
 class PlatformProductService extends BaseService
 {
-    public function __construct()
-    {
-    }
-
     /*
      *  產品列表獲取
      */
