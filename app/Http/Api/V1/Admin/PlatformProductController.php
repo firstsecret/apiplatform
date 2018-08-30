@@ -27,4 +27,9 @@ class PlatformProductController extends Controller
     {
 
     }
+
+    public function index()
+    {
+        dd('后台认证接口');
+    }
 }

@@ -81,9 +81,11 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
             $api->get('categoriesList', PlatformProductController::class . '@allList');
 
         });
+        // 后台的api
 
         // 需授权的 api
         $api->group(['middleware' => ['jwt.auth']], function ($api) {
+
             $api->group(['limit' => 10, 'expires' => 1], function ($api) {
                 $api->get('showauth', ApiAuthController::class . '@test');
                 $api->get('getUserInfo', ApiAuthController::class . '@uInfo');
