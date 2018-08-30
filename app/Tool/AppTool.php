@@ -21,7 +21,7 @@ trait AppTool
      * @param int $deep
      * @return
      */
-    function cmf_sort_with_deep($menus = [], $pId = 0, $deep = 0): Array
+    function sortWithDeep($menus = [], $pId = 0, $deep = 0): Array
     {
         static $sortMenu = [];
         foreach ($menus as $menu) {
@@ -30,14 +30,13 @@ trait AppTool
                 $flag          = str_repeat('└―', $deep);
                 $menu['label'] = $flag . $menu['name'];
                 $sortMenu[]    = $menu;
-                $this->cmf_sort_with_deep($menus, $menu['id'], $deep + 1);
+                $this->sortWithDeep($menus, $menu['id'], $deep + 1);
             }
         }
 
         return $sortMenu;
     }
 
-// 应用公共文件
     /**
      *
      * @method 树状排序
@@ -48,7 +47,7 @@ trait AppTool
      * @param int $deep
      * @return
      */
-    function cmf_tree_sort($menus = [], $pId = 0, $deep = 0): Array
+    function treeSort($menus = [], $pId = 0, $deep = 0): Array
     {
         $treeMenu = [];
         foreach ($menus as $k => $menu) {
@@ -59,12 +58,34 @@ trait AppTool
                 unset($menus[$k]);
 
                 $key_name        = 'children';
-                $menu[$key_name] = $this->cmf_tree_sort($menus, $menu['id'], $deep + 1);
+                $menu[$key_name] = $this->treeSort($menus, $menu['id'], $deep + 1);
 
                 $treeMenu[] = $menu;
             }
         }
 
         return $treeMenu;
+    }
+
+    /**
+     *
+     * @method 去除自身 及 自身的 子分类
+     * @version
+     * @User: bevan
+     * @param array $menus
+     * @param int $pId
+     * @return
+     */
+    function getWithoutSelfTree($menus = [], $pId = 0)
+    {
+        foreach ($menus as $key => $menu) {
+            if ($menu['parent_id'] == $pId) {
+                $pid = $menu['id'];
+                unset($menus[$key]);
+                $this->getWithoutSelfTree($menus, $pid);
+            }
+        }
+
+        return $menus;
     }
 }
