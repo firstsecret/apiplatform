@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class PlatformProduct extends Model
 {
     //
-    public function getList($page=1,$limit = 20, $type='default')
+    public function getList($paginte = 15, $type='default')
     {
-
+        $where = $type == 'default' ? []: ['type',$type];
+        return $this->simplePaginate($paginte)->get($where);
     }
 }

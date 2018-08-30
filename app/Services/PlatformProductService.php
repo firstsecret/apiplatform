@@ -13,9 +13,12 @@ use App\Models\PlatformProduct;
 
 class PlatformProductService
 {
-
-    public function productList(PlatformProduct $platformProduct, $page, $limit)
+    /*
+     *  產品列表獲取
+     */
+    public function productList(PlatformProduct $platformProduct)
     {
-        $platformProduct->getList($page, $limit);
+        $paginte = config('platformProduct.paginte');
+        $platformProduct->getList($paginte);
     }
 }

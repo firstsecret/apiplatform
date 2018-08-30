@@ -150,6 +150,8 @@ return [
         /*
          * Package Service Providers...
          */
+        Dingo\Api\Provider\LaravelServiceProvider::class,
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -159,8 +161,11 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Dingo\Api\Provider\LaravelServiceProvider::class,
-        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+
+        /**
+         * Application business Service Providers...
+         */
+        App\Providers\PlatformProductServiceProvider::class
     ],
 
     /*
@@ -211,6 +216,7 @@ return [
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'APIRoute' => Dingo\Api\Facade\Route::class,
-        'API' => Dingo\Api\Facade\API::class
+        'API' => Dingo\Api\Facade\API::class,
+        'PlatformProduct' => App\Facades\PlatformProduct::class
     ],
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\PlatformProductService;
 use Illuminate\Support\ServiceProvider;
 
 class PlatformProductServiceProvider extends ServiceProvider
@@ -25,7 +26,7 @@ class PlatformProductServiceProvider extends ServiceProvider
     {
         //
         $this->app->singleton('PlatformProduct', function (){
-
+            return new PlatformProductService();
         });
     }
 }
