@@ -15,6 +15,11 @@ return [
     |
     */
 
+    /*
+     *
+     */
+    'categories_with_product' => env('CATEGORIES_WITH_PRODUCT'),
+
     'default' => env('CACHE_DRIVER', 'file'),
 
     /*

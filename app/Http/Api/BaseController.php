@@ -12,7 +12,6 @@ class BaseController extends Controller
 {
     //
     use Helpers;
-    use AppTool;
 
     public function responseClient($status_code = 200, $msg = 'success', $data = [])
     {

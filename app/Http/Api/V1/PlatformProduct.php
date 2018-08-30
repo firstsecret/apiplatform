@@ -19,9 +19,6 @@ class PlatformProduct extends BaseController
     {
         $list = PlatformProFacade::getCategoriesWithProduct();
 
-        //sort
-        $this->treeSort($list);
-
         return $this->responseClient(200,'success',$list);
     }
 }

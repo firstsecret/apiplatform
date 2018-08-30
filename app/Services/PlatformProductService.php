@@ -12,7 +12,7 @@ namespace App\Services;
 use App\Models\PlatformProduct;
 use App\Models\PlatformProductCategory;
 
-class PlatformProductService
+class PlatformProductService extends BaseService
 {
     public function __construct()
     {
@@ -33,6 +33,24 @@ class PlatformProductService
      */
     public function getCategoriesWithProduct(): Array
     {
-        return PlatformProductCategory::with('products:id,name,detail,category_id')->get(['id','name','detail','parent_id'])->toArray();
+        // has cache
+//        cache()
+        if(cache('categoriesWithProduct')){
+            return cache('categoriesWithProduct');
+        }else{
+            $lists = $this->getCategoriesWithProductFromDb();
+
+            cache(['categoriesWithProduct' => $lists], config('cache.categories_with_product'));
+
+            return $lists;
+        }
+    }
+
+    protected function getCategoriesWithProductFromDb(): Array
+    {
+        $cate_lists = PlatformProductCategory::with('products:id,name,detail,category_id')->get(['id','name','detail','parent_id'])->toArray();
+
+        // sort
+        return $this->treeSort($cate_lists);
     }
 }
