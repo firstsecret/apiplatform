@@ -78,6 +78,8 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
 //
 //            })
 
+            $api->get('categoriesList', PlatformProduct::class . '@allList');
+
         });
 
         // 需授权的 api

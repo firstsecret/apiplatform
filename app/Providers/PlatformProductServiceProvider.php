@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+
 use App\Services\PlatformProductService;
 use Illuminate\Support\ServiceProvider;
 
