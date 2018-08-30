@@ -5,7 +5,7 @@ namespace App\Http\Api\V1;
 use App\Http\Api\BaseController;
 use App\Facades\PlatformProduct as PlatformProFacade;
 
-class PlatformProduct extends BaseController
+class PlatformProductController extends BaseController
 {
     //
     public function index($type = 'default')
@@ -15,6 +15,10 @@ class PlatformProduct extends BaseController
         return $this->responseClient(200,'success',$list);
     }
 
+    /**
+     * 获取产品列表
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function allList()
     {
         $list = PlatformProFacade::getCategoriesWithProduct();

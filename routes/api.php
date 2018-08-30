@@ -73,12 +73,12 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
             $api->get('testEvent', ShowController::class . '@testEvent');
 
 
-            $api->get('productList/{type?}',PlatformProduct::class. '@index');
+            $api->get('productList/{type?}',PlatformProductController::class. '@index');
 //            $api->group(['namespace'=>''], function($api){
 //
 //            })
 
-            $api->get('categoriesList', PlatformProduct::class . '@allList');
+            $api->get('categoriesList', PlatformProductController::class . '@allList');
 
         });
 
