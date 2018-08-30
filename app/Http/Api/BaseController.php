@@ -2,6 +2,7 @@
 
 namespace App\Http\Api;
 
+use App\Tool\AppTool;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Dingo\Api\Routing\Helpers;
@@ -11,6 +12,7 @@ class BaseController extends Controller
 {
     //
     use Helpers;
+    use AppTool;
 
     public function responseClient($status_code = 200, $msg = 'success', $data = [])
     {
