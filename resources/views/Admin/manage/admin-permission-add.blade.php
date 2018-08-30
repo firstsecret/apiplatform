@@ -8,11 +8,11 @@
                     <div class="panel-heading">添加权限</div>
 
                     <div class="panel-body">
-                        <form class="form-horizontal" method="POST" action="{{ route('admin/roleAdd') }}">
+                        <form class="form-horizontal" method="POST" action="{{ route('admin/permissionAdd') }}">
                             {{ csrf_field() }}
 
                             <div class="form-group{{$errors->has('name') ? ' has-error' : '' }}">
-                                <label for="name" class="col-md-4 control-label">角色名</label>
+                                <label for="name" class="col-md-4 control-label">权限名</label>
 
                                 <div class="col-md-6">
                                     <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required autofocus>
@@ -29,7 +29,7 @@
                                 <label for="detail" class="col-md-4 control-label">备注</label>
 
                                 <div class="col-md-6">
-                                    <input id="detail" type="detail" class="form-control" name="detail" required>
+                                    <input id="detail" type="detail" class="form-control" name="detail">
 
                                     @if ($errors->has('detail'))
                                         <span class="help-block">

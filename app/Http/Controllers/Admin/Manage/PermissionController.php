@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Admin\Manage;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
     protected $permission;
 
-    public function __construct()
+    public function __construct(Permission $permission)
     {
-        $this->permission = new \Spatie\Permission\Models\Permission();
+        $this->permission = $permission;
     }
 
     //
@@ -36,7 +37,8 @@ class PermissionController extends Controller
 
         $this->permission->create([
             'name' => $request->input('name'),
-            'detail' => $request->input('detail','')
+            'detail' => $request->input('detail',''),
+            'guard_name' => 'admin'
         ]);
 
         return redirect('/admin/index');

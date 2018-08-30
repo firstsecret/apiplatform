@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Admin\Manage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
     protected $role;
 
-    public function __construct()
+    public function __construct(Role $role)
     {
-        $this->role = new \Spatie\Permission\Models\Role();
+        $this->role = $role;
     }
 
     //
@@ -40,5 +41,13 @@ class RoleController extends Controller
         ]);
 
         return redirect('/admin/index');
+    }
+
+    /**
+     *  角色 权限
+     */
+    public function rolePermission()
+    {
+        
     }
 }
