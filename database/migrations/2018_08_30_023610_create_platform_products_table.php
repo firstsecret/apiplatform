@@ -15,6 +15,9 @@ class CreatePlatformProductsTable extends Migration
     {
         Schema::create('platform_products', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name')->unique()->comment('產品名稱');
+            $table->string('detail')->default('')->commnet('描述');
+            $table->unsignedSmallInteger('type')->comment('產品類型id');
             $table->timestamps();
         });
     }

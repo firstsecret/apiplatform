@@ -13,12 +13,15 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // $this->call(UsersTableSeeder::class);
-        DB::table('app_users')
-            ->insert([
-                'app_key' => md5(rand(1000,9999)),
-                'app_secret' => md5(rand(1000,9999)),
-                'user_id' => 1,
-                'app_id' => rand(1,100)
-            ]);
+//        DB::table('app_users')
+//            ->insert([
+//                'app_key' => md5(rand(1000,9999)),
+//                'app_secret' => md5(rand(1000,9999)),
+//                'user_id' => 1,
+//                'app_id' => rand(1,100)
+//            ]);
+        $this->call([
+           PlatformProductSeeder::class
+        ]);
     }
 }

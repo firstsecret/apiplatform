@@ -34,7 +34,7 @@ app('api.exception')->register(function (Exception $exception) {
         return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'data' => ''], 422);
     } else {
         $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
-        $err_message = $exception->getMessage() == '' ? '请求失败' : $exception->getMessage();
+        $err_message = $exception->getMessage() == '' ? '路由不存在' : $exception->getMessage();
         return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'data' => ''], $status_code);
     }
 });
@@ -47,7 +47,7 @@ $api = app('Dingo\Api\Routing\Router');
 //
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
     $api->group(['prefix' => 'cli'], function ($api) {
-        // 非授权api
+        // 無需授权api
         $api->group([], function($api){
 
             $api->group(['limit'=>300,'expires'=>5], function($api){
@@ -64,9 +64,16 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
             $api->get('test', ShowController::class . '@index');
 
             $api->get('testEvent', ShowController::class . '@testEvent');
+
+
+            $api->get('productList/{type?}',PlatformProduct::class. '@index');
+//            $api->group(['namespace'=>''], function($api){
+//
+//            })
+
         });
 
-        // 授权的 api
+        // 需授权的 api
         $api->group(['middleware' => ['jwt.auth']], function ($api) {
             $api->group(['limit' => 10, 'expires' => 1], function ($api) {
                 $api->get('showauth', ApiAuthController::class . '@test');

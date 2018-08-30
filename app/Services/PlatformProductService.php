@@ -13,12 +13,18 @@ use App\Models\PlatformProduct;
 
 class PlatformProductService
 {
+    public function __construct()
+    {
+        $this->platformProduct = new PlatformProduct();
+    }
+
     /*
      *  產品列表獲取
      */
-    public function productList(PlatformProduct $platformProduct)
+    public function productList($type = 'default')
     {
         $paginte = config('platformProduct.paginte');
-        $platformProduct->getList($paginte);
+
+        return $this->platformProduct->getList($paginte, $type);
     }
 }
