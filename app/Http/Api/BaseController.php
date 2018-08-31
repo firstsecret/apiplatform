@@ -15,6 +15,6 @@ class BaseController extends Controller
 
     public function responseClient($status_code = 200, $msg = 'success', $data = [])
     {
-        return Response()->json(['status_code' => $status_code, 'msg' => $msg, 'respData' => $data]);
+        return Response()->json(['status_code' => $status_code, 'message' => $msg, 'respData' => $data]);
     }
 }

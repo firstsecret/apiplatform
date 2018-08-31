@@ -26,6 +26,7 @@ class AdminUserService extends BaseService
         // add event
 
         $token = $this->loginByType($loginMsg);
+
         if($token !== false){
             $admin = JWTAuth::user();
 

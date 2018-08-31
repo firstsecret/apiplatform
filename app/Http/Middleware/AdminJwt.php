@@ -25,17 +25,19 @@ class AdminJwt extends BaseMiddleware
             // check
 //            var_dump(Auth::guard('admin')->check());
             // get user id
-            $admin = $this->auth->parseToken()->authenticate();
 
-            if(empty($admin)){
-                throw new AdminJwtException('未找到对应用户或已过期');
-            }
+            $this->authenticate($request);
+//            $admin = $this->auth->parseToken()->authenticate();
+//
+//            if(empty($admin)){
+//                throw new AdminJwtException('用户不存在');
+//            }
 
             // is admin or user
-            if(!cache('admin-' .  $admin->id)){
-                // user or expire time
-                throw new AdminJwtException('token非法或已过期');
-            }
+//            if(!cache('admin-' .  $admin->id)){
+//                // user or expire time
+//                throw new AdminJwtException('token非法或已过期');
+//            }
         }
 
         return $next($request);

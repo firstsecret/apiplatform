@@ -2,10 +2,11 @@
 
 namespace App\Http\Api\V1\Admin;
 
+use App\Http\Api\AdminBaseController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
-class PlatformProductController extends Controller
+
+class PlatformProductController extends AdminBaseController
 {
     //
     public function add()
@@ -30,6 +31,6 @@ class PlatformProductController extends Controller
 
     public function index()
     {
-        dd('后台认证接口');
+        return $this->responseClient(200,'api需认证请求',[]);
     }
 }

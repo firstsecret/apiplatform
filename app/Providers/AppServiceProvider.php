@@ -19,12 +19,12 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
 
         // sql listen
-//        DB::listen(function ($query) {
-//            // $query->sql
-//            // $query->bindings
-//            // $query->time
-//            echo $query->sql . '<br>';
-//        });
+        DB::listen(function ($query) {
+            // $query->sql
+            // $query->bindings
+            // $query->time
+            echo $query->sql . ',time:'. $query->time / 1000 . '<br>';
+        });
     }
 
     /**

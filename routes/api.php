@@ -29,13 +29,15 @@ app('api.exception')->register(function (Exception $exception) {
 //    return Response()->json(['status_code'=>$exception->getStatusCode(),'message'=>$exception->validator->errors(),'data'=>''],$exception->getStatusCode());
 //    var_dump(get_class($exception));
     if ($exception instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
-        return Response()->json(['status_code' => $exception->getStatusCode(), 'message' => $exception->getMessage(), 'data' => ''], $exception->getStatusCode());
+        return Response()->json(['status_code' => $exception->getStatusCode(), 'message' => $exception->getMessage(), 'respData' => ''], $exception->getStatusCode());
     } else if (get_class($exception) == 'Illuminate\Validation\ValidationException') {
-        return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'data' => ''], 422);
+        return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'respData' => ''], 422);
+    } else if ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
+
     } else {
         $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
         $err_message = $exception->getMessage() == '' ? '路由不存在' : $exception->getMessage();
-        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'data' => ''], $status_code);
+        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => ''], $status_code);
     }
 });
 
@@ -82,7 +84,7 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
 
         });
         // 后台的api
-        $api->group(['middleware' => ['admin.jwt.changeAuth', 'admin.jwt.auth'], 'namespace' => 'Admin', 'prefix' => 'admin'], function ($api) {
+        $api->group(['middleware' => ['admin.jwt.changeAuth', 'self.jwt.refresh:admin', 'admin.jwt.auth'], 'namespace' => 'Admin', 'prefix' => 'admin'], function ($api) {
             $api->group(['middleware' => ['admin.jwt.permission:opeartor|admins']], function ($api) {
                 $api->get('index', PlatformProductController::class . '@index');
             });
