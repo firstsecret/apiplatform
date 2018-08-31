@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
         'checkAccessToken' => CheckAccessToken::class,
         'admin' =>  \App\Http\Middleware\Admin::class,
         'admin.role' => \App\Http\Middleware\AdminRole::class,
-//        'admin.jwt.auth' => \App\Http\Middleware\AdminJwt::class
+        'admin.jwt.auth' => \App\Http\Middleware\AdminJwt::class,
+        'admin.jwt.changeAuth' => \App\Http\Middleware\AdminJwtChange::class
     ];
 }

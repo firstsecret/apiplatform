@@ -9,6 +9,9 @@
 return [
   'noNeedLogin' => env('NO_NEED_LOGIN',  [
       '/admin/login',
-      '/admin/logout'
+      '/admin/logout',
+      // api
+      '/api/cli/admin/login',
+      '/api/cli/admin/logout'
   ])
 ];

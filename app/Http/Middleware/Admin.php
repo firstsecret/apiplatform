@@ -17,7 +17,7 @@ class Admin
     public function handle($request, Closure $next)
     {
         // check admin
-        if(!in_array($request->getRequestUri(), config('admin.noNeedLogin'))){
+        if(!in_array($request->getPathInfo(), config('admin.noNeedLogin'))){
             // check
 //            var_dump(Auth::guard('admin')->check());
 
