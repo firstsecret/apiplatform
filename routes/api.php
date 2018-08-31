@@ -82,7 +82,7 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
 
         });
         // 后台的api
-        $api->group(['middleware' => ['admin.jwt.changeAuth','admin.jwt.auth'],'namespace'=>'Admin','prefix'=>'admin'], function ($api) {
+        $api->group(['middleware' => ['admin.jwt.changeAuth','admin.jwt.auth','admin.jwt.permission:opeartor|admins'],'namespace'=>'Admin','prefix'=>'admin'], function ($api) {
             $api->get('index', PlatformProductController::class . '@index');
             $api->post('login', LoginController::class . '@login');
         });
