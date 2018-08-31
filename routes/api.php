@@ -85,6 +85,7 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
         $api->group(['middleware' => ['admin.jwt.changeAuth', 'self.jwt.refresh:admin', 'admin.jwt.auth'], 'namespace' => 'Admin', 'prefix' => 'admin'], function ($api) {
             $api->group(['middleware' => ['admin.jwt.permission:opeartor|admins']], function ($api) {
                 $api->get('index', PlatformProductController::class . '@index');
+                $api->get('test', PlatformProductController::class . '@test');
             });
             $api->post('login', LoginController::class . '@login');
         });

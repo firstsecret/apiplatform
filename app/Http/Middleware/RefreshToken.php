@@ -49,10 +49,11 @@ class RefreshToken extends BaseMiddleware
                 try {
 //                sleep(rand(1, 5) / 100);
                     $newToken = JWTAuth::claims(['model'=>$model])->refresh($token);
-                    var_dump($newToken);
+//                    var_dump($newToken);
                     $request->headers->set('Authorization', 'Bearer ' . $newToken); // 给当前的请求设置性的token,以备在本次请求中需要调用用户信息
 //                Redis::setex('token_blacklist:' . $token, 30, $newToken);
-                    cache(['token_blacklist:' . $token => $newToken], 5);
+                    // 不能大于 可 刷新的 时间
+                    cache(['token_blacklist:' . $token => $newToken], 2);
                 } catch (JWTException $e) {
                     // 在黑名单的有效期,放行
                     if ($newToken = cache('token_blacklist:' . $token)) {

@@ -50,8 +50,14 @@ class AdminUserService extends BaseService
         }
     }
 
+    /**
+     * login
+     * @param array $msg
+     * @return mixed $access_token or false
+     */
     public function loginByType(Array $msg)
     {
         return JWTAuth::claims(['model' => $this->model])->attempt($msg);
     }
+
 }
