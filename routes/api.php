@@ -32,8 +32,6 @@ app('api.exception')->register(function (Exception $exception) {
         return Response()->json(['status_code' => $exception->getStatusCode(), 'message' => $exception->getMessage(), 'respData' => ''], $exception->getStatusCode());
     } else if (get_class($exception) == 'Illuminate\Validation\ValidationException') {
         return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'respData' => ''], 422);
-    } else if ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
-
     } else {
         $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
         $err_message = $exception->getMessage() == '' ? '路由不存在' : $exception->getMessage();

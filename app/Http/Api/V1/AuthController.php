@@ -4,9 +4,10 @@ namespace App\Http\Api\V1;
 
 use App\Facades\AdminUser;
 use App\Http\Api\BaseController;
+use App\Http\Requests\V1\UserRegisterRule;
+use App\Http\Requests\V1\UserRule;
 use App\User;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends BaseController
@@ -16,7 +17,7 @@ class AuthController extends BaseController
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
+    public function login(UserRule $request)
     {
         $token = AdminUser::login($request->input('login_name'), $request->input('password'), 'user');
 
@@ -26,7 +27,7 @@ class AuthController extends BaseController
     /**
      *  注册
      */
-    public function register(\App\Http\Requests\V1\UserRule $request)
+    public function register(UserRegisterRule $request)
     {
         $data = $request->all();
 
@@ -39,9 +40,9 @@ class AuthController extends BaseController
         if ($user->save()) {
             $token = JWTAuth::fromUser($user);
 
-            return ['token' => $token];
+            return $this->tokenResponse($token);
         }
 
-        return ['status_code' => 500, 'msg' => '用户创建失败'];
+        return $this->responseClient(500, '用户创建失败', []);
     }
 }
