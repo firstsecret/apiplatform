@@ -17,6 +17,6 @@ class LoginController extends AdminBaseController
 
         $token = AdminUser::login($login_name, $password);
 
-        return $token === false ? $this->responseClient(400,'登录失败,账号或密码错误',[]) :  $this->responseClient(200, '登录成功', ['token' => $token]);
+        return $token === false ? $this->responseClient(400,'登录失败,账号或密码错误',[]) :  $this->responseClient(200, '登录成功', ['access_token' => 'Bearer' . $token]);
     }
 }

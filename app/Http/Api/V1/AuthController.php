@@ -21,13 +21,15 @@ class AuthController extends BaseController
 
         try {
             if (!$token = JWTAuth::attempt($userInfo)) {
-                return response()->json(['error user or password'], 401);
+                return $this->responseClient(401, '用户或密码错误', []);
+//                return response()->json(['error user or password'], 401);
             }
         } catch (JWTException $e) {
-            return $this->response->error('system error', 500);
+//            return $this->response->error('system error', 500);
+            return $this->responseClient(500, '系统错误', []);
         }
 
-        return response()->json(compact('token'));
+        return $this->responseClient(200, '登录成功', ['access_token' => 'Bearer' . $token]);
     }
 
     /**

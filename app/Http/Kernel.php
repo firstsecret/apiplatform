@@ -70,6 +70,7 @@ class Kernel extends HttpKernel
         'admin.role' => \App\Http\Middleware\AdminRole::class,
         'admin.jwt.auth' => \App\Http\Middleware\AdminJwt::class,
         'admin.jwt.changeAuth' => \App\Http\Middleware\AdminJwtChange::class,
-        'admin.jwt.permission' => \App\Http\Middleware\AdminJwtPermission::class
+        'admin.jwt.permission' => \App\Http\Middleware\AdminJwtPermission::class,
+        'jwt.refresh' => \App\Http\Middleware\RefreshToken::class
     ];
 }
