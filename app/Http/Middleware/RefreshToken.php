@@ -48,7 +48,7 @@ class RefreshToken extends BaseMiddleware
 //                var_dump(get_class($e));
                 try {
 //                sleep(rand(1, 5) / 100);
-                    $newToken = JWTAuth::refresh($token);
+                    $newToken = JWTAuth::claims(['model'=>$model])->refresh($token);
                     var_dump($newToken);
                     $request->headers->set('Authorization', 'Bearer ' . $newToken); // 给当前的请求设置性的token,以备在本次请求中需要调用用户信息
 //                Redis::setex('token_blacklist:' . $token, 30, $newToken);

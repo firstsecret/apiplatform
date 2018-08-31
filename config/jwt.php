@@ -153,6 +153,7 @@ return [
         'nbf',
         'sub',
         'jti',
+        'model',
     ],
 
     /*

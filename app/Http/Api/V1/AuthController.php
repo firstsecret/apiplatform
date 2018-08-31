@@ -2,6 +2,7 @@
 
 namespace App\Http\Api\V1;
 
+use App\Facades\AdminUser;
 use App\Http\Api\BaseController;
 use App\User;
 use Illuminate\Http\Request;
@@ -17,19 +18,9 @@ class AuthController extends BaseController
      */
     public function login(Request $request)
     {
-        $userInfo = $request->only('email', 'password');
+        $token = AdminUser::login($request->input('login_name'), $request->input('password'), 'user');
 
-        try {
-            if (!$token = JWTAuth::attempt($userInfo)) {
-                return $this->responseClient(401, '用户或密码错误', []);
-//                return response()->json(['error user or password'], 401);
-            }
-        } catch (JWTException $e) {
-//            return $this->response->error('system error', 500);
-            return $this->responseClient(500, '系统错误', []);
-        }
-
-        return $this->responseClient(200, '登录成功', ['access_token' => 'Bearer' . $token]);
+        return $this->tokenResponse($token);
     }
 
     /**

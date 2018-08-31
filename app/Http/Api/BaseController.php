@@ -17,4 +17,9 @@ class BaseController extends Controller
     {
         return Response()->json(['status_code' => $status_code, 'message' => $msg, 'respData' => $data]);
     }
+
+    public function tokenResponse($token)
+    {
+        return $token === false ? $this->responseClient(400,'登录失败,账号或密码错误',[]) :  $this->responseClient(200, '登录成功', ['access_token' => 'Bearer' . $token]);
+    }
 }

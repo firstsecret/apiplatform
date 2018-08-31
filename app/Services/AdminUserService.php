@@ -13,9 +13,12 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AdminUserService extends BaseService
 {
-    public function login($login_name, $password)
+    public $model;
+
+    public function login($login_name, $password, $model = 'user')
     {
         // check login type
+        $this->model = $model;
         $type = $this->getLoginType($login_name);
 
         $loginMsg = [
@@ -27,11 +30,11 @@ class AdminUserService extends BaseService
 
         $token = $this->loginByType($loginMsg);
 
-        if($token !== false){
-            $admin = JWTAuth::user();
-
-            cache(['admin-' . $admin->id => $token], config('jwt.ttl'));
-        }
+//        if ($token !== false) {
+//            $admin = JWTAuth::user();
+//
+//            cache(['admin-' . $admin->id => $token], config('jwt.ttl'));
+//        }
 
         return $token;
     }
@@ -49,6 +52,6 @@ class AdminUserService extends BaseService
 
     public function loginByType(Array $msg)
     {
-        return JWTAuth::attempt($msg);
+        return JWTAuth::claims(['model' => $this->model])->attempt($msg);
     }
 }

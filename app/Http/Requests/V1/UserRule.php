@@ -31,22 +31,19 @@ class UserRule extends FormRequest
     {
         return [
             //
-            'name' => 'required|max:32|bail',
-            'email' => 'required|unique:users|bail',
-            'password' => 'required|max:16|min:3|bail'
+            'login_name' => 'required|max:32|bail',
+            'password' => 'required|max:32|min:6|bail'
         ];
     }
 
     public function messages()
     {
         return [
-            'name.required' => '用户名不能为空',
-            'name.max' => '用户名不能为空',
-            'email.required' => '邮箱不能为空',
-            'email.unique' => '该邮箱已被注册',
+            'login_name.required' => '登录账号不能为空',
+            'login_name.max' => '登录账号不能超过32个字符',
             'password.required' => '密码不能为空',
-            'password.max' => '密码不能为空',
-            'password.min' => '密码不能为空',
+            'password.max' => '密码长度不能超过32个字符',
+            'password.min' => '密码长度不能少于6个字符',
         ];
     }
 }

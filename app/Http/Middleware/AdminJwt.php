@@ -2,12 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Exceptions\AdminJwtException;
-use Closure;
-use Illuminate\Support\Facades\Config;
-use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
 
-class AdminJwt extends BaseMiddleware
+use Closure;
+
+class AdminJwt extends BevanJwtAuth
 {
     /**
      * Handle an incoming request.
@@ -16,7 +14,7 @@ class AdminJwt extends BaseMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $model = 'admin')
     {
         // jump route
 //        dd($request->getPathInfo());
@@ -25,6 +23,7 @@ class AdminJwt extends BaseMiddleware
             // check
 //            var_dump(Auth::guard('admin')->check());
             // get user id
+            $this->checkClaimModel($model);
 
             $this->authenticate($request);
 //            $admin = $this->auth->parseToken()->authenticate();
