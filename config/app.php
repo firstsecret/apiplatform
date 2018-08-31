@@ -165,7 +165,8 @@ return [
         /**
          * Application business Service Providers...
          */
-        App\Providers\PlatformProductServiceProvider::class
+        App\Providers\PlatformProductServiceProvider::class,
+        App\Providers\AdminUserServiceProvider::class
     ],
 
     /*
@@ -217,6 +218,7 @@ return [
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'APIRoute' => Dingo\Api\Facade\Route::class,
         'API' => Dingo\Api\Facade\API::class,
-        'PlatformProduct' => App\Facades\PlatformProduct::class
+        'PlatformProduct' => App\Facades\PlatformProduct::class,
+        'AdminUser' => App\Facades\AdminUser::class
     ],
 ];

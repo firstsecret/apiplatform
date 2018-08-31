@@ -22,7 +22,7 @@ class UsersTransformer extends Transformer
      * @param $data
      * @return array
      */
-    public function transform($data)
+    public function transform($data): Array
     {
 //        dd($data);
         return [

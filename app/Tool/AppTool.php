@@ -76,7 +76,7 @@ trait AppTool
      * @param int $pId
      * @return
      */
-    function getWithoutSelfTree($menus = [], $pId = 0)
+    function getWithoutSelfTree($menus = [], $pId = 0): Array
     {
         foreach ($menus as $key => $menu) {
             if ($menu['parent_id'] == $pId) {
@@ -87,5 +87,16 @@ trait AppTool
         }
 
         return $menus;
+    }
+
+    /**
+     * 验证手机号码
+     * @User: bevan
+     * @param $phone
+     * @return bool
+     */
+    function checkIsPhone($phone)
+    {
+        return preg_match("/^1[345678]{1}\d{9}$/",$phone);
     }
 }

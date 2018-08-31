@@ -31,9 +31,9 @@ class UserRule extends FormRequest
     {
         return [
             //
-            'name' => 'required|max:32',
-            'email' => 'required|unique:users',
-            'password' => 'required|max:16|min:3'
+            'name' => 'required|max:32|bail',
+            'email' => 'required|unique:users|bail',
+            'password' => 'required|max:16|min:3|bail'
         ];
     }
 

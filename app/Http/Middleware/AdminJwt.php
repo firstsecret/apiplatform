@@ -20,11 +20,10 @@ class AdminJwt extends BaseMiddleware
     {
         // jump route
 //        dd($request->getPathInfo());
-        dd(config('admin.noNeedLogin'));
+//        dd(config('admin.noNeedLogin'));
         if(!in_array($request->getPathInfo(), config('admin.noNeedLogin'))){
             // check
 //            var_dump(Auth::guard('admin')->check());
-
             // get user id
             $admin = $this->auth->parseToken()->authenticate();
 
@@ -38,7 +37,6 @@ class AdminJwt extends BaseMiddleware
                 throw new AdminJwtException('token非法或已过期');
             }
         }
-
 
         return $next($request);
     }
