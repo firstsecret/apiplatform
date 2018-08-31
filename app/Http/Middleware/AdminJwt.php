@@ -32,7 +32,7 @@ class AdminJwt extends BaseMiddleware
             }
 
             // is admin or user
-            if(!cache('admin' .  $admin->id)){
+            if(!cache('admin-' .  $admin->id)){
                 // user or expire time
                 throw new AdminJwtException('token非法或已过期');
             }
