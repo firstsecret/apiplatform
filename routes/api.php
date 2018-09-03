@@ -88,7 +88,12 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                 $api->get('getUserInfo', ApiAuthController::class . '@uInfo');
             });
 
-            $api->post('openService/{product_id}', PlatformProductController::class . '@openService');
+            // 开通 产品 服务 (单个)
+            $api->get('openServiceSelf/{product_id}', ProductServiceController::class . '@addService');
+            // 编辑 产品 服务 (多开通， 多 关闭)
+            $api->post('editServiceSelf', ProductServiceController::class . '@editService');
+            // 关闭 产品 服务 (单个)
+            $api->get('delService/{product_id}', ProductServiceController::class . '@delService');
 
             $api->group(['limit' => 300, 'expires' => 5], function ($api) {
                 // 刷新token

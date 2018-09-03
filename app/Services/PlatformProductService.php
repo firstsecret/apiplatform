@@ -80,9 +80,34 @@ class PlatformProductService extends BaseService
      * @param $product_ids
      * @param $user_id
      */
-    public function disableUserService($product_ids, $user_id)
+    public function disableUserService($product_id, $user_id)
     {
+        $user_id = $user_id == null ? $this->user->id : $user_id;
 
+        $disableProducts = ProductUserDisableService::where('user_id', $user_id)->first();
+
+        if ($disableProducts) {
+            $platform_product_id = $disableProducts->platform_product_id;
+            $platform_product_id = $platform_product_id == null ? [] : $platform_product_id;
+
+            if (is_array($product_id)) {
+                $platform_product_id = array_merge($platform_product_id, $product_id);
+            } else {
+                $platform_product_id[] = $product_id;
+            }
+            $platform_product_id = array_unique($platform_product_id);
+
+            $disableProducts->platform_product_id = $platform_product_id;
+
+            $res = $disableProducts->save();
+        } else {
+            $res = ProductUserDisableService::create([
+                'user_id' => $user_id,
+                'platform_product_id' => $product_id
+            ]);
+        }
+
+        return $res === false ? false : true;
     }
 
     /**
@@ -133,14 +158,14 @@ class PlatformProductService extends BaseService
      * @param array $products_id
      * @return bool
      */
-    public function eidtService(Array $products_ids, $user_id = null)
+    public function editService(Array $products_ids, $user_id = null)
     {
         $user_id = $user_id == null ? $this->user->id : $user_id;
         $this->checkIsProductDisable($products_ids, $user_id);
 
         $res = ProductUserService::where('user_id', $user_id)
             ->update([
-                'platform_product_id' => json_encode($products_ids)
+                'platform_product_id' => $products_ids
             ]);
 
         return $res === false ? false : true;

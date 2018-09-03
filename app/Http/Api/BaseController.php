@@ -2,6 +2,7 @@
 
 namespace App\Http\Api;
 
+use App\Exceptions\PlatformProductException;
 use App\Tool\AppTool;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -41,5 +42,16 @@ class BaseController extends Controller
     public function res2Response($res, $successMsg, $errorMsg = '', $successCode = 200, $errorCode = 400, $data = [])
     {
         return $res === true ? $this->responseClient($successCode, $successMsg, $data) : $this->responseClient($errorCode, $errorMsg, $data);
+    }
+
+    /**
+     * 验证 请求 的 产品 id
+     * @param $product_ids
+     */
+    protected function checkProductArr($product_ids)
+    {
+        foreach ($product_ids as $product_id) {
+            if (!is_numeric($product_id)) throw new PlatformProductException('400', '产品编号有误');
+        }
     }
 }

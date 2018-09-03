@@ -2,6 +2,7 @@
 
 namespace App\Http\Api\V1;
 
+
 use App\Http\Api\BaseController;
 use Illuminate\Http\Request;
 use App\Facades\PlatformProduct as PlatformProFacade;
@@ -16,12 +17,12 @@ class ProductServiceController extends BaseController
     public function editService(Request $request)
     {
         $product_ids = json_decode($request->input('product_ids'), true);
-
+        $this->checkProductArr($product_ids);
         if (empty($product_ids)) {
             return $this->responseClient(400, '未获取到服务产品信息', []);
         }
 
-        $res = PlatformProFacade::eidtService($product_ids);
+        $res = PlatformProFacade::editService($product_ids);
 
         return $this->res2Response($res, '更新成功', '更新失败', 200, 500);
 //        return $res === false ? $this->responseClient(500, '更新失败', []) : $this->responseClient(200, '更新成功', []);

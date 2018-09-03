@@ -46,7 +46,6 @@ class PlatformProductController extends AdminBaseController
      */
     public function openService(Request $request, $user_id)
     {
-
 //        $request->validate([
 //            'user_id' => 'required|integer|bail',
 //        ], ['user_id.required' => '用户id必传', 'user_id.integer' => '用户id必须为整型']);
@@ -54,8 +53,10 @@ class PlatformProductController extends AdminBaseController
             return $this->responseClient(400, '用户id必须为数字', []);
         }
 
-        $product_ids = $request->input('product_ids') == '' ? config('platformProduct.defaultProductService') : json_decode($request->input('product_ids'), true);
+        $product_ids = $request->input('product_ids') == '' ? config('platformProduct.defaultProductService') : $request->input('product_ids');
 
+        $product_ids = is_numeric($product_ids) ? [(int)$product_ids] : json_decode($product_ids, true);
+        $this->checkProductArr($product_ids);
         $res = PlatformProFacade::openService($product_ids, $user_id);
 
         return $this->res2Response($res, '开通成功', '开通失败', 200, 500);
@@ -69,10 +70,13 @@ class PlatformProductController extends AdminBaseController
     {
         $user_id = $request->input('user_id');
 
-        $product_ids = json_decode($request->input('product_ids'), true);
+        $product_ids = $request->input('product_ids');
+
+        $product_ids = is_numeric($product_ids) ? [(int)$product_ids] : json_decode($product_ids, true);
+        $this->checkProductArr($product_ids);
 
         $res = PlatformProFacade::disableUserService($user_id, $product_ids);
 
-        return $this->res2Response($res, '操作成功','操作失败',200,500);
+        return $this->res2Response($res, '操作成功', '操作失败', 200, 500);
     }
 }
