@@ -24,6 +24,9 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+        Route::pattern('id', '[0-9]+');
+        Route::pattern('user_id', '[0-9]+');
+        Route::pattern('parent_id', '[0-9]+');
 
         parent::boot();
     }
@@ -49,6 +52,7 @@ class RouteServiceProvider extends ServiceProvider
             ->middleware('web')
             ->group(base_path('routes/admin.php'));
     }
+
     /**
      * Define the "web" routes for the application.
      *
@@ -59,8 +63,8 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebRoutes()
     {
         Route::middleware('web')
-             ->namespace($this->namespace)
-             ->group(base_path('routes/web.php'));
+            ->namespace($this->namespace)
+            ->group(base_path('routes/web.php'));
     }
 
     /**
@@ -73,8 +77,8 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapApiRoutes()
     {
         Route::prefix('api')
-             ->middleware('api')
+            ->middleware('api')
 //             ->namespace($this->namespace)
-             ->group(base_path('routes/api.php'));
+            ->group(base_path('routes/api.php'));
     }
 }

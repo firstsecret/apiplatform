@@ -49,9 +49,9 @@ class PlatformProductController extends AdminBaseController
 //        $request->validate([
 //            'user_id' => 'required|integer|bail',
 //        ], ['user_id.required' => '用户id必传', 'user_id.integer' => '用户id必须为整型']);
-        if (!is_numeric($user_id)) {
-            return $this->responseClient(400, '用户id必须为数字', []);
-        }
+//        if (!is_numeric($user_id)) {
+//            return $this->responseClient(400, '用户id必须为数字', []);
+//        }
 
         $product_ids = $request->input('product_ids') == '' ? config('platformProduct.defaultProductService') : $request->input('product_ids');
 
@@ -66,9 +66,9 @@ class PlatformProductController extends AdminBaseController
      * 禁用某一用户的 某些/个 产品 服务
      * @param Request $request
      */
-    public function disableUserService(Request $request)
+    public function disableUserService(Request $request, $user_id)
     {
-        $user_id = $request->input('user_id');
+
 
         $product_ids = $request->input('product_ids');
 

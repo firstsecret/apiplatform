@@ -110,12 +110,11 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
 
             // 内部的 应用 可以调用的 api
             $api->group(['middleware' => ['admin.jwt.permission:admins|internal']], function ($api) {
-                $api->post('openUserService/{user_id}', PlatformProductController::class . '@openService');
+                $api->post('openUserService/{user_id}', PlatformProductController::class . '@openService')->where(['user_id' => '[0-9]+']);
+                $api->post('disableUserService/{user_id}', PlatformProductController::class . '@disableUserService')->where(['user_id' => '[0-9]+']);
             });
 
             $api->post('login', LoginController::class . '@login');
         });
-
-
     });
 });
