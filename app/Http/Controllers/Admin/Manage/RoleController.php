@@ -18,7 +18,7 @@ class RoleController extends Controller
     }
 
     //
-    public  function  index()
+    public function index()
     {
         //  all roles
         $user = Auth::guard('admin')->user();
@@ -28,17 +28,20 @@ class RoleController extends Controller
 
     public function add(Request $request)
     {
-        if($request->isMethod('get')){
+        if ($request->isMethod('get')) {
             return view('admin.manage.admin-role-add');
         }
 
         $request->validate([
             'name' => 'required|max:16|bail',
-        ],['name.required'=>'角色名不能为空','name.max'=>'名称长度不能超过16个字符']);
+        ], ['name.required' => '角色名不能为空', 'name.max' => '名称长度不能超过16个字符']);
+
+        $guard_name = $request->input('guard_name') ?: 'admin';
 
         $this->role->create([
             'name' => $request->name,
-            'detail' => $request->detail
+            'detail' => $request->detail,
+            'guard_name' => $guard_name
         ]);
 
         return redirect('/admin/index');
@@ -58,7 +61,7 @@ class RoleController extends Controller
 
         $role->givePermissionTo('edit permission');
 
-        return Response()->json(['status_code'=>200,'msg'=>'success','data'=>'']);
+        return Response()->json(['status_code' => 200, 'msg' => 'success', 'data' => '']);
     }
 
     public function roleAdminUser($user_id)
@@ -67,8 +70,8 @@ class RoleController extends Controller
 //        $admin->givePermissionTo('edit permission');
 //        $user->givePermissionTo('edit permission');
 
-        $admin->assignRole('opeartor');
+        $admin->assignRole('internal');
 
-        return Response()->json(['status_code'=>200,'msg'=>'success','data'=>'']);
+        return Response()->json(['status_code' => 200, 'msg' => 'success', 'data' => '']);
     }
 }

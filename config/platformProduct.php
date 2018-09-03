@@ -7,5 +7,6 @@
  */
 
 return [
-  'paginte' => env('PLATFORM_PRODUCT_PAGINTE', 15)
+    'paginte' => env('PLATFORM_PRODUCT_PAGINTE', 15),
+    'defaultProductService' => env('DEFAULT_PRODUCT_SERVICE', [1, 2, 3])    // 默认用户 开通 权限
 ];

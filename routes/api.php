@@ -72,7 +72,7 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
 
             $api->get('testEvent', ShowController::class . '@testEvent');
 
-
+            // 产品列表
             $api->get('productList/{type?}', PlatformProductController::class . '@index');
 //            $api->group(['namespace'=>''], function($api){
 //
@@ -99,10 +99,16 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
 
         // 后台的api （都需登录）
         $api->group(['middleware' => ['admin.jwt.changeAuth', 'self.jwt.refresh:admin', 'admin.jwt.auth'], 'namespace' => 'Admin', 'prefix' => 'admin'], function ($api) {
-            $api->group(['middleware' => ['admin.jwt.permission:opeartor|admins']], function ($api) {
+            $api->group(['middleware' => ['admin.jwt.permission:admins|opeartor']], function ($api) {
                 $api->get('index', PlatformProductController::class . '@index');
                 $api->get('test', PlatformProductController::class . '@test');
             });
+
+            // 内部的 应用 可以调用的 api
+            $api->group(['middleware' => ['admin.jwt.permission:admins|internal']], function ($api) {
+                $api->post('openUserService/{user_id}', PlatformProductController::class . '@openService');
+            });
+
             $api->post('login', LoginController::class . '@login');
         });
 

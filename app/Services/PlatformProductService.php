@@ -14,6 +14,7 @@ use App\Models\PlatformProduct;
 use App\Models\PlatformProductCategory;
 use App\Models\ProductUserDisableService;
 use App\Models\ProductUserService;
+use App\User;
 
 class PlatformProductService extends BaseService
 {
@@ -63,23 +64,37 @@ class PlatformProductService extends BaseService
     }
 
     /**
-     * 为用户开通权限
+     * 为用户开通产品服务 (被动)
      * @param $product_id
      */
-    public function openService($product_id)
+    public function openService($product_id, $user_id)
+    {
+        // 验证用户是否存在
+        if (!User::find($user_id)) throw new PlatformProductException(400, '用户不存在');
+        return $this->addService($product_id, $user_id);
+    }
+
+    /**
+     * 禁用用户的产品服务
+     * @param $product_ids
+     * @param $user_id
+     */
+    public function disableUserService($product_ids, $user_id)
     {
 
     }
 
     /**
-     * 添加应用
+     * 开通产品服务 （用户主动）
      * @param $product_id
      */
-    public function addService($product_id)
+    public function addService($product_id, $user_id = null)
     {
         $this->checkIsProductDisable($product_id);
 
-        $pu = ProductUserService::where('user_id', $this->user->id)->find();
+        $user_id = $user_id === null ? $this->user->id : $user_id;
+
+        $pu = ProductUserService::where('user_id', $user_id)->find();
 
         if ($pu) {
             $platform_product_id = $pu->platform_product_id;
@@ -100,7 +115,7 @@ class PlatformProductService extends BaseService
     }
 
     /**
-     * 更新用户 应用 对应的权限
+     * 更新用户 开通的产品 对应的服务
      * @param array $products_id
      * @return bool
      */
