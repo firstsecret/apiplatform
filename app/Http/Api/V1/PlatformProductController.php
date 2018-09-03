@@ -7,6 +7,11 @@ use App\Facades\PlatformProduct as PlatformProFacade;
 
 class PlatformProductController extends BaseController
 {
+    public function __construct()
+    {
+
+    }
+
     //
     public function index($type = 'default')
     {

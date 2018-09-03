@@ -54,7 +54,7 @@ $api->version('v1', [], function ($api) {
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
     $api->group(['prefix' => 'cli'], function ($api) {
-        // 無需授权api
+        // 前台無需授权api
         $api->group([], function ($api) {
 
             $api->group(['limit' => 300, 'expires' => 5], function ($api) {
@@ -81,7 +81,23 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
             $api->get('categoriesList', PlatformProductController::class . '@allList');
 
         });
-        // 后台的api
+
+        // 前台需授权的 api
+        $api->group(['middleware' => ['self.jwt.auth']], function ($api) {
+            $api->group(['limit' => 10, 'expires' => 1], function ($api) {
+                $api->get('showauth', ApiAuthController::class . '@test');
+                $api->get('getUserInfo', ApiAuthController::class . '@uInfo');
+            });
+
+            $api->post('openService/{product_id}', PlatformProductController::class . '@openService');
+
+            $api->group(['limit' => 300, 'expires' => 5], function ($api) {
+                // 刷新token
+                $api->get('refreshToken', ApiAuthController::class . '@refreshAccessToken');
+            });
+        });
+
+        // 后台的api （都需登录）
         $api->group(['middleware' => ['admin.jwt.changeAuth', 'self.jwt.refresh:admin', 'admin.jwt.auth'], 'namespace' => 'Admin', 'prefix' => 'admin'], function ($api) {
             $api->group(['middleware' => ['admin.jwt.permission:opeartor|admins']], function ($api) {
                 $api->get('index', PlatformProductController::class . '@index');
@@ -90,17 +106,6 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
             $api->post('login', LoginController::class . '@login');
         });
 
-        // 需授权的 api
-        $api->group(['middleware' => ['self.jwt.auth']], function ($api) {
-            $api->group(['limit' => 10, 'expires' => 1], function ($api) {
-                $api->get('showauth', ApiAuthController::class . '@test');
-                $api->get('getUserInfo', ApiAuthController::class . '@uInfo');
-            });
 
-            $api->group(['limit' => 300, 'expires' => 5], function ($api) {
-                // 刷新token
-                $api->get('refreshToken', ApiAuthController::class . '@refreshAccessToken');
-            });
-        });
     });
 });
