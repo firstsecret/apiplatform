@@ -24,6 +24,7 @@ Route::group(['namespace'=> 'App\Http\Controllers\Admin','middleware'=>['admin']
     })->name('admin/register');
 
     Route::get('/adminAdd', \Manage\AdminController::class . '@add');
+    Route::get('/userAdd', \Manage\AdminController::class . '@webAdd');
 
     // 验证权限
     Route::group(['middleware' =>'admin.role:admin,opeartor|admins'], function(){
@@ -39,10 +40,8 @@ Route::group(['namespace'=> 'App\Http\Controllers\Admin','middleware'=>['admin']
         Route::get('rolePermission/{id}', 'Manage\RoleController@rolePermission');
 
         Route::get('roleAdminUser/{user_id}','Manage\RoleController@roleAdminUser');
-
         // permission
         Route::match(['get','post'],'/permissionAdd', 'Manage\PermissionController@add')->name('admin/permissionAdd');
-
     });
 
     Route::get('login', 'LoginController@showLoginForm')->name('admin/login');

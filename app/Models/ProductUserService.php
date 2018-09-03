@@ -9,6 +9,8 @@ class ProductUserService extends Model
     //
     protected $fillable = ['user_id', 'platform_product_id'];
 
+    public $timestamps = false;
+
     protected $casts = [
         'platform_product_id' => 'array',
     ];

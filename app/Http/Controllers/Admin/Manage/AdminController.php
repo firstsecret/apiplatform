@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin\Manage;
 
 use App\Models\Admin;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Spatie\Permission\Exceptions\UnauthorizedException;
@@ -28,5 +29,12 @@ class AdminController extends Controller
         }
 
         dd('创建成功');
+    }
+
+    public function webAdd()
+    {
+        User::create(
+            ['name' => 'test232','email' => 'test@qq.com', 'password' => bcrypt('123456')]
+        );
     }
 }

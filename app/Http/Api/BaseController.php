@@ -40,6 +40,6 @@ class BaseController extends Controller
      */
     public function res2Response($res, $successMsg, $errorMsg = '', $successCode = 200, $errorCode = 400, $data = [])
     {
-        return $res === false ? $this->responseClient($successCode, $successMsg, $data) : $this->responseClient($errorCode, $errorMsg, $data);
+        return $res === true ? $this->responseClient($successCode, $successMsg, $data) : $this->responseClient($errorCode, $errorMsg, $data);
     }
 }

@@ -10,4 +10,6 @@ class ProductUserDisableService extends Model
     protected $casts = [
         'platform_product_id' => 'array',
     ];
+
+    public $timestamps = false;
 }

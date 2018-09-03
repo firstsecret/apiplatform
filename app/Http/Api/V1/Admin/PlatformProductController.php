@@ -4,7 +4,7 @@ namespace App\Http\Api\V1\Admin;
 
 use App\Http\Api\AdminBaseController;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Facades\PlatformProduct as PlatformProFacade;
 
 
 class PlatformProductController extends AdminBaseController

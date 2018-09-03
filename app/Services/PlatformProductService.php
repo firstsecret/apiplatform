@@ -70,6 +70,7 @@ class PlatformProductService extends BaseService
     public function openService($product_id, $user_id)
     {
         // 验证用户是否存在
+
         if (!User::find($user_id)) throw new PlatformProductException(400, '用户不存在');
         return $this->addService($product_id, $user_id);
     }
@@ -90,25 +91,38 @@ class PlatformProductService extends BaseService
      */
     public function addService($product_id, $user_id = null)
     {
-        $this->checkIsProductDisable($product_id);
+        $user_id = $user_id == null ? $this->user->id : $user_id;
+        $this->checkIsProductDisable($product_id, $user_id);
 
-        $user_id = $user_id === null ? $this->user->id : $user_id;
-
-        $pu = ProductUserService::where('user_id', $user_id)->find();
+        $pu = ProductUserService::where('user_id', $user_id)->first();
 
         if ($pu) {
             $platform_product_id = $pu->platform_product_id;
-            array_push($platform_product_id, $product_id);
-            $platform_product_id = array_filter($platform_product_id);
+            $platform_product_id = $platform_product_id == null ? [] : $platform_product_id;
+//            array_push($platform_product_id, $product_id);
+            if (is_array($product_id)) {
+                $platform_product_id = array_merge($platform_product_id, $product_id);
+            } else {
+                $platform_product_id[] = $product_id;
+            }
+            $platform_product_id = array_unique($platform_product_id);
 
             $pu->platform_product_id = $platform_product_id;
 
             $res = $pu->save();
         } else {
+//            dd($product_id);
+//            $pu = new ProductUserService();
+//            $pu->user_id = $user_id;
+//            $pu->platform_product_id = $product_id;
+//
+//            $res = $pu->save();
+
             $res = ProductUserService::create([
-                'user_id' => $this->user->id,
+                'user_id' => $user_id,
                 'platform_product_id' => $product_id
             ]);
+
         }
 
         return $res === false ? false : true;
@@ -119,11 +133,12 @@ class PlatformProductService extends BaseService
      * @param array $products_id
      * @return bool
      */
-    public function eidtService(Array $products_ids)
+    public function eidtService(Array $products_ids, $user_id = null)
     {
-        $this->checkIsProductDisable($products_ids);
+        $user_id = $user_id == null ? $this->user->id : $user_id;
+        $this->checkIsProductDisable($products_ids, $user_id);
 
-        $res = ProductUserService::where('user_id', $this->user->id)
+        $res = ProductUserService::where('user_id', $user_id)
             ->update([
                 'platform_product_id' => json_encode($products_ids)
             ]);
@@ -136,9 +151,9 @@ class PlatformProductService extends BaseService
      * @param $product_ids
      * @return bool
      */
-    public function checkIsProductDisable($product_ids)
+    public function checkIsProductDisable($product_ids, $user_id)
     {
-        $users_disable_service = ProductUserDisableService::where('user_id', $this->user->id)->find()->toArray();
+        $users_disable_service = ProductUserDisableService::where('user_id', $user_id)->get()->toArray();
 
         if (empty($users_disable_service)) return true;
 
