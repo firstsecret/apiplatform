@@ -32,7 +32,7 @@ class PlatformProductService extends BaseService
     }
 
     /**
-     * 分类获取
+     * 产品所属分类获取
      * @return Array
      * @throws \Exception
      */
@@ -52,7 +52,7 @@ class PlatformProductService extends BaseService
     }
 
     /**
-     * 获取信息
+     * 获取产品列表信息(db)
      * @return Array
      */
     protected function getCategoriesWithProductFromDb(): Array
@@ -70,7 +70,6 @@ class PlatformProductService extends BaseService
     public function openService($product_id, $user_id)
     {
         // 验证用户是否存在
-
         if (!User::find($user_id)) throw new PlatformProductException(400, '用户不存在');
         return $this->addService($product_id, $user_id);
     }
@@ -88,16 +87,8 @@ class PlatformProductService extends BaseService
 
         if ($disableProducts) {
             $platform_product_id = $disableProducts->platform_product_id;
-            $platform_product_id = $platform_product_id == null ? [] : $platform_product_id;
 
-            if (is_array($product_id)) {
-                $platform_product_id = array_merge($platform_product_id, $product_id);
-            } else {
-                $platform_product_id[] = $product_id;
-            }
-            $platform_product_id = array_unique($platform_product_id);
-
-            $disableProducts->platform_product_id = $platform_product_id;
+            $disableProducts->platform_product_id = $this->dealWithProductId($platform_product_id, $product_id);
 
             $res = $disableProducts->save();
         } else {
@@ -123,34 +114,36 @@ class PlatformProductService extends BaseService
 
         if ($pu) {
             $platform_product_id = $pu->platform_product_id;
-            $platform_product_id = $platform_product_id == null ? [] : $platform_product_id;
-//            array_push($platform_product_id, $product_id);
-            if (is_array($product_id)) {
-                $platform_product_id = array_merge($platform_product_id, $product_id);
-            } else {
-                $platform_product_id[] = $product_id;
-            }
-            $platform_product_id = array_unique($platform_product_id);
 
-            $pu->platform_product_id = $platform_product_id;
+            $pu->platform_product_id = $this->dealWithProductId($platform_product_id, $product_id);
 
             $res = $pu->save();
         } else {
-//            dd($product_id);
-//            $pu = new ProductUserService();
-//            $pu->user_id = $user_id;
-//            $pu->platform_product_id = $product_id;
-//
-//            $res = $pu->save();
-
             $res = ProductUserService::create([
                 'user_id' => $user_id,
                 'platform_product_id' => $product_id
             ]);
-
         }
 
         return $res === false ? false : true;
+    }
+
+    /**
+     * 封装 处理入库 请求的 产品 id, 与 原db 中的 产品 id 的方法
+     * @param $platform_product_id
+     * @param $product_id
+     * @return array
+     */
+    protected function dealWithProductId($platform_product_id, $product_id): Array
+    {
+        $platform_product_id = $platform_product_id == null ? [] : $platform_product_id;
+
+        if (is_array($product_id)) {
+            $platform_product_id = array_merge($platform_product_id, $product_id);
+        } else {
+            $platform_product_id[] = $product_id;
+        }
+        return array_unique($platform_product_id);
     }
 
     /**
@@ -189,5 +182,54 @@ class PlatformProductService extends BaseService
         }
 
         return true;
+    }
+
+    /**
+     *  删除某个产品 服务 (soft)
+     * @param $product_id
+     * @return bool
+     */
+    public function deleteProduct($product_id)
+    {
+        $res = PlatformProduct::destroy($product_id);
+
+        return $res === false ? false : true;
+    }
+
+    /**
+     * 更新产品
+     * @param $data
+     * @param $product_id
+     * @return bool
+     */
+    public function updateProduct($data, $product_id)
+    {
+
+        $product = PlatformProduct::find($product_id);
+
+        $product->name = $data['name'];
+
+        $product->detail = $data['detail'];
+
+        $res = $product->save();
+
+        return $res === false ? false : true;
+//        return true;
+    }
+
+    /**
+     * 新增产品
+     * @param $data
+     * @return bool
+     */
+    public function addProduct($data)
+    {
+        $res = PlatformProduct::create([
+            'name' => $data['name'],
+            'detail' => $data['detail'],
+            'category_id' => $data['category_id']
+        ]);
+
+        return $res === false ? false : true;
     }
 }

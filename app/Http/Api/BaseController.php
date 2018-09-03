@@ -39,7 +39,7 @@ class BaseController extends Controller
      * @param array $data
      * @return \Illuminate\Http\JsonResponse
      */
-    public function res2Response($res, $successMsg, $errorMsg = '', $successCode = 200, $errorCode = 400, $data = [])
+    public function res2Response($res, $successMsg, $errorMsg = '', $successCode = 200, $errorCode = 500, $data = [])
     {
         return $res === true ? $this->responseClient($successCode, $successMsg, $data) : $this->responseClient($errorCode, $errorMsg, $data);
     }

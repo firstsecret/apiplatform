@@ -15,6 +15,8 @@
 //$dispatcher = app('Dingo\Api\Dispatcher');
 
 app('api.exception')->register(function (Exception $exception) {
+
+//    dd(get_class($exception));
 //    if(config('app.debug')){
 //        $request=Request::capture();
 //        //交给laravelz自带的错误异常接管类处理
@@ -106,6 +108,16 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
             $api->group(['middleware' => ['admin.jwt.permission:admins|opeartor']], function ($api) {
                 $api->get('index', PlatformProductController::class . '@index');
                 $api->get('test', PlatformProductController::class . '@test');
+
+                $api->group(['middleware' => ['admin.jwt.permission:admins|opeartor']], function ($api) {
+                    // 删除某个 产品服务
+                    $api->delete('platformProduct/{product_id}', PlatformProductController::class . '@delete')->where(['product_id' => '[0-9]+']);
+                    // 更新某个 产品服务
+                    $api->put('platformProduct/{product_id}', PlatformProductController::class . '@edit')->where(['product_id' => '[0-9]+']);
+
+                    // 添加 产品服务
+                    $api->post('platformProduct', PlatformProductController::class . '@add');
+                });
             });
 
             // 内部的 应用 可以调用的 api
