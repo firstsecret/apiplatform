@@ -72,6 +72,7 @@ class Kernel extends HttpKernel
         'admin.jwt.changeAuth' => \App\Http\Middleware\AdminJwtChange::class,
         'admin.jwt.permission' => \App\Http\Middleware\AdminJwtPermission::class,
         'self.jwt.refresh' => \App\Http\Middleware\RefreshToken::class,
-        'self.jwt.auth' => \App\Http\Middleware\BevanJwtAuth::class
+        'self.jwt.auth' => \App\Http\Middleware\BevanJwtAuth::class,
+        'check.request.data' => \App\Http\Middleware\VerificateRequstData::class
     ];
 }

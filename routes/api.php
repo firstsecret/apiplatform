@@ -114,16 +114,19 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                     $api->delete('platformProduct/{product_id}', PlatformProductController::class . '@delete')->where(['product_id' => '[0-9]+']);
                     // 更新某个 产品服务
                     $api->put('platformProduct/{product_id}', PlatformProductController::class . '@edit')->where(['product_id' => '[0-9]+']);
-
                     // 添加 产品服务
                     $api->post('platformProduct', PlatformProductController::class . '@add');
                 });
             });
 
-            // 内部的 应用 可以调用的 api
-            $api->group(['middleware' => ['admin.jwt.permission:admins|internal']], function ($api) {
+            // 内部的 应用 可以调用的 api (增加一层 数据 加/解密层)
+            $api->group(['middleware' => ['admin.jwt.permission:admins|internal','check.request.data']], function ($api) {
+                // 开通 某一用户的 服务功能
                 $api->post('openUserService/{user_id}', PlatformProductController::class . '@openService')->where(['user_id' => '[0-9]+']);
+                // 禁止 某一用户 服务功能
                 $api->post('disableUserService/{user_id}', PlatformProductController::class . '@disableUserService')->where(['user_id' => '[0-9]+']);
+                // 开通 用户
+                $api->post('openUser', InternalController::class . '@openUser');
             });
 
             $api->post('login', LoginController::class . '@login');

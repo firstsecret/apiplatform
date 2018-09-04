@@ -8,7 +8,11 @@ use App\Http\Requests\V1\AdminRule;
 
 class LoginController extends AdminBaseController
 {
-    //
+    /**
+     * 后台管理登录api
+     * @param AdminRule $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(AdminRule $request)
     {
         $login_name = $request->input('login_name');
