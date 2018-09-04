@@ -28,19 +28,19 @@ class VerificateRequstData
         $appKey = $request->input('appKey'); // app key
 
         // 获取 appsecret
-        $appUser = AppUser::field('app_secret,user_id')->where('app_key', $appKey)->first()->toArray();
+        $appUser = AppUser::where('app_key', $appKey)->first(['app_secret', 'user_id']);
 
-        if (!$appUser) throw new SignException('400', 'appkey不存在', []);
+        if (!$appUser) throw new SignException(400, 'appkey不存在');
 
         $sign = $request->input('sign');
 
-        $reqData = $request->input('reqData'); // client 请求数据
-
-        $appSecret = $appUser['app_secret'];
+        $reqData = strtr($request->input('reqData'), [' ' => '']); // client 请求数据
+        // 消除空格
+        $appSecret = $appUser->app_secret;
 
         $makeSign = $signMethod($reqData . $sequenceID . $appSecret);
 
-        if ($makeSign != $sign) throw new SignException('400', 'sign错误', []);
+        if ($makeSign != $sign) throw new SignException(400, 'sign错误');
 
         return $next($request);
     }

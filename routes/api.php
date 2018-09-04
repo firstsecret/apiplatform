@@ -120,14 +120,18 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
             });
 
             // 内部的 应用 可以调用的 api (增加一层 数据 加/解密层)
-            $api->group(['middleware' => ['admin.jwt.permission:admins|internal','check.request.data']], function ($api) {
+            $api->group(['middleware' => ['admin.jwt.permission:admins|internal', 'check.request.data']], function ($api) {
                 // 开通 某一用户的 服务功能
                 $api->post('openUserService/{user_id}', PlatformProductController::class . '@openService')->where(['user_id' => '[0-9]+']);
                 // 禁止 某一用户 服务功能
                 $api->post('disableUserService/{user_id}', PlatformProductController::class . '@disableUserService')->where(['user_id' => '[0-9]+']);
                 // 开通 用户
                 $api->post('openUser', InternalController::class . '@openUser');
+
             });
+
+            // 测试 sign 中间件
+            $api->get('testSign', InternalController::class . '@testSign');
 
             $api->post('login', LoginController::class . '@login');
         });
