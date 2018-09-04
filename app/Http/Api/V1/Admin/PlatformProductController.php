@@ -87,7 +87,7 @@ class PlatformProductController extends AdminBaseController
 //            return $this->responseClient(400, '用户id必须为数字', []);
 //        }
 
-        $product_ids = $request->input('product_ids') == '' ? config('platformProduct.defaultProductService') : $request->input('product_ids');
+        $product_ids = $request->input('reqData.product_ids') == '' ? config('platformProduct.defaultProductService') : $request->input('reqData.product_ids');
 
         $product_ids = is_numeric($product_ids) ? [(int)$product_ids] : json_decode($product_ids, true);
         $this->checkProductArr($product_ids);
@@ -104,7 +104,7 @@ class PlatformProductController extends AdminBaseController
     {
 
 
-        $product_ids = $request->input('product_ids');
+        $product_ids = $request->input('reqData.product_ids');
 
         $product_ids = is_numeric($product_ids) ? [(int)$product_ids] : json_decode($product_ids, true);
         $this->checkProductArr($product_ids);

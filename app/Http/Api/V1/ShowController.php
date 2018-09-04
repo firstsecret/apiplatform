@@ -58,7 +58,6 @@ class ShowController extends BaseController
         Event::fire(new UserRegisterEvent());
 //        $this->dispatch(new MailJob());
 
-
         return Response()->json(['status_code'=>200,'msg'=>'任务投递成功','data'=>'']);
     }
 }
