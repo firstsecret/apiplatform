@@ -166,7 +166,8 @@ return [
          * Application business Service Providers...
          */
         App\Providers\PlatformProductServiceProvider::class,
-        App\Providers\AdminUserServiceProvider::class
+        App\Providers\AdminUserServiceProvider::class,
+        App\Providers\InternalProvider::class
     ],
 
     /*
@@ -219,6 +220,7 @@ return [
         'APIRoute' => Dingo\Api\Facade\Route::class,
         'API' => Dingo\Api\Facade\API::class,
         'PlatformProduct' => App\Facades\PlatformProduct::class,
-        'AdminUser' => App\Facades\AdminUser::class
+        'AdminUser' => App\Facades\AdminUser::class,
+        'Internal' => App\Facades\Internal::class
     ],
 ];

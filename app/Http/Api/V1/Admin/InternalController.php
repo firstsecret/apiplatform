@@ -12,9 +12,11 @@ class InternalController extends AdminBaseController
     /**
      *  内部开通 新的用户
      */
-    public function openUser()
+    public function openUser(Request $request)
     {
-        dd('通过SIGN验证');
+        $reqData = $request->input('reqData');
+
+
     }
 
     public function testSign()

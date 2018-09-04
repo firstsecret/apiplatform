@@ -15,11 +15,19 @@ class VerificateRequstData
      * @param  \Closure $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $model)
     {
 //        $admin = \App\Models\Admin::find(1);
 
 //        dd(Hash::check('123456', $admin->password));
+
+        $mapModel = [
+            'admin' => 'App\Models\Admin',
+            'user' => 'App\User'
+        ];
+
+        $model = $mapModel[$model];
+
 
         $signMethod = 'md5';
 
@@ -28,7 +36,7 @@ class VerificateRequstData
         $appKey = $request->input('appKey'); // app key
 
         // 获取 appsecret
-        $appUser = AppUser::where('app_key', $appKey)->first(['app_secret', 'user_id']);
+        $appUser = AppUser::where(['app_key' => $appKey, 'model' => $model])->first(['app_secret', 'user_id']);
 
         if (!$appUser) throw new SignException(400, 'appkey不存在');
 

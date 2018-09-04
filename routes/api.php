@@ -117,10 +117,13 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                     // 添加 产品服务
                     $api->post('platformProduct', PlatformProductController::class . '@add');
                 });
+
+                // 生成 一个新的内部 用户
+                $api->post('createNewInternal', AuthController::class . '@createNewInternal');
             });
 
             // 内部的 应用 可以调用的 api (增加一层 数据 加/解密层)
-            $api->group(['middleware' => ['admin.jwt.permission:admins|internal', 'check.request.data']], function ($api) {
+            $api->group(['middleware' => ['admin.jwt.permission:admins|internal', 'check.request.data:admin']], function ($api) {
                 // 开通 某一用户的 服务功能
                 $api->post('openUserService/{user_id}', PlatformProductController::class . '@openService')->where(['user_id' => '[0-9]+']);
                 // 禁止 某一用户 服务功能
