@@ -52,8 +52,8 @@ class InternalController extends AdminBaseController
         $appSecret = '0690009e3d2560f8b0b8fbaceb4bf813';
 
         $reqData = [
-            'name' => 'xiaowang',
-            'telephone' => 13913057592,
+            'name' => 'xiaowang2',
+            'telephone' => 13913057593,
             'password' => 123456,
             'type' => 1
         ];

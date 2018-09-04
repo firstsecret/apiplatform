@@ -31,7 +31,7 @@ class InternalService extends BaseService
         try {
             $admin = Admin::create([
                 'name' => $data['name'],
-                'email' => $data['email'] ?? '',
+                'email' => $data['email'] ?? null,
                 'password' => bcrypt($data['password']),
                 'telephone' => $data['telephone'],
             ]);
@@ -94,7 +94,7 @@ class InternalService extends BaseService
         try {
             $user = User::create([
                 'name' => $data['name'],
-                'email' => ($data['email'] ?? ''),
+                'email' => ($data['email'] ?? null),
                 'password' => bcrypt($data['password']),
                 'telephone' => $data['telephone'],
                 'type' => (int)$data['type']
@@ -114,7 +114,7 @@ class InternalService extends BaseService
                     'user_id' => $user->id
                 ]);
             }
-            
+
             $creater = JWTAuth::parseToken()->user();
             // 记录 哪个 应用 请求 创建的
             Log::info("\r\n\r\n" . $creater->name . '(model_id:' . $creater->id . ')创建了用户: ' . $user->name . '(user_id:' . $user->id . ')');

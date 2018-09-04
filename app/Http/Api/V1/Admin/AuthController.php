@@ -39,7 +39,7 @@ class AuthController extends AdminBaseController
         $reqData = [
             'name' => $request->input('name'),
             'password' => $request->input('password'),
-            'email' => $request->input('email',''),
+            'email' => $request->input('email',null),
             'telephone' => $request->input('telephone'),
         ];
 
