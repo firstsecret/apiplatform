@@ -17,7 +17,6 @@ class AuthController extends AdminBaseController
      */
     public function createNewInternal(Request $request)
     {
-
         $request->validate([
             'name' => 'required|max:14|min:3|bail',
             'password' => 'required|max:16|min:6',

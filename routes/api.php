@@ -129,7 +129,6 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                 $api->post('disableUserService/{user_id}', PlatformProductController::class . '@disableUserService')->where(['user_id' => '[0-9]+']);
                 // 开通 用户
                 $api->post('openUser', InternalController::class . '@openUser');
-
             });
 
             // 测试 sign 中间件

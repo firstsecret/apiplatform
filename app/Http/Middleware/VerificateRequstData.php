@@ -28,7 +28,6 @@ class VerificateRequstData
 
         $model = $mapModel[$model];
 
-
         $signMethod = 'md5';
 
         $sequenceID = $request->input('sequenceId'); // client 随机值
@@ -39,11 +38,11 @@ class VerificateRequstData
         $appUser = AppUser::where(['app_key' => $appKey, 'model' => $model])->first(['app_secret', 'user_id']);
 //        $appUser = AppUser::where(['app_key' => $appKey])->first(['app_secret', 'user_id']);
 
-        if (!$appUser) throw new SignException(400, 'appkey不存在');
+        if (!$appUser) throw new SignException(400, '对应权限不存在');
 
         $sign = $request->input('sign');
 
-        $reqData = strtr($request->input('reqData'), [' ' => '',"\n"=> '']); // client 请求数据
+        $reqData = strtr($request->input('reqData'), [' ' => '', "\n" => '']); // client 请求数据
         // 消除空格
         $appSecret = $appUser->app_secret;
 

@@ -3,8 +3,6 @@
 namespace App\Http\Api;
 
 use App\Exceptions\PlatformProductException;
-use App\Tool\AppTool;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Dingo\Api\Routing\Helpers;
 
@@ -39,7 +37,7 @@ class BaseController extends Controller
      * @param array $data
      * @return \Illuminate\Http\JsonResponse
      */
-    public function res2Response($res, $successMsg, $errorMsg = '', $successCode = 200, $errorCode = 500, $data = [])
+    public function res2Response($res, $successMsg, $errorMsg = '',$data = [], $successCode = 200, $errorCode = 500)
     {
         return $res === true ? $this->responseClient($successCode, $successMsg, $data) : $this->responseClient($errorCode, $errorMsg, $data);
     }
