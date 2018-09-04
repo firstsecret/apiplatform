@@ -9,6 +9,7 @@
 namespace App\Services;
 
 
+use App\Exceptions\AdminJwtException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AdminUserService extends BaseService
@@ -26,15 +27,18 @@ class AdminUserService extends BaseService
             'password' => $password
         ];
 
-        // add event
+        // add login event
 
         $token = $this->loginByType($loginMsg);
 
-//        if ($token !== false) {
-//            $admin = JWTAuth::user();
-//
-//            cache(['admin-' . $admin->id => $token], config('jwt.ttl'));
-//        }
+        if ($token) {
+            // 是否 是 后台 登录
+            $loginer = JWTAuth::parseToken()->user();
+            if (get_class($loginer) == 'App\Models\Admin') {
+                // 是否 拥有 角色权限
+                if (!$loginer->hasRole('opeartor')) throw new AdminJwtException('该类型角色不允许登录');
+            }
+        }
 
         return $token;
     }
