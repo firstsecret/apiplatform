@@ -28,8 +28,10 @@ class InternalController extends AdminBaseController
         $appSecret = '08aee6276db142f4b8ac98fb8ee0ed1b';
 
         $reqData = [
-            'name' => '小王',
-            'age' => 18
+            'name' => 'xiaowang',
+            'telephone' => 123214235,
+            'password' => 123456,
+            'type' => 0
         ];
 //        var_dump(json_encode($reqData, JSON_UNESCAPED_UNICODE) . $sequenceID . $appSecret);
         //{"name":"小王","age":18}12345608aee6276db142f4b8ac98fb8ee0ed1b

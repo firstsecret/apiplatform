@@ -116,10 +116,9 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                     $api->put('platformProduct/{product_id}', PlatformProductController::class . '@edit')->where(['product_id' => '[0-9]+']);
                     // 添加 产品服务
                     $api->post('platformProduct', PlatformProductController::class . '@add');
+                    // 生成 一个新的内部 用户
+                    $api->post('createNewInternal', AuthController::class . '@createNewInternal');
                 });
-
-                // 生成 一个新的内部 用户
-                $api->post('createNewInternal', AuthController::class . '@createNewInternal');
             });
 
             // 内部的 应用 可以调用的 api (增加一层 数据 加/解密层)
