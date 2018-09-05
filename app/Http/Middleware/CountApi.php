@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Jobs\CountApiJob;
 use Closure;
+use Illuminate\Support\Facades\Redis;
 
 class CountApi
 {
@@ -15,9 +17,14 @@ class CountApi
      */
     public function handle($request, Closure $next)
     {
-        $apiname = $request->getPathInfo();
+        $apiname = ltrim($request->getPathInfo(), '/');
 
-        var_dump($apiname);
+//        var_dump($apiname);die;
+        // async
+
+//        die;
+        // api count
+        CountApiJob::dispatch($apiname);
 
         $response = $next($request);
 
