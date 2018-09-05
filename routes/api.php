@@ -54,8 +54,10 @@ $api = app('Dingo\Api\Routing\Router');
 //});
 //
 // 项目 应用1
-$api->version('v1', [], function ($api) {
-    $api->get('showtest', \Show\Api\V1\IndexController::class . '@index');
+$api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', 'self.jwt.auth'], 'namespace' => '\Show\Api\V1'], function ($api) {
+    $api->group(['prefix' => 'app1'], function ($api) {
+        $api->get('showtest', IndexController::class . '@index');
+    });
 });
 //....
 

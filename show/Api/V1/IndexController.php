@@ -10,7 +10,6 @@ namespace Show\Api\V1;
 
 
 use App\Http\Api\BaseController;
-//use App\Http\Controllers\Controller;
 use Show\Services\IndexService;
 
 class IndexController extends BaseController
@@ -22,6 +21,8 @@ class IndexController extends BaseController
 
     public function index()
     {
-        $this->service->oneService();
+        $msg = $this->service->oneService();
+
+        return $this->responseClient(200, $msg, []);
     }
 }

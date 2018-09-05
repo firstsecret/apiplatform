@@ -13,6 +13,6 @@ class IndexService
 {
     public function oneService()
     {
-        dd('应用的某个服务');
+        return '某个服务';
     }
 }
