@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Jobs\CountApiJob;
 use Closure;
-use Illuminate\Support\Facades\Redis;
+//use Illuminate\Support\Facades\Redis;
 
 class CountApi
 {

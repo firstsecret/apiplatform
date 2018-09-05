@@ -9,10 +9,14 @@
 namespace Show\Services;
 
 
+use Illuminate\Support\Facades\Redis;
+
 class IndexService
 {
-    public function oneService()
+    public function oneService(): Array
     {
-        return '某个服务';
+        $apis = Redis::get('api_request_condition');
+
+        return json_decode($apis,true);
     }
 }

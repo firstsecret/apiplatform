@@ -7,10 +7,28 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Redis;
 
 class CountApiJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * 任务最大尝试次数
+     *
+     * @var int
+     */
+    public $tries = 2;
+
+
+    /**
+     * 执行任务的最长时间
+     */
+
+    public $timeout = 5;
+
+
+    protected $apiname;
 
     /**
      * Create a new job instance.
@@ -31,6 +49,9 @@ class CountApiJob implements ShouldQueue
     public function handle()
     {
         //
+        if (!$this->apiname) {
+            return;
+        }
         $apiname = $this->apiname;
         $apiname_arr = explode('/', $apiname);
 

@@ -21,8 +21,8 @@ class IndexController extends BaseController
 
     public function index()
     {
-        $msg = $this->service->oneService();
+        $data = $this->service->oneService();
 
-        return $this->responseClient(200, $msg, []);
+        return $this->responseClient(200, '获取成功', $data);
     }
 }
