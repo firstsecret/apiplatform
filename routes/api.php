@@ -79,7 +79,7 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
 //            $api->group(['namespace'=>''], function($api){
 //
 //            })
-
+            $api->get('testLogEvent', ShowController::class . '@testLogEvent');
             $api->get('categoriesList', PlatformProductController::class . '@allList');
         });
 

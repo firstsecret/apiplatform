@@ -9,10 +9,12 @@
 namespace App\Http\Api\V1;
 
 
+use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
 use App\Http\Api\BaseController;
 use App\Jobs\MailJob;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 
 class ShowController extends BaseController
 {
@@ -59,5 +61,12 @@ class ShowController extends BaseController
 //        $this->dispatch(new MailJob());
 
         return Response()->json(['status_code'=>200,'msg'=>'任务投递成功','data'=>'']);
+    }
+
+    public function testLogEvent()
+    {
+        Event::fire(new AsyncLogEvent('日志信息','info'));
+
+        return $this->responseClient(200,'任务投递成功','');
     }
 }

@@ -18,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         'App\Events\UserRegisterEvent' => [
             'App\Listeners\UserRegisterListener'
+        ],
+        'App\Events\AsyncLogEvent' => [
+            'App\Listeners\AsyncLogListener'
         ]
     ];
 
