@@ -66,13 +66,14 @@ class Kernel extends HttpKernel
         'checkAppKeySecret' => CheckAppKeySecret::class,
         // app access token check
         'checkAccessToken' => CheckAccessToken::class,
-        'admin' =>  \App\Http\Middleware\Admin::class,
+        'admin' => \App\Http\Middleware\Admin::class,
         'admin.role' => \App\Http\Middleware\AdminRole::class,
         'admin.jwt.auth' => \App\Http\Middleware\AdminJwt::class,
         'admin.jwt.changeAuth' => \App\Http\Middleware\AdminJwtChange::class,
         'admin.jwt.permission' => \App\Http\Middleware\AdminJwtPermission::class,
         'self.jwt.refresh' => \App\Http\Middleware\RefreshToken::class,
         'self.jwt.auth' => \App\Http\Middleware\BevanJwtAuth::class,
-        'check.request.data' => \App\Http\Middleware\VerificateRequstData::class
+        'check.request.data' => \App\Http\Middleware\VerificateRequstData::class,
+        'api.count' => \App\Http\Middleware\CountApi::class
     ];
 }
