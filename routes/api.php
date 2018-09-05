@@ -86,13 +86,12 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
             // 产品列表
             $api->get('productList/{type?}', PlatformProductController::class . '@index');
 //            $api->group(['namespace'=>''], function($api){
-//
 //            })
             $api->get('testLogEvent', ShowController::class . '@testLogEvent');
         });
 
         // 前台需授权的 api
-        $api->group(['middleware' => ['self.jwt.auth']], function ($api) {
+        $api->group(['middleware' => ['self.jwt.refresh:user', 'self.jwt.auth']], function ($api) {
             $api->group(['limit' => 10, 'expires' => 1], function ($api) {
                 $api->get('showauth', ApiAuthController::class . '@test');
                 $api->get('getUserInfo', ApiAuthController::class . '@uInfo');

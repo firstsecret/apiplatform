@@ -25,16 +25,13 @@ class RefreshToken extends BaseMiddleware
         if (!in_array($request->getPathInfo(), config($model . '.noNeedLogin'))) {
             $auth = JWTAuth::parseToken();
 
-            if (!$token = $auth->setRequest($request)->getToken()) {
-                throw new RefreshJwtException('未获取token');
-            }
+            if (!$token = $auth->setRequest($request)->getToken()) throw new RefreshJwtException('未获取token');
 
             try {
                 $user = $auth->authenticate($token);
 
-                if (!$user) {
-                    throw new RefreshJwtException('未获取到用户');
-                }
+                if (!$user) throw new RefreshJwtException('未获取到用户');
+
 
                 // 判断 模型 是否 正确
 //                if ($model == 'admin') {
@@ -50,7 +47,7 @@ class RefreshToken extends BaseMiddleware
 //                sleep(rand(1, 5) / 100);
                     $newToken = JWTAuth::claims(['model'=>$model])->refresh($token);
 //                    var_dump($newToken);
-                    $request->headers->set('Authorization', 'Bearer ' . $newToken); // 给当前的请求设置性的token,以备在本次请求中需要调用用户信息
+                    $request->headers->set('Authorization', 'Bearer' . $newToken); // 给当前的请求设置性的token,以备在本次请求中需要调用用户信息
 //                Redis::setex('token_blacklist:' . $token, 30, $newToken);
                     // 不能大于 可 刷新的 时间
                     cache(['token_blacklist:' . $token => $newToken], 2);
@@ -71,10 +68,10 @@ class RefreshToken extends BaseMiddleware
 //        dd('fsdf');
 //        header('Authorization232','teststs');
         $response = $next($request);
-        $response->headers->set('test','4134');
+
         if ($newToken) {
 //            header('Authorization', 'Bearer ' . $newToken );
-            $response->headers->set('Authorization', 'Bearer ' . $newToken);
+            $response->headers->set('Authorization', 'Bearer' . $newToken);
         }
 
         return $response;

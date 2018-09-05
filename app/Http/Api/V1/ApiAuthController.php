@@ -25,11 +25,11 @@ class ApiAuthController extends BaseController
     public function uInfo(UsersTransformer $trans)
     {
 //        var_dump('okkkk');die;
-        $user=JWTAuth::user()->toArray();
+        $user = JWTAuth::user()->toArray();
 //        var_dump($user);die;
         $user = $trans->transform($user);
 
-        return Response()->json(['status_code'=>200,'msg'=>'获取成功','data'=>$user]);
+        return Response()->json(['status_code' => 200, 'msg' => '获取成功', 'data' => $user]);
     }
 
     /**
@@ -46,9 +46,11 @@ class ApiAuthController extends BaseController
         $user = AppUser::where([
             'app_key' => $app_key,
             'app_secret' => $app_secret
-        ])->find(1)->user;
+        ])->first()->user;
 
-        $token = JWTAuth::fromUser($user);
+//        if ($user->type) config(['jwt.ttl' => null]);
+
+        $token = JWTAuth::claims(['model' => 'user'])->fromUser($user);
         // 获取过期时间
         $express_in = config('jwt.ttl') * 60; // second
 //        dd($token);
@@ -63,7 +65,7 @@ class ApiAuthController extends BaseController
 //        }catch (\Exception $e){
 //            return Response()->json(['status_code'=>500,'msg'=>'token生成失败']);
 //        }
-        return Response()->json(['status_code' => 200, 'msg' => 'token生成成功', 'data' => ['access_token' => 'Bearer' . $token,'express_in'=>$express_in]]);
+        return Response()->json(['status_code' => 200, 'msg' => 'token生成成功', 'data' => ['access_token' => 'Bearer' . $token, 'express_in' => $express_in]]);
         // return
     }
 

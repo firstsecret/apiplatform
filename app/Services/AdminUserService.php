@@ -63,13 +63,13 @@ class AdminUserService extends BaseService
     public function loginByType(Array $msg)
     {
         // 查看 jwt ttl时间
-        if ($this->model == 'user') {
-            $user = User::where($msg)->first();
-
-            if (!$user) throw new AdminJwtException('用户不存在');
-
-            if ($user->type) config('jwt.ttl', null);
-        }
+//        if ($this->model == 'user') {
+//            $user = User::where($msg)->first();
+//
+//            if (!$user) throw new AdminJwtException('用户不存在');
+//
+//            if ($user->type) config('jwt.ttl', null);
+//        }
 
 
         return JWTAuth::claims(['model' => $this->model])->attempt($msg);

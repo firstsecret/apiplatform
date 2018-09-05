@@ -19,7 +19,7 @@ class BevanJwtAuth extends BaseMiddleware
     {
         $this->checkClaimModel($model);
 
-        // go
+        // check
         $this->authenticate($request);
 
         return $next($request);
@@ -27,8 +27,6 @@ class BevanJwtAuth extends BaseMiddleware
 
     public function checkClaimModel($model = 'user')
     {
-        if ($model != $this->auth->getClaim('model')) {
-            throw new BevanJwtAuthException(400, 'token令牌场景错误,验证失败');
-        }
+        if ($model != $this->auth->getClaim('model')) throw new BevanJwtAuthException(400, 'token令牌场景错误,验证失败');
     }
 }
