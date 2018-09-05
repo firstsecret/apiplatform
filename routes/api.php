@@ -31,14 +31,20 @@ app('api.exception')->register(function (Exception $exception) {
 //    return Response()->json(['status_code'=>$exception->getStatusCode(),'message'=>$exception->validator->errors(),'data'=>''],$exception->getStatusCode());
 //    var_dump(get_class($exception));
     if ($exception instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
-        return Response()->json(['status_code' => $exception->getStatusCode(), 'message' => $exception->getMessage(), 'respData' => ''], $exception->getStatusCode());
+        $status_code = $exception->getStatusCode();
+        $err_message = $exception->getMessage();
+//        return Response()->json(['status_code' => $exception->getStatusCode(), 'message' => $exception->getMessage(), 'respData' => ''], $exception->getStatusCode());
     } else if (get_class($exception) == 'Illuminate\Validation\ValidationException') {
-        return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'respData' => ''], 422);
+        $status_code = 422;
+        $err_message = $exception->validator->errors();
+//        return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'respData' => ''], 422);
     } else {
         $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
         $err_message = $exception->getMessage() == '' ? '路由不存在' : $exception->getMessage();
-        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => ''], $status_code);
+//        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => ''], $status_code);
     }
+    \Illuminate\Support\Facades\Event::fire(new \App\Events\AsyncLogEvent($err_message, 'error'));
+    return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => []], $status_code);
 });
 
 $api = app('Dingo\Api\Routing\Router');
@@ -70,6 +76,9 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                 $api->get('token', ApiAuthController::class . '@getAccessToken')->middleware('checkAppKeySecret');
             });
 
+            $api->get('categoriesList', PlatformProductController::class . '@allList');
+
+            // 测试API
             $api->get('test', ShowController::class . '@index');
 
             $api->get('testEvent', ShowController::class . '@testEvent');
@@ -80,7 +89,6 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
 //
 //            })
             $api->get('testLogEvent', ShowController::class . '@testLogEvent');
-            $api->get('categoriesList', PlatformProductController::class . '@allList');
         });
 
         // 前台需授权的 api
