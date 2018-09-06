@@ -120,20 +120,29 @@ trait AppTool
     }
 
     /**
-     *  生成 对应  应用的 uuid
+     *  生成 用户对应  应用的 uuid
      */
     function factoryOpenId($prefix = '')
     {
-        $uuid = extension_loaded('uuid') ? uuid_create() : $this->create_uuid();
-        $uuid = strtr($uuid, ['-' => '']);
+        $uuid = $this->customCreateUUID();
         return $prefix . $uuid;
+    }
+
+    /**
+     * 生成uuid
+     * @return string
+     */
+    protected function customCreateUUID()
+    {
+        $uuid = extension_loaded('uuid') ? uuid_create() : $this->createUuid();
+        return strtr($uuid, ['-' => '']);
     }
 
     /**
      * 自定义 uuid
      * @return string
      */
-    function create_uuid()
+    protected function createUuid()
     {    //可以指定前缀
         $str = md5(uniqid(mt_rand(), true));
         $uuid = substr($str, 0, 8) . '-';
@@ -144,8 +153,14 @@ trait AppTool
         return $uuid;
     }
 
+    /**
+     * app 应用 的 唯一 标识生成  (可支持100W以上的 应用)
+     * @param $sign
+     * @return bool|string
+     */
     function factoryAppAdminUUID($sign)
     {
-        return substr(md5($sign), 0, 8);
+        $str = uniqid($sign, true);
+        return substr($str, 0, 8);
     }
 }

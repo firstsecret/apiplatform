@@ -27,10 +27,25 @@ set_time_limit(0);
 //}
 //
 //echo '总重复值:' . $time . '<br>';
+//
+//var_dump(extension_loaded('uuid'));
+//
+//var_dump(uuid_create());
+//$str = uniqid(1, true);
+//var_dump(strlen($str));die;
+$uuid_arr = [];
+for($i; $i< 500000; $i++){
+    $str = uniqid($i, true);
+    $uuid = substr($str, 0, 8);
+//    $uuid .= substr($str, 8, 4) . '-';
+//    $uuid .= substr($str, 12, 4) . '-';
+//    $uuid .= substr($str, 16, 4) . '-';
+//    $uuid .= substr($str, 20, 12);
+    $uniqe_arr[] = $uuid;
+}
 
-var_dump(extension_loaded('uuid'));
-
-var_dump(uuid_create());
+echo count(array_unique($uniqe_arr)) . '<br>';
+die;
 
 //function create_uuid($prefix = ""){    //可以指定前缀
 //    $str = md5(uniqid(mt_rand(), true));
@@ -55,17 +70,17 @@ var_dump(uuid_create());
 /**
  *  用户
  */
-$uniqe_arr = [];
-$time = 0;
-for ($i = 1; $i <= 200000; $i++) {
-//    $uniqe = substr(md5($i), 0, 16);
-    $uniqe = uniqid($i, true);
-//    $uniqe = md5($i);
-
-    $uniqe_arr[] = $uniqe;
-}
-
-echo '总数:' . count(array_unique($uniqe_arr));
+//$uniqe_arr = [];
+//$time = 0;
+//for ($i = 1; $i <= 200000; $i++) {
+////    $uniqe = substr(md5($i), 0, 16);
+//    $uniqe = uniqid($i, true);
+////    $uniqe = md5($i);
+//
+//    $uniqe_arr[] = $uniqe;
+//}
+//
+//echo '总数:' . count(array_unique($uniqe_arr));
 
 //var_dump(array_count_values($uniqe_arr));
 //echo '总重复值:' . $time . '<br>';
