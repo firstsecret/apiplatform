@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Api\V1\Admin;
+namespace App\Http\Api\V1\Internal;
 
 use App\Facades\Internal;
 use App\Http\Api\AdminBaseController;
