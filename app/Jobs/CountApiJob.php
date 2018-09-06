@@ -38,6 +38,11 @@ class CountApiJob implements ShouldQueue
     protected $needAddType;
 
     /**
+     * @var string 请求 成功 还是 失败
+     */
+    protected $anotherType;
+
+    /**
      * Create a new job instance.
      *
      * @return void
@@ -63,6 +68,7 @@ class CountApiJob implements ShouldQueue
         if (!$this->apiname) {
             return;
         }
+
         $apiname = $this->apiname;
         $apiname_arr = explode('/', $apiname);
 

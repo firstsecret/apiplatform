@@ -57,7 +57,7 @@ $api = app('Dingo\Api\Routing\Router');
 $api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', 'self.jwt.auth', 'api.count:success'], 'namespace' => '\Show\Api\V1'], function ($api) {
     $api->group(['prefix' => 'app1'], function ($api) {
         $api->get('showtest', IndexController::class . '@index');
-        $api->get('show2', IndexController::class . '@index');
+        $api->get('show2/{type?}', IndexController::class . '@index');
         $api->get('show3', IndexController::class . '@testCurl');
     });
 });

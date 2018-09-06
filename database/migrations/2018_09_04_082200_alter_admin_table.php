@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateAppUsersTable extends Migration
+class AlterAdminTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class UpdateAppUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('app_users', function (Blueprint $table) {
+        Schema::table('admins', function (Blueprint $table) {
             //
-            $table->dropColumn('platform_product_id');
+            $table->string('email')->nullable()->change();
         });
     }
 
@@ -26,9 +26,9 @@ class UpdateAppUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('app_users', function (Blueprint $table) {
+        Schema::table('admins', function (Blueprint $table) {
             //
-            $table->unsignedInteger('platform_product_id');
+            $table->string('email')->change();
         });
     }
 }
