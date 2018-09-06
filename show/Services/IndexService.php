@@ -18,6 +18,9 @@ class IndexService extends baseAppService
     {
         $apis = Redis::get('api_request_condition');
 
+        $appAdmin = $this->factoryAppAdminUUID(2);
+        dd($this->factoryOpenId($appAdmin));
+
         return json_decode($apis, true);
     }
 
@@ -27,6 +30,6 @@ class IndexService extends baseAppService
             'Authorization' => request()->headers->get('Authorization')
         ]]);
 
-        dd(json_decode($response->getBody()->getContents(), true));
+        return json_decode($response->getBody()->getContents(), true);
     }
 }

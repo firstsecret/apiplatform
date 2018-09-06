@@ -97,12 +97,12 @@ trait AppTool
      */
     function checkIsPhone($phone)
     {
-        return preg_match("/^1[345678]{1}\d{9}$/",$phone);
+        return preg_match("/^1[345678]{1}\d{9}$/", $phone);
     }
 
     function randomStr($len = 6)
     {
-        $chars    = [
+        $chars = [
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
             'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
             'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
@@ -117,5 +117,35 @@ trait AppTool
             $output .= $chars[mt_rand(0, $charsLen)];
         }
         return $output;
+    }
+
+    /**
+     *  生成 对应  应用的 uuid
+     */
+    function factoryOpenId($prefix = '')
+    {
+        $uuid = extension_loaded('uuid') ? uuid_create() : $this->create_uuid();
+        $uuid = strtr($uuid, ['-' => '']);
+        return $prefix . $uuid;
+    }
+
+    /**
+     * 自定义 uuid
+     * @return string
+     */
+    function create_uuid()
+    {    //可以指定前缀
+        $str = md5(uniqid(mt_rand(), true));
+        $uuid = substr($str, 0, 8) . '-';
+        $uuid .= substr($str, 8, 4) . '-';
+        $uuid .= substr($str, 12, 4) . '-';
+        $uuid .= substr($str, 16, 4) . '-';
+        $uuid .= substr($str, 20, 12);
+        return $uuid;
+    }
+
+    function factoryAppAdminUUID($sign)
+    {
+        return substr(md5($sign), 0, 8);
     }
 }

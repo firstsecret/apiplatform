@@ -9,12 +9,16 @@
 namespace App\Client;
 
 
-class baseAppService
+use App\Services\BaseService;
+
+class baseAppService extends BaseService
 {
     public $client;
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->client = new httpClient();
     }
 }
