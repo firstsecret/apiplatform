@@ -58,6 +58,7 @@ $api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', '
     $api->group(['prefix' => 'app1'], function ($api) {
         $api->get('showtest', IndexController::class . '@index');
         $api->get('show2', IndexController::class . '@index');
+        $api->get('show3', IndexController::class . '@testCurl');
     });
 });
 //....

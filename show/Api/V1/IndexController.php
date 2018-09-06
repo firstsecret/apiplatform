@@ -25,4 +25,11 @@ class IndexController extends BaseController
 
         return $this->responseClient(200, '获取成功', $data);
     }
+
+    public function testCurl()
+    {
+        $data = $this->service->onCurl();
+
+        return $this->responseClient(200, 'success', $data);
+    }
 }

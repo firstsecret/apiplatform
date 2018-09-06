@@ -8,15 +8,23 @@
 
 namespace Show\Services;
 
-
+use App\Client\baseAppService;
+use App\Client\httpClient;
 use Illuminate\Support\Facades\Redis;
 
-class IndexService
+class IndexService extends baseAppService
 {
     public function oneService(): Array
     {
         $apis = Redis::get('api_request_condition');
 
-        return json_decode($apis,true);
+        return json_decode($apis, true);
+    }
+
+    public function onCurl()
+    {
+        $response = $this->client->get('http://bevan.top/api/cli/testLogEvent');
+
+        dd(json_decode($response->getBody()->getContents(), true));
     }
 }
