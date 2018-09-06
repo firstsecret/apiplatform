@@ -131,7 +131,6 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                     $api->post('createNewInternal', AuthController::class . '@createNewInternal');
                 });
             });
-
             // 测试 sign 中间件
             $api->get('testSign', InternalController::class . '@testSign');
 

@@ -151,7 +151,7 @@ trait AppTool
 //        $uuid .= substr($str, 16, 4) . '-';
 //        $uuid .= substr($str, 20, 12);
         $microTime = microtime();
-        list($a_dec, $a_sec) = explode(" ", $microTime);
+        list($a_dec, $a_sec) = explode(' ', $microTime);
         $dec_hex = dechex($a_dec * 1000000);
         $sec_hex = dechex($a_sec);
         $this->ensureLength($dec_hex, 5);
@@ -183,7 +183,7 @@ trait AppTool
 
     protected function createGuidSection($characters)
     {
-        $return = "";
+        $return = '';
         for ($i = 0; $i < $characters; $i++) {
             $return .= dechex(mt_rand(0, 15));
         }
@@ -191,7 +191,7 @@ trait AppTool
     }
 
     /**
-     * app 应用 的 唯一 标识生成  (可支持100W以上的 应用)
+     * app 应用 的 唯一 标识生成
      * @param $sign
      * @return bool|string
      */
