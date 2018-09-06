@@ -102,7 +102,7 @@ class InternalService extends BaseService
 
             if ($user) {
                 // app_user
-                $app_key = md5($this->randomStr(11));
+                $app_key = md5($this->randomStr(11) . $this->customCreateUUID());
                 $app_secret = md5($this->randomStr(11));
                 AppUser::updateOrCreate([
                     'user_id' => $user->id,

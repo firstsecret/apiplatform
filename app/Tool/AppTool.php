@@ -144,13 +144,50 @@ trait AppTool
      */
     protected function createUuid()
     {    //可以指定前缀
-        $str = md5(uniqid(mt_rand(), true));
-        $uuid = substr($str, 0, 8) . '-';
-        $uuid .= substr($str, 8, 4) . '-';
-        $uuid .= substr($str, 12, 4) . '-';
-        $uuid .= substr($str, 16, 4) . '-';
-        $uuid .= substr($str, 20, 12);
-        return $uuid;
+//        $str = md5(uniqid(mt_rand(), true));
+//        $uuid = substr($str, 0, 8) . '-';
+//        $uuid .= substr($str, 8, 4) . '-';
+//        $uuid .= substr($str, 12, 4) . '-';
+//        $uuid .= substr($str, 16, 4) . '-';
+//        $uuid .= substr($str, 20, 12);
+        $microTime = microtime();
+        list($a_dec, $a_sec) = explode(" ", $microTime);
+        $dec_hex = dechex($a_dec * 1000000);
+        $sec_hex = dechex($a_sec);
+        $this->ensureLength($dec_hex, 5);
+        $this->ensureLength($sec_hex, 6);
+        $guid = '';
+        $guid .= $dec_hex;
+        $guid .= $this->createGuidSection(3);
+        $guid .= '-';
+        $guid .= $this->createGuidSection(4);
+        $guid .= '-';
+        $guid .= $this->createGuidSection(4);
+        $guid .= '-';
+        $guid .= $this->createGuidSection(4);
+        $guid .= '-';
+        $guid .= $sec_hex;
+        $guid .= $this->createGuidSection(6);
+        return $guid;
+    }
+
+    protected function ensureLength(&$string, $length)
+    {
+        $strlen = strlen($string);
+        if ($strlen < $length) {
+            $string = str_pad($string, $length, "0");
+        } else if ($strlen > $length) {
+            $string = substr($string, 0, $length);
+        }
+    }
+
+    protected function createGuidSection($characters)
+    {
+        $return = "";
+        for ($i = 0; $i < $characters; $i++) {
+            $return .= dechex(mt_rand(0, 15));
+        }
+        return $return;
     }
 
     /**
