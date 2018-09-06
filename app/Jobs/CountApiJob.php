@@ -27,18 +27,29 @@ class CountApiJob implements ShouldQueue
 
     public $timeout = 5;
 
-
+    /**
+     * @var 需要统计的 api 路由名称
+     */
     protected $apiname;
+
+    /**
+     * @var 统计 请求 成功 还是 失败
+     */
+    protected $needAddType;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($apiname)
+    public function __construct($apiname, $type)
     {
         //
         $this->apiname = $apiname;
+
+        $this->needAddType = $type;
+
+        $this->anotherType = $this->needAddType == 'success' ? 'fail' : 'success';
     }
 
     /**
@@ -67,14 +78,14 @@ class CountApiJob implements ShouldQueue
                 if (isset($apicondition[$apiname_arr[1]][$apiname])) {
                     // 存在 该 api 记录
                     $apicondition[$apiname_arr[1]][$apiname]['total']++;
-                    $apicondition[$apiname_arr[1]][$apiname]['success']++;
+                    $apicondition[$apiname_arr[1]][$apiname][$this->needAddType]++;
                     $apicondition[$apiname_arr[1]][$apiname]['lasttime'] = time();
                 } else {
                     $apicondition[$apiname_arr[1]][$apiname] = [
                         'api_name' => $apiname,
                         'total' => 1,
-                        'success' => 1,
-                        'fail' => 0,
+                        $this->needAddType => 1,
+                        $this->anotherType => 0,
                         'lasttime' => time()
                     ];
                 }
@@ -83,8 +94,8 @@ class CountApiJob implements ShouldQueue
                 $apicondition[$apiname_arr[1]][$apiname] = [
                     'api_name' => $apiname,
                     'total' => 1,
-                    'success' => 1,
-                    'fail' => 0,
+                    $this->needAddType => 1,
+                    $this->anotherType => 0,
                     'lasttime' => time()
                 ];
             }
@@ -94,8 +105,8 @@ class CountApiJob implements ShouldQueue
             $apicondition[$apiname_arr[1]][$apiname] = [
                 'api_name' => $apiname,
                 'total' => 1,
-                'success' => 1,
-                'fail' => 0,
+                $this->needAddType => 1,
+                $this->anotherType => 0,
                 'lasttime' => time()
             ];
         }

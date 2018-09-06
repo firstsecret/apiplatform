@@ -15,7 +15,7 @@ class CountApi
      * @param  \Closure $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $type = 'success')
     {
         $apiname = ltrim($request->getPathInfo(), '/');
 
@@ -24,7 +24,7 @@ class CountApi
 
 //        die;
         // api count
-        CountApiJob::dispatch($apiname);
+        CountApiJob::dispatch($apiname, $type);
 
         $response = $next($request);
 
