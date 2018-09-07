@@ -27,19 +27,22 @@ class InternalService extends BaseLoginService
     protected $errorModel;
 
     /**
-     *  admin创建用户
+     *  admin创建内部应用
      */
     public function createAdminUser($data)
     {
         // check unique
-        $this->checkUnique($data, '\App\Models\Admin');
+//        $this->checkUnique($data, '\App\Models\Admin');
         $password = md5($this->customCreateUUID());
+        $uuid = $this->factoryAppAdminUUID($this->randomStr());
+
         DB::beginTransaction();
         try {
             $admin = Admin::create([
                 'name' => md5($this->customCreateUUID()),
                 'email' => $data['email'] ?? null,
                 'password' => bcrypt($password),
+                'uuid' => $uuid,
                 'telephone' => $data['telephone'] ?? null,
             ]);
 
@@ -61,7 +64,7 @@ class InternalService extends BaseLoginService
 
             DB::commit();
 
-            return ['res' => true, 'data' => ['app_key' => $app_key, 'app_secret' => $app_secret]];
+            return ['res' => true, 'data' => ['app_key' => $app_key, 'app_secret' => $app_secret, 'uuid' => $uuid]];
         } catch (\Exception $e) {
             DB::rollBack();
             throw new PlatformProductException('500', '创建失败' . $e->getMessage());

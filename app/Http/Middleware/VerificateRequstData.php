@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Exceptions\SignException;
 use App\Models\AppUser;
 use Closure;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class VerificateRequstData
 {
@@ -34,12 +35,18 @@ class VerificateRequstData
 
         $appKey = $request->input('appKey'); // app key
 
-        if (!$appKey) throw new SignException(400, 'appkey未获取');
+        if (!$appKey) throw new SignException(401, 'appkey未获取');
         // 获取 appsecret
         $appUser = AppUser::where(['app_key' => $appKey, 'model' => $model])->first(['app_secret', 'user_id']);
 //        $appUser = AppUser::where(['app_key' => $appKey])->first(['app_secret', 'user_id']);
 
-        if (!$appUser) throw new SignException(400, '对应权限不存在');
+        if (!$appUser) throw new SignException(402, '对应权限不存在');
+
+        $requester = JWTAuth::parseToken()->user();
+
+        $requesterApp = $requester->app($model);
+
+        if ($requesterApp->app_key != $appKey || $requesterApp->app_secret != $appUser->app_secret) throw new SignException(403, '授权不一致,请求失败');
 
         $sign = $request->input('sign');
 

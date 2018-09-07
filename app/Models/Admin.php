@@ -14,7 +14,7 @@ class Admin extends Authenticatable implements JWTSubject
 
     protected $primaryKey = 'id';
 
-    public $table='admins';
+    public $table = 'admins';
 
     protected $guard_name = 'admin';
 
@@ -24,7 +24,7 @@ class Admin extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','telephone'
+        'name', 'email', 'password', 'telephone', 'uuid'
     ];
 
     /**
@@ -41,7 +41,13 @@ class Admin extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
-    function getJWTCustomClaims(){
+    function getJWTCustomClaims()
+    {
         return [];
+    }
+
+    function app($model)
+    {
+        return $this->hasOne('App\Models\AppUser', 'user_id')->where('model', $model)->first(['app_key', 'app_secret', 'user_id', 'created_at', 'model']);
     }
 }

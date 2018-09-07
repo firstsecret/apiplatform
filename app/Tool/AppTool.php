@@ -222,7 +222,7 @@ trait AppTool
     public function tokenResponse($token)
     {
         $express_in = config('jwt.ttl') * 60;
-        return $token === false ? $this->responseClient(400, '登录失败,授权失败', []) : $this->responseClient(200, '登录成功', ['access_token' => 'Bearer' . $token, 'express_in' => $express_in]);
+        return $token === false ? $this->responseClient(400, '授权失败', []) : $this->responseClient(200, '授权成功', ['access_token' => 'Bearer' . $token, 'express_in' => $express_in]);
     }
 
     /**
