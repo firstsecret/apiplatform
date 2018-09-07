@@ -131,13 +131,14 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                     $api->post('createNewInternal', AuthController::class . '@createNewInternal');
                 });
             });
-            // 测试 sign 中间件
-            $api->get('testSign', InternalController::class . '@testSign');
 
             $api->post('login', LoginController::class . '@login');
-
+            // 内部应用 获取授权
             $api->get('token', AuthController::class . '@getAccessToken');
         });
+
+        // 测试 sign 中间件
+        $api->get('testSign', Internal\InternalController::class . '@testSign');
 
         // 内部的 应用 可以调用的 api (增加一层 数据 加/解密层)
         $api->group(['middleware' => ['admin.jwt.changeAuth', 'self.jwt.refresh:admin', 'admin.jwt.auth', 'admin.jwt.permission:admins|internal', 'check.request.data:admin'], 'namespace' => 'Internal'], function ($api) {

@@ -73,8 +73,10 @@ class InternalService extends BaseService
     {
         if (!$this->checkIsPhone($data['telephone'])) throw new PlatformProductException(400, '手机号码不正确');
 
-        if ($user = $model::where('name', $data['name'])->first(['name'])) {
+        if ($user = $model::where('name', $data['name'])->first(['id','name'])) {
 //            return Response()->json(['status_code' => 200,'msg'=>'用户名已存在', 'data'=> ]);
+            $uuidUser = $user->getOpenid($user->id, $this->user->id, $this->user->uuid, get_class($this->user));
+            if($uuidUser)
             throw new PlatformProductException(400, '用户名已存在');
         }
 
@@ -92,8 +94,6 @@ class InternalService extends BaseService
     public function openUser($data)
     {
         $this->checkUnique($data, '\App\User');
-
-        dd(User::find(2)->app);
 
         DB::beginTransaction();
         try {
