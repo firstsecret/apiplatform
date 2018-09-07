@@ -36,7 +36,7 @@ class InternalController extends AdminBaseController
 
         $resWithData = Internal::openUser($reqData);
 
-        return $this->res2Response($resWithData['res'], '用户创建成功', '用户创建失败', $resWithData['data']);
+        return $this->res2Response($resWithData['res'], '用户创建成功', $resWithData['msg'], $resWithData['data']);
     }
 
     /**

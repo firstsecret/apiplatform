@@ -21,6 +21,11 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class InternalService extends BaseService
 {
     /**
+     * @var 校验异常模型对象
+     */
+    protected $errorModel;
+
+    /**
      *  admin创建用户
      */
     public function createAdminUser($data)
@@ -73,17 +78,24 @@ class InternalService extends BaseService
     {
         if (!$this->checkIsPhone($data['telephone'])) throw new PlatformProductException(400, '手机号码不正确');
 
-        if ($user = $model::where('name', $data['name'])->first(['id','name'])) {
+        if ($user = $model::where('name', $data['name'])->first(['id', 'name'])) {
 //            return Response()->json(['status_code' => 200,'msg'=>'用户名已存在', 'data'=> ]);
-            $uuidUser = $user->getOpenid($user->id, $this->user->id, $this->user->uuid, get_class($this->user));
-            if($uuidUser)
-            throw new PlatformProductException(400, '用户名已存在');
+            $this->errorModel = $user;
+//            $uuidUser = $user->getOpenid($user->id, $this->user->id, $this->user->uuid, get_class($this->user));
+//            if ($uuidUser) return $this->responseClient(203, '用户名已经存在', ['openid' => $uuidUser->openid]);
+            throw new PlatformProductException(403, '用户名已存在');
         }
 
-        if ($model::where('telephone', $data['telephone'])->first(['telephone'])) throw new PlatformProductException(400, '该号码已注册');
+        if ($user = $model::where('telephone', $data['telephone'])->first(['id', 'telephone'])) {
+            $this->errorModel = $user;
+            throw new PlatformProductException(403, '该号码已注册');
+        }
 
         if (isset($data['email']) && $data['email']) {
-            if ($model::where('email', $data['email'])->first(['email'])) throw new PlatformProductException(400, '该邮箱已注册');
+            if ($user = $model::where('email', $data['email'])->first(['id', 'email'])) {
+                $this->errorModel = $user;
+                throw new PlatformProductException(403, '该邮箱已注册');
+            }
         }
     }
 
@@ -93,7 +105,17 @@ class InternalService extends BaseService
      */
     public function openUser($data)
     {
-        $this->checkUnique($data, '\App\User');
+        try {
+            $this->checkUnique($data, '\App\User');
+        } catch (PlatformProductException $e) {
+            if ($e->getStatusCode() == 403) {
+                $uuidUser = $this->errorModel->getOpenid($this->errorModel->id, $this->user->id, $this->user->uuid, get_class($this->user));
+                $openid = $uuidUser->openid;
+                return ['res' => false, 'msg' => $e->getMessage(), 'data' => ['openid' => $openid]];
+            } else {
+                throw $e;
+            }
+        }
 
         DB::beginTransaction();
         try {
