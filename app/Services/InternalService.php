@@ -111,7 +111,7 @@ class InternalService extends BaseService
             if ($e->getStatusCode() == 403) {
                 $uuidUser = $this->errorModel->getOpenid($this->errorModel->id, $this->user->id, $this->user->uuid, get_class($this->user));
                 $openid = $uuidUser->openid;
-                return ['res' => false, 'msg' => $e->getMessage(), 'data' => ['openid' => $openid]];
+                return ['res' => false, 'errormsg' => $e->getMessage(), 'data' => ['openid' => $openid]];
             } else {
                 throw $e;
             }

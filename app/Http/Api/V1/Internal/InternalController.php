@@ -36,7 +36,7 @@ class InternalController extends AdminBaseController
 
         $resWithData = Internal::openUser($reqData);
 
-        return $this->res2Response($resWithData['res'], '用户创建成功', $resWithData['msg'], $resWithData['data']);
+        return $this->res2Response($resWithData['res'], '用户创建成功', $resWithData['errormsg'] ?? '用户创建失败', $resWithData['data'], 200, 403);
     }
 
     /**
@@ -52,10 +52,10 @@ class InternalController extends AdminBaseController
         $appSecret = '0690009e3d2560f8b0b8fbaceb4bf813';
 
         $reqData = [
-            'name' => 'xiaowang2',
-            'telephone' => 13913057593,
+            'name' => 'xiaowang23542',
+            'telephone' => 13913078563,
             'password' => 123456,
-            'type' => 1
+            'type' => 0
         ];
 //        var_dump(json_encode($reqData, JSON_UNESCAPED_UNICODE) . $sequenceID . $appSecret);
         //{"name":"小王","age":18}12345608aee6276db142f4b8ac98fb8ee0ed1b
