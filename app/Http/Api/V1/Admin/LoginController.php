@@ -18,7 +18,6 @@ class LoginController extends AdminBaseController
         $login_name = $request->input('login_name');
         $password = $request->input('password');
 
-
         $token = AdminUser::login($login_name, $password, 'admin');
 
         return $this->tokenResponse($token);

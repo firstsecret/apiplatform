@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class InternalService extends BaseService
+class InternalService extends BaseLoginService
 {
     /**
      * @var 校验异常模型对象
@@ -43,20 +43,19 @@ class InternalService extends BaseService
                 'telephone' => $data['telephone'] ?? null,
             ]);
 
-            if ($admin) {
-                // app_user
-                $app_key = md5($this->randomStr(11));
-                $app_secret = md5($this->randomStr(11));
-                AppUser::updateOrCreate([
-                    'user_id' => $admin->id,
-                    'model' => get_class($admin),
-                ], [
-                    'app_key' => $app_key,
-                    'app_secret' => $app_secret,
-                    'model' => get_class($admin),
-                    'user_id' => $admin->id
-                ]);
-            }
+            // app_user
+            $app_key = md5($this->randomStr(11));
+            $app_secret = md5($this->randomStr(11));
+            AppUser::updateOrCreate([
+                'user_id' => $admin->id,
+                'model' => get_class($admin),
+            ], [
+                'app_key' => $app_key,
+                'app_secret' => $app_secret,
+                'model' => get_class($admin),
+                'user_id' => $admin->id
+            ]);
+
             // 分配角色
             $admin->assignRole('internal');
 
@@ -197,7 +196,7 @@ class InternalService extends BaseService
     }
 
     /**
-     * 检验类 异常 用户处理 生成openid 
+     * 检验类 异常 用户处理 生成openid
      * @return string
      * @throws \Exception
      */

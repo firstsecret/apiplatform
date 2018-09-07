@@ -21,6 +21,7 @@ class AdminJwt extends BevanJwtAuth
 //        dd(config('admin.noNeedLogin'));
         if(!in_array($request->getPathInfo(), config('admin.noNeedLogin'))){
             // check
+
 //            var_dump(Auth::guard('admin')->check());
             // get user id
             $this->checkClaimModel($model);

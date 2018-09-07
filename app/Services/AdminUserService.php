@@ -10,12 +10,20 @@ namespace App\Services;
 
 
 use App\Exceptions\AdminJwtException;
-use App\User;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AdminUserService extends BaseService
 {
     public $model;
+
+    /**
+     * overwrite
+     * AdminUserService constructor.
+     */
+    public function operatorUser()
+    {
+
+    }
 
     public function login($login_name, $password, $model = 'user')
     {
@@ -34,6 +42,8 @@ class AdminUserService extends BaseService
 
         if ($token) {
             // 是否 是 后台 登录
+//            JWTAuth::setToken($token);
+            request()->headers->set('Authorization',  'Bearer' . $token);
             $loginer = JWTAuth::parseToken()->user();
             if ($model == 'admin') {
                 // 是否 拥有 角色权限

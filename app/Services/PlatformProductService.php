@@ -16,7 +16,7 @@ use App\Models\ProductUserDisableService;
 use App\Models\ProductUserService;
 use App\User;
 
-class PlatformProductService extends BaseService
+class PlatformProductService extends BaseLoginService
 {
 
     /**
