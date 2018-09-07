@@ -10,8 +10,22 @@
 -->
 ## api平台
 
-##### 1.通过 服务的 方式 进行 开发, 提供了如平台产品服务提供，内部开放API服务
+##### 现有功能列表：
+1. 接口限流
+2. JWT机制
+3. 权限管理
+4. 用户UUID 机制
+5. 授权模块区别
+6. 异步日志系统
+7. 异步任务队列
+8. sign校验功能
+9. 多模块的权限功能系统
+10. 异步接口统计功能
+11. 用户服务禁用功能
 
+
+#### 现有API:
+###### 查看api 文档
 
 
 ## 调用流程
@@ -20,16 +34,6 @@
 ##### 3. 请求的 数据 需要 生成 sign 进行 数据校验 
 ##### 4. 完成服务调用 响应
 ##### 5. 执行 api 统计 中间件
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -47,7 +51,7 @@
 ##### 1. 通过后台可以 创建对应的内部应用 
 ##### 2. 每个用户信息 都 对应 不同应用的 有着 不同的UUID
 ##### 3. 内部应用 通过授权 获取access_token 可以 访问 开放的 内部API
-noting can say
+<!--noting can say-->
 <!--
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
 
@@ -96,5 +100,5 @@ Thank you for considering contributing to the Laravel framework! The contributio
 
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 -->
-## License
+
 
