@@ -157,6 +157,12 @@ class InternalService extends BaseService
         }
     }
 
+    /**
+     * 授权 生成 token
+     * @param $app_key
+     * @param $app_secret
+     * @return mixed
+     */
     public function factoryAccessToken($app_key, $app_secret)
     {
         if (!$app_key || !$app_secret) throw new PlatformProductException(400, 'appkey或appsecret未获取');
@@ -169,10 +175,10 @@ class InternalService extends BaseService
 
         $token = JWTAuth::claims(['model' => 'admin'])->fromUser($admin);
         // 获取过期时间
-        $express_in = config('jwt.ttl') * 60; // second
+//        $express_in = config('jwt.ttl') * 60; // second
 
         if (!$token) throw new PlatformProductException(500, '令牌生成失败');
 
-        return ['access_token' => $token, 'express_in' => $express_in];
+        return $token;
     }
 }

@@ -34,6 +34,7 @@ class VerificateRequstData
 
         $appKey = $request->input('appKey'); // app key
 
+        if (!$appKey) throw new SignException(400, 'appkey未获取');
         // 获取 appsecret
         $appUser = AppUser::where(['app_key' => $appKey, 'model' => $model])->first(['app_secret', 'user_id']);
 //        $appUser = AppUser::where(['app_key' => $appKey])->first(['app_secret', 'user_id']);

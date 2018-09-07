@@ -32,6 +32,7 @@ class AuthController extends AdminBaseController
 //        }catch (\Exception $e){
 //            return Response()->json(['status_code'=>500,'msg'=>'token生成失败']);
 //        }
+//        dd($token);
         return $this->tokenResponse($token);
 //        return Response()->json(['status_code' => 200, 'msg' => 'token生成成功', 'data' => ['access_token' => 'Bearer' . $reData['access_token'], 'express_in' => $reData['express_in']]]);
     }

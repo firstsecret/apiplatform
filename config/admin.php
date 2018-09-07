@@ -12,6 +12,7 @@ return [
       '/admin/logout',
       // api
       '/api/cli/admin/login',
-      '/api/cli/admin/logout'
+      '/api/cli/admin/logout',
+      '/api/cli/admin/token'
   ])
 ];
