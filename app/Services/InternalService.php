@@ -9,13 +9,14 @@
 namespace App\Services;
 
 
+use App\Events\AsyncLogEvent;
 use App\Exceptions\PlatformProductException;
 use App\Models\Admin;
 use App\Models\AppUser;
 use App\Models\UuidUser;
 use App\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Event;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class InternalService extends BaseService
@@ -169,7 +170,7 @@ class InternalService extends BaseService
 //                'model' => get_class($creater)
 //            ]);
             // 记录 哪个 应用 请求 创建的
-            Log::info("\r\n\r\n" . $creater->name . '(model_id:' . $creater->id . ')创建了用户: ' . $user->name . '(user_id:' . $user->id . ')');
+            Event::fire(new AsyncLogEvent("\r\n\r\n" . $creater->name . '(model_id:' . $creater->id . ')创建了用户: ' . $user->name . '(user_id:' . $user->id . ')', 'info'));
             DB::commit();
 
             return ['res' => true, 'data' => ['app_key' => $app_key, 'app_secret' => $app_secret, 'openid' => $openid]];
