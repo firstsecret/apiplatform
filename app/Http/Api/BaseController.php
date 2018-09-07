@@ -24,7 +24,8 @@ class BaseController extends Controller
      */
     public function tokenResponse($token)
     {
-        return $token === false ? $this->responseClient(400, '登录失败,账号或密码错误', []) : $this->responseClient(200, '登录成功', ['access_token' => 'Bearer' . $token]);
+        $express_in = config('jwt.ttl') * 60;
+        return $token === false ? $this->responseClient(400, '登录失败,账号或密码错误', []) : $this->responseClient(200, '登录成功', ['access_token' => 'Bearer' . $token, 'express_in' => $express_in]);
     }
 
     /**
@@ -37,7 +38,7 @@ class BaseController extends Controller
      * @param array $data
      * @return \Illuminate\Http\JsonResponse
      */
-    public function res2Response($res, $successMsg, $errorMsg = '',$data = [], $successCode = 200, $errorCode = 500)
+    public function res2Response($res, $successMsg, $errorMsg = '', $data = [], $successCode = 200, $errorCode = 500)
     {
         return $res === true ? $this->responseClient($successCode, $successMsg, $data) : $this->responseClient($errorCode, $errorMsg, $data);
     }

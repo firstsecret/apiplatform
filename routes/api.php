@@ -135,6 +135,8 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
             $api->get('testSign', InternalController::class . '@testSign');
 
             $api->post('login', LoginController::class . '@login');
+
+            $api->get('token', AuthController::class . '@getAccessToken');
         });
 
         // 内部的 应用 可以调用的 api (增加一层 数据 加/解密层)

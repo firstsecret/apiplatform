@@ -40,6 +40,8 @@ class User extends Authenticatable implements JWTSubject
 
     function app()
     {
-        return $this->hasOne('App\Models\AppUser', 'user_id');
+        return $this->hasOne('App\Models\AppUser', 'user_id')->wherePivot('model', 'App\User');
     }
+
+
 }

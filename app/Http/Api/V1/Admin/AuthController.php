@@ -11,6 +11,32 @@ use Illuminate\Http\Request;
 class AuthController extends AdminBaseController
 {
     /**
+     *  授权应用 token 登录
+     */
+    public function getAccessToken(Request $request)
+    {
+        $app_key = urldecode($request->get('app_key'));
+        $app_secret = urldecode($request->get('app_secret'));
+
+        $token = Internal::factoryAccessToken($app_key, $app_secret);
+        // 生成 token
+//        dd($token);
+//        $token = bcrypt($app_key . $app_secret);
+
+//        try{
+//            Redis::set($token,time(),'EX',2);
+////            $redis = new \Redis();
+////            $redis->connect('127.0.0.1',6379);
+////
+////            $redis->set($token, time());
+//        }catch (\Exception $e){
+//            return Response()->json(['status_code'=>500,'msg'=>'token生成失败']);
+//        }
+        return $this->tokenResponse($token);
+//        return Response()->json(['status_code' => 200, 'msg' => 'token生成成功', 'data' => ['access_token' => 'Bearer' . $reData['access_token'], 'express_in' => $reData['express_in']]]);
+    }
+
+    /**
      * 添加其他应用角色
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse

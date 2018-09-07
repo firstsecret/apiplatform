@@ -73,7 +73,10 @@ class InternalService extends BaseService
     {
         if (!$this->checkIsPhone($data['telephone'])) throw new PlatformProductException(400, '手机号码不正确');
 
-        if ($model::where('name', $data['name'])->first(['name'])) throw new PlatformProductException(400, '用户名已存在');
+        if ($user = $model::where('name', $data['name'])->first(['name'])) {
+//            return Response()->json(['status_code' => 200,'msg'=>'用户名已存在', 'data'=> ]);
+            throw new PlatformProductException(400, '用户名已存在');
+        }
 
         if ($model::where('telephone', $data['telephone'])->first(['telephone'])) throw new PlatformProductException(400, '该号码已注册');
 
@@ -90,6 +93,8 @@ class InternalService extends BaseService
     {
         $this->checkUnique($data, '\App\User');
 
+        dd(User::find(2)->app);
+
         DB::beginTransaction();
         try {
             $user = User::create([
@@ -97,7 +102,7 @@ class InternalService extends BaseService
                 'email' => ($data['email'] ?? null),
                 'password' => bcrypt($data['password']),
                 'telephone' => $data['telephone'],
-                'type' => (int) $data['type'] ?? 0
+                'type' => (int)$data['type'] ?? 0
             ]);
 
             if ($user) {
@@ -150,5 +155,24 @@ class InternalService extends BaseService
             DB::rollBack();
             throw new PlatformProductException('500', '创建失败' . $e->getMessage());
         }
+    }
+
+    public function factoryAccessToken($app_key, $app_secret)
+    {
+        if (!$app_key || !$app_secret) throw new PlatformProductException(400, 'appkey或appsecret未获取');
+
+        $admin = AppUser::where([
+            'app_key' => $app_key,
+            'app_secret' => $app_secret,
+            'model' => 'App\Models\Admin'
+        ])->first()->admin;
+
+        $token = JWTAuth::claims(['model' => 'admin'])->fromUser($admin);
+        // 获取过期时间
+        $express_in = config('jwt.ttl') * 60; // second
+
+        if (!$token) throw new PlatformProductException(500, '令牌生成失败');
+
+        return ['access_token' => $token, 'express_in' => $express_in];
     }
 }
