@@ -111,7 +111,8 @@ class InternalService extends BaseService
         } catch (PlatformProductException $e) {
             if ($e->getStatusCode() == 403) {
                 $uuidUser = $this->errorModel->getOpenid($this->errorModel->id, $this->user->id, $this->user->uuid, get_class($this->user));
-                $openid = $uuidUser->openid;
+                if ($uuidUser) $openid = $uuidUser->openid;
+                else $openid = $this->createNewAppUserOpenid();
                 return ['res' => false, 'errormsg' => $e->getMessage(), 'data' => ['openid' => $openid]];
             } else {
                 throw $e;
@@ -128,20 +129,18 @@ class InternalService extends BaseService
                 'type' => (int)$data['type'] ?? 0
             ]);
 
-            if ($user) {
-                // app_user
-                $app_key = md5($this->customCreateUUID());
-                $app_secret = md5($this->randomStr(11));
-                AppUser::updateOrCreate([
-                    'user_id' => $user->id,
-                    'model' => get_class($user),
-                ], [
-                    'app_key' => $app_key,
-                    'app_secret' => $app_secret,
-                    'model' => get_class($user),
-                    'user_id' => $user->id
-                ]);
-            }
+            // app_user
+            $app_key = md5($this->customCreateUUID());
+            $app_secret = md5($this->randomStr(11));
+            AppUser::updateOrCreate([
+                'user_id' => $user->id,
+                'model' => get_class($user),
+            ], [
+                'app_key' => $app_key,
+                'app_secret' => $app_secret,
+                'model' => get_class($user),
+                'user_id' => $user->id
+            ]);
 
             $creater = JWTAuth::parseToken()->user();
 
@@ -149,7 +148,7 @@ class InternalService extends BaseService
             $creater_uuid = $creater->uuid;
             $uuid = $this->customCreateUUID();
             $openid = $creater_uuid . $uuid;
-
+            // 生成 对应 应用的openid
             UuidUser::updateOrCreate([
                 'user_id' => $user->id,
                 'model_id' => $creater->id,
@@ -162,17 +161,9 @@ class InternalService extends BaseService
                 'openid' => $openid,
                 'model' => get_class($creater)
             ]);
-//            UuidUser::create([
-//                'user_id' => $user->id,
-//                'model_id' => $creater->id,
-//                'model_uuid' => $creater_uuid,
-//                'openid' => $openid,
-//                'model' => get_class($creater)
-//            ]);
             // 记录 哪个 应用 请求 创建的
             Event::fire(new AsyncLogEvent("\r\n\r\n" . $creater->name . '(model_id:' . $creater->id . ')创建了用户: ' . $user->name . '(user_id:' . $user->id . ')', 'info'));
             DB::commit();
-
             return ['res' => true, 'data' => ['app_key' => $app_key, 'app_secret' => $app_secret, 'openid' => $openid]];
         } catch (\Exception $e) {
             DB::rollBack();
@@ -203,5 +194,36 @@ class InternalService extends BaseService
         if (!$token) throw new PlatformProductException(500, '令牌生成失败');
 
         return $token;
+    }
+
+    /**
+     * 检验类 异常 用户处理 生成openid 
+     * @return string
+     * @throws \Exception
+     */
+    protected function createNewAppUserOpenid()
+    {
+        // 生成openid
+        $uuid = $this->customCreateUUID();
+        $openid = $this->user->uuid . $uuid;
+        try {
+            UuidUser::updateOrCreate([
+                'user_id' => $this->errorModel->id,
+                'model_id' => $this->user->id,
+                'model_uuid' => $this->user->uuid,
+                'model' => get_class($this->user)
+            ], [
+                'user_id' => $this->errorModel->id,
+                'model_id' => $this->user->id,
+                'model_uuid' => $this->user->uuid,
+                'openid' => $openid,
+                'model' => get_class($this->user)
+            ]);
+
+        } catch (\Exception $e) {
+            Event::fire(new AsyncLogEvent("\r\n\r\n" . $this->user->name . '(model_id:' . $this->user->id . ',model: ' . get_class($this->user) . ')创建用户失败: ' . $this->errorModel->name . '(user_id:' . $this->errorModel->id . ')', 'error'));
+            throw $e;
+        }
+        return $openid;
     }
 }

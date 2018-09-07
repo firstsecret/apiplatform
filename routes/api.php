@@ -131,7 +131,7 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                     $api->post('createNewInternal', AuthController::class . '@createNewInternal');
                 });
             });
-
+            // 后台登录
             $api->post('login', LoginController::class . '@login');
             // 内部应用 获取授权
             $api->get('token', AuthController::class . '@getAccessToken');
