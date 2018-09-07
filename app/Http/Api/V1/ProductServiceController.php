@@ -7,10 +7,22 @@ use App\Http\Api\BaseController;
 use Illuminate\Http\Request;
 use App\Facades\PlatformProduct as PlatformProFacade;
 
+/**
+ * Class ProductServiceController
+ * @author Bevan
+ * @Resource("ProductService")
+ * @package App\Http\Api\V1
+ */
 class ProductServiceController extends BaseController
 {
     /**
-     * 更新产品服务
+     *  api平台接入用户更新开通的服务
+     *
+     *  api平台接入用户更新开通的服务
+     *
+     * @Post("/cli/editServiceSelf")
+     * @Response(200, body={"status_code":200,"message":"成功","respData":""})
+     * @Request("{'product_ids':'product_ids'}",contentType="application/x-www-form-urlencoded",headers={"Authorization":"token"})
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -18,9 +30,7 @@ class ProductServiceController extends BaseController
     {
         $product_ids = json_decode($request->input('product_ids'), true);
         $this->checkProductArr($product_ids);
-        if (empty($product_ids)) {
-            return $this->responseClient(400, '未获取到服务产品信息', []);
-        }
+        if (empty($product_ids)) return $this->responseClient(400, '未获取到服务产品信息', []);
 
         $res = PlatformProFacade::editService($product_ids);
 
@@ -29,7 +39,13 @@ class ProductServiceController extends BaseController
     }
 
     /**
-     * 开通产品服务
+     * api平台接入用户开通服务
+     *
+     * api平台接入用户开通服务
+     *
+     * @Post("/cli/openServiceSelf/{product_id}")
+     * @Response(200, body={"status_code":200,"message":"成功","respData":""})
+     * @Request("{'product_id':'product_id'}",contentType="application/x-www-form-urlencoded",headers={"Authorization":"token"})
      * @param $product_id
      * @return \Illuminate\Http\JsonResponse
      */
@@ -41,7 +57,13 @@ class ProductServiceController extends BaseController
     }
 
     /**
-     * 关闭产品服务
+     * api平台接入用户关闭服务
+     *
+     * api平台接入用户关闭服务
+     *
+     * @Post("/cli/delService/{product_id}")
+     * @Response(200, body={"status_code":200,"message":"成功","respData":""})
+     * @Request("{'product_id':'product_id'}",contentType="application/x-www-form-urlencoded",headers={"Authorization":"token"})
      * @param $product_id
      * @return \Illuminate\Http\JsonResponse
      */

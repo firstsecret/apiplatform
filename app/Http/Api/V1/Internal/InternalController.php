@@ -6,12 +6,25 @@ use App\Facades\Internal;
 use App\Http\Api\AdminBaseController;
 use Illuminate\Http\Request;
 
-//use App\Http\Controllers\Controller;
 
+/**
+ * Class InternalController
+ * @author Bevan
+ * @Resource("Internal/Internal")
+ * @package App\Http\Api\V1\Internal
+ */
 class InternalController extends AdminBaseController
 {
     /**
-     *  内部开通 新的用户
+     * 开通新的用户
+     *
+     * 开通新的用户 返回openid , 如果 满足 内部uuid机制 已存在将返回 对应的 openid 并 提示， 没有则 新增该用户 并生成openid 返回
+     *
+     * @Post("/cli/admin/openUser")
+     * @Response(200, body={"status_code":200,"message": "success", "respData": {"openid": "openid"}})
+     * @Request("{'sign':'sign','appKey':'appKey','sequenceId':'sequenceId','reqData':{'name':'name','telephone':'telephone','password':'password','type':'type'}}",contentType="application/x-www-form-urlencoded",headers={"Authorization":"token"})
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function openUser(Request $request)
     {
@@ -39,10 +52,6 @@ class InternalController extends AdminBaseController
         return $this->res2Response($resWithData['res'], '用户创建成功', $resWithData['errormsg'] ?? '用户创建失败', $resWithData['data'], 200, 403);
     }
 
-    /**
-     * 测试生成sign
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function testSign()
     {
         $sequenceID = 123456;

@@ -6,12 +6,24 @@ use App\Facades\Internal;
 use App\Http\Api\AdminBaseController;
 use Illuminate\Http\Request;
 
-//use App\Http\Controllers\Controller;
-
+/**
+ * Class AuthController
+ * @author Bevan
+ * @Resource("Admin\Auth")
+ * @package App\Http\Api\V1\Admin
+ */
 class AuthController extends AdminBaseController
 {
     /**
-     *  授权应用 token 登录
+     * 内部应用获取授权api
+     *
+     * 内部应用获取授权
+     *
+     * @Get("/cli/admin/token")
+     * @Response(200, body={"status_code":200,"message":"success","resqData":{"access_token":"token","express_in":7200}})
+     * @Request("app_key=appkey&app_secret=appsecret",contentType="application/x-www-form-urlencoded",headers={"Authorization": "token"})
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getAccessToken(Request $request)
     {
@@ -38,7 +50,13 @@ class AuthController extends AdminBaseController
     }
 
     /**
-     * 添加其他应用角色
+     * 添加一个内部应用授权api
+     *
+     * 添加一个内部应用授权 （admins/operator角色可调用）
+     *
+     * @Post("/cli/admin/createNewInternal")
+     * @Response(200, body={"status_code":200,"message":"success","resqData":{"app_key":"app_key","app_secret": "app_secret", "uuid": "uuid"}})
+     * @Request("app_key=appkey&app_secret=appsecret",contentType="application/x-www-form-urlencoded",headers={"Authorization": "token"})
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */

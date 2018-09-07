@@ -1,19 +1,29 @@
 <?php
 
-namespace App\Http\Api\V1\Admin;
+namespace App\Http\Api\V1\Internal;
 
-use App\Facades\PlatformProduct;
 use App\Http\Api\AdminBaseController;
-use App\Http\Requests\V1\PlatformProductRule;
 use Illuminate\Http\Request;
 use App\Facades\PlatformProduct as PlatformProFacade;
 
-
+/**
+ * Class PlatformProductController
+ * @author Bevan
+ * @Resource("Internal\PlatformProduct")
+ * @package App\Http\Api\V1\Internal
+ */
 class PlatformProductController extends AdminBaseController
 {
     /**
-     * 给 某一用户 开通 产品服务
+     * 内部应用开放接口-- 给某一用户开通某个服务
+     *
+     * 内部应用开放接口-- 给某一用户开通某个服务
+     *
+     * @Post("/cli/admin/openUserService")
+     * @Response(200, body={"status_code":200,"message": "success", "respData": ""})
+     * @Request("{'reqData':{'product_ids':'product_ids', 'openid': 'openid'},'sign':'sign','appKey':'appKey','sequenceId':'sequenceId'}",contentType="application/x-www-form-urlencoded",headers={"Authorization":"token"})
      * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function openService(Request $request)
     {
@@ -34,8 +44,15 @@ class PlatformProductController extends AdminBaseController
     }
 
     /**
-     * 禁用某一用户的 某些/个 产品 服务
+     * 禁用某用户的应用服务api
+     *
+     * 禁用某用户的应用服务api
+     *
+     * @Post("/cli/admin/disableUserService")
+     * @Response(200, body={"status_code":200,"message": "success", "respData": ""})
+     * @Request("{'sign':'sign','appKey':'appKey','sequenceId':'sequenceId','reqData':{'product_ids':'product_ids', 'openid': 'openid'}}",contentType="application/x-www-form-urlencoded",headers={"Authorization":"token"})
      * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function disableUserService(Request $request)
     {

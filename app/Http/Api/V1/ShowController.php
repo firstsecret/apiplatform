@@ -12,9 +12,7 @@ namespace App\Http\Api\V1;
 use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
 use App\Http\Api\BaseController;
-use App\Jobs\MailJob;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Log;
 
 class ShowController extends BaseController
 {
@@ -47,7 +45,7 @@ class ShowController extends BaseController
 //        }
 
 //        $dispatcher = app('Dingo\Api\Dispatcher');
-//
+
 //        $dispatcher->get();
         $res = $this->api->get('cli/token?app_key=' . $appkey . '&app_secret=' . $appsecret);
 

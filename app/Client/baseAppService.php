@@ -17,8 +17,6 @@ class baseAppService extends BaseService
 
     public function __construct()
     {
-        parent::__construct();
-
         $this->client = new httpClient();
     }
 }
