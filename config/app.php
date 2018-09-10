@@ -176,7 +176,9 @@ return [
          */
         App\Providers\PlatformProductServiceProvider::class,
         App\Providers\AdminUserServiceProvider::class,
-        App\Providers\InternalProvider::class
+        App\Providers\InternalProvider::class,
+//        Bevan\Product\Providers\LaravelServiceProvider::class
+        Show\Providers\LaravelServiceProvider::class
     ],
 
     /*

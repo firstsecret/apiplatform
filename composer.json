@@ -32,7 +32,7 @@
         ],
         "psr-4": {
             "App\\": "app/",
-            "Show\\": "show/"
+            "Show\\": "show/src/"
         }
     },
     "autoload-dev": {

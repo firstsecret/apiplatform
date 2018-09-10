@@ -9,7 +9,7 @@
 namespace Show\Services;
 
 use App\Client\baseAppService;
-use App\Client\httpClient;
+//use App\Client\httpClient;
 use Illuminate\Support\Facades\Redis;
 
 class IndexService extends baseAppService
@@ -19,7 +19,9 @@ class IndexService extends baseAppService
         $apis = Redis::get('api_request_condition');
 
         $appAdmin = $this->factoryAppAdminUUID(2);
-        dd($this->factoryOpenId($appAdmin));
+//        dd($this->factoryOpenId($appAdmin));
+
+        dd(config('show'));
 
         return json_decode($apis, true);
     }
