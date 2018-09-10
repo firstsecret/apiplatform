@@ -70,26 +70,30 @@ class CheckIsDisableService
     {
         $pathinfo = ltrim($request->getPathInfo(), '/');
 
-        $product_id = null;
-
         if (Cache::has('platform_products')) {
             $platform_products = Cache::get('platform_products');
         } else {
             // 兼容 处理
             $platform_products = PlatformProduct::get(['id', 'name', 'detail', 'created_at', 'category_id', 'api_path'])->toArray();
-            // 永久 存储
-            Cache::forever('platform_products', $platform_products);
-        }
+            $new_platform_products = [];
 
-        foreach ($platform_products as $product) {
-            if ($pathinfo == $product['api_path']) {
-                $product_id = $product['id'];
-                break;
+            foreach ($platform_products as $product) {
+                $new_platform_products[$product['api_path']] = $product;
             }
+            // 永久 存储
+            Cache::forever('platform_products', $new_platform_products);
+
+            $platform_products = $new_platform_products;
         }
+        
+        if (!isset($platform_products[$pathinfo])) throw new PlatformProductException('请求服务不存在,请核对');
+//        foreach ($platform_products as $product) {
+//            if ($pathinfo == $product['api_path']) {
+//                $product_id = $product['id'];
+//                break;
+//            }
+//        }
 
-        if (!$product_id) throw new PlatformProductException('请求服务不存在,请核对');
-
-        return $product_id;
+        return $platform_products[$pathinfo]['id'];
     }
 }

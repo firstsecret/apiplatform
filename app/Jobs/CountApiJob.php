@@ -73,6 +73,11 @@ class CountApiJob implements ShouldQueue
         $apiname_arr = explode('/', $apiname);
 
 //        dd($apiname_arr);
+        // 只有 服务 需要 记录
+        $platform_products = Cache::get('platform_products');
+
+
+
 
         $apicondition = Redis::get('api_request_condition');
         $apicondition = json_decode($apicondition, true);
@@ -119,4 +124,6 @@ class CountApiJob implements ShouldQueue
 
         Redis::set('api_request_condition', json_encode($apicondition));
     }
+
+//    protected function
 }

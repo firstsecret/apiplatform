@@ -43,6 +43,9 @@ app('api.exception')->register(function (Exception $exception) {
         $err_message = $exception->getMessage() == '' ? '路由不存在' : $exception->getMessage();
 //        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => ''], $status_code);
     }
+
+    // 统计 api 失败 请求
+
     \Illuminate\Support\Facades\Event::fire(new \App\Events\AsyncLogEvent($err_message, 'error'));
     return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => []], $status_code);
 });
