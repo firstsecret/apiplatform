@@ -9,5 +9,10 @@
             "email": "569072412@qq.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Show\\": "src/"
+        }
+    }
 }

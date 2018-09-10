@@ -13,21 +13,16 @@ use Show\Services\IndexService;
 
 class LaravelServiceProvider extends AbstractServiceProvider
 {
-    public function register()
-    {
-        // TODO: Implement boot() method.
-        $path = realpath(__DIR__ . '/../../config/show.php');
-
-        $this->publishes([$path => config_path('show.php')]);
-    }
-
     public function boot()
     {
         // TODO: Implement boot() method.
-        $path = realpath(__DIR__ . '/../../config/show.php');
 
-        $this->publishes([$path => config_path('show.php')]);
+        $path = realpath(__DIR__.'/../../config/show.php');
 
+        $this->publishes([$path => config_path('showtest.php')], 'config');
+        $this->mergeConfigFrom($path, 'showtest');
+        var_dump(config_path('showtest.php'));
+        var_dump($path);
 //        $this->registerAliases();
     }
 
