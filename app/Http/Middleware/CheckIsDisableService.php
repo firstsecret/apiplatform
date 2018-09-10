@@ -85,7 +85,7 @@ class CheckIsDisableService
 
             $platform_products = $new_platform_products;
         }
-        
+
         if (!isset($platform_products[$pathinfo])) throw new PlatformProductException('请求服务不存在,请核对');
 //        foreach ($platform_products as $product) {
 //            if ($pathinfo == $product['api_path']) {
