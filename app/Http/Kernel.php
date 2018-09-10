@@ -74,6 +74,7 @@ class Kernel extends HttpKernel
         'self.jwt.refresh' => \App\Http\Middleware\RefreshToken::class,
         'self.jwt.auth' => \App\Http\Middleware\BevanJwtAuth::class,
         'check.request.data' => \App\Http\Middleware\VerificateRequstData::class,
-        'api.count' => \App\Http\Middleware\CountApi::class
+        'api.count' => \App\Http\Middleware\CountApi::class,
+        'api.checkIsDisable' => \App\Http\Middleware\CheckIsDisableService::class
     ];
 }

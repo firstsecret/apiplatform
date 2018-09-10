@@ -12,6 +12,7 @@ namespace App\Http\Api\V1;
 use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
 use App\Http\Api\BaseController;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 
 class ShowController extends BaseController
@@ -47,9 +48,18 @@ class ShowController extends BaseController
 //        $dispatcher = app('Dingo\Api\Dispatcher');
 
 //        $dispatcher->get();
-        $res = $this->api->get('cli/token?app_key=' . $appkey . '&app_secret=' . $appsecret);
+//        $res = $this->api->get('cli/token?app_key=' . $appkey . '&app_secret=' . $appsecret);
 
-        var_dump($res);die;
+//        var_dump($res);die;
+
+
+        Cache::add('test_service', [1=> [1,3,4],2=>[3,46]],3);
+
+
+        $va = Cache::get('test_service');
+
+        dd($va);
+
     }
 
     public function testEvent()
