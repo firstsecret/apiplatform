@@ -45,7 +45,8 @@ app('api.exception')->register(function (Exception $exception) {
     }
 
     // 统计 api 失败 请求
-
+    \App\Jobs\CountApiJob::dispatch(ltrim(request()->getPathInfo(), '/'), 'fail');
+    // 记录 错误 日志
     \Illuminate\Support\Facades\Event::fire(new \App\Events\AsyncLogEvent($err_message, 'error'));
     return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => []], $status_code);
 });
