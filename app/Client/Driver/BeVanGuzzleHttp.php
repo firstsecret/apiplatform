@@ -10,6 +10,7 @@ namespace App\Client\Driver;
 
 
 use App\Client\Contracts\Request;
+use App\Client\Exception\HttpClientException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use function GuzzleHttp\Promise\unwrap;
@@ -81,15 +82,28 @@ class BeVanGuzzleHttp implements Request
     }
 
     /**
-     * async restful api
+     * async restful api (don't use)
      * @param $method
      * @param $url
      * @param array $params
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function requestAsync($method, $url, $params = [])
+    public function requestAsync($method, $url, $params = [], $successCallBack, $erroCallBack)
     {
-        return $this->client->requestAsync($method, $url, $params);
+        if (!is_callable($successCallBack) || !is_callable($erroCallBack)) throw new HttpClientException(403, '参数不是一个回调方法');
+        
+        $promise = $this->client->requestAsync('GET', 'http://bevan.top/api/testLua4');
+        $promise->then(
+            $successCallBack, $erroCallBack
+        )->wait();
+
+//        $promise = $this->client->requestAsync($method, $url, $params);
+////        dd($promise);
+//        $promise->then(function (ResponseInterface $response) {
+//            Log::info('回调成功');
+//        }, function (RequestException $e) {
+//            Log::info($e->getMessage());
+//        });
     }
 
     /**

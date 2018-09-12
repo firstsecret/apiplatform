@@ -16,6 +16,8 @@ use App\Http\Api\BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
+use Psr\Http\Message\ResponseInterface;
 
 class ShowController extends BaseController
 {
@@ -150,5 +152,27 @@ class ShowController extends BaseController
     {
 //        sleep(1);
         return $this->responseClient(200, 'lua4');
+    }
+
+    public function testAsync()
+    {
+        $client = new httpClient();
+
+        $client->request->requestAsync('post', 'http://bevan.top/api/testLua2', [], function ($res) {
+            // end
+//            var_dump(get_class_methods($res));
+//
+            var_dump('isok');
+//            Log::info(get_class_methods($res));
+            return $this->responseClient(200, '回调返回成功', ['name' => 'bevan']);
+        }, function ($e) {
+            $errormsg = $e->getMessage();
+            $status_code = $e->getCode();
+            Log::info(get_class_methods($errormsg));
+//            return $this->responseClient($status_code, $errormsg, []);
+        });
+
+        var_dump('dfddf');
+        die;
     }
 }

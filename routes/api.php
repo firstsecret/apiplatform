@@ -72,6 +72,7 @@ $api->version('v1', [], function ($api) {
     $api->post('testLua2', '\App\Http\Api\V1\ShowController@testLua2');
     $api->get('testLua3', '\App\Http\Api\V1\ShowController@testLua3');
     $api->get('testLua4', '\App\Http\Api\V1\ShowController@testLua4');
+    $api->get('testAsync', '\App\Http\Api\V1\ShowController@testAsync');
 });
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
