@@ -9,6 +9,7 @@
 namespace App\Http\Api\V1;
 
 
+use App\Client\httpClient;
 use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
 use App\Http\Api\BaseController;
@@ -20,7 +21,8 @@ class ShowController extends BaseController
     /**
      *  测试
      */
-    public function index(){
+    public function index()
+    {
 //        echo 'ok api';
         $appkey = urlencode('439d8c975f26e5005dcdbf41b0d84161');
         $appsecret = urlencode('08aee6276db142f4b8ac98fb8ee0ed1b');
@@ -28,7 +30,7 @@ class ShowController extends BaseController
 
         // curl
 
-        $url = 'http://laravelapi.local/api/cli/token?app_key='.$appkey . '&$app_secret=' . $appsecret;
+        $url = 'http://laravelapi.local/api/cli/token?app_key=' . $appkey . '&$app_secret=' . $appsecret;
 
 //        $ch = curl_init();
 //        curl_setopt($ch,CURLOPT_URL,$url);
@@ -53,7 +55,7 @@ class ShowController extends BaseController
 //        var_dump($res);die;
 
 
-        Cache::add('test_service', [1=> [1,3,4],2=>[3,46]],3);
+        Cache::add('test_service', [1 => [1, 3, 4], 2 => [3, 46]], 3);
 
 
         $va = Cache::get('test_service');
@@ -68,14 +70,14 @@ class ShowController extends BaseController
         Event::fire(new UserRegisterEvent());
 //        $this->dispatch(new MailJob());
 
-        return Response()->json(['status_code'=>200,'msg'=>'任务投递成功','data'=>'']);
+        return Response()->json(['status_code' => 200, 'msg' => '任务投递成功', 'data' => '']);
     }
 
     public function testLogEvent()
     {
-        Event::fire(new AsyncLogEvent('日志信息','info'));
+        Event::fire(new AsyncLogEvent('日志信息', 'info'));
 
-        return $this->responseClient(200,'任务投递成功','');
+        return $this->responseClient(200, '任务投递成功', '');
     }
 
     /**
@@ -83,15 +85,58 @@ class ShowController extends BaseController
      */
     public function testLua()
     {
-        $lua = new Lua();
-        $lua->eval(<<<CODE
-    function dummy(foo, bar)
-        print(foo, ",", bar, ngx.var.request_method)
-    end
-CODE
-        );
-        $lua->call("dummy", array("Lua", "geiliable"));
-        $lua->dummy("Lua", "geiliable"); // __call()
-        var_dump($lua->call(array("table", "concat"), array(array(1=>1, 2=>2, 3=>3), "-")));
+//        $lua = new Lua();
+//        $lua->eval(<<<CODE
+//    function dummy(foo, bar)
+//        print(foo, ",", bar, ngx.var.request_method)
+//    end
+//CODE
+//        );
+//        $lua->call("dummy", array("Lua", "geiliable"));
+//        $lua->dummy("Lua", "geiliable"); // __call()
+//        var_dump($lua->call(array("table", "concat"), array(array(1 => 1, 2 => 2, 3 => 3), "-")));
+
+        $client = new httpClient();
+
+        $promise = [
+            '1' => [
+                'method' => 'get',
+                'uri' => 'http://bevan.top/api/testLua2'
+            ],
+            '2' => [
+                'method' => 'get',
+                'uri' => 'http://bevan.top/api/testLua3'
+            ],
+            '3' => [
+                'method' => 'get',
+                'uri' => 'http://bevan.top/api/testLua4'
+            ],
+            '4' => [
+                'method' => 'get',
+                'uri' => 'http://bevan.top/api/testLua2'
+            ],
+        ];
+
+        $res = $client->request->asyncPoolRequest($promise);
+
+        dd($res);
+    }
+
+    public function testLua2()
+    {
+        sleep(3);
+        return $this->responseClient(200, 'lua2');
+    }
+
+    public function testLua3()
+    {
+        sleep(1);
+        return $this->responseClient(200, 'lua3');
+    }
+
+    public function testLua4()
+    {
+        sleep(2);
+        return $this->responseClient(200, 'lua4');
     }
 }

@@ -12,6 +12,7 @@ use App\Client\Contracts\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use function GuzzleHttp\Promise\unwrap;
+use function PHPSTORM_META\type;
 
 class BeVanGuzzleHttp implements Request
 {
@@ -55,7 +56,12 @@ class BeVanGuzzleHttp implements Request
      */
     public function asyncRequest($promise)
     {
-        $results = unwrap($promise);
+        $re_promise = [];
+        foreach ($promise as $key => $item) {
+            $re_promise[$key] = $this->client->getAsync($item['uri']);
+        }
+
+        $results = unwrap($re_promise);
 
         return $results;
     }
@@ -66,15 +72,20 @@ class BeVanGuzzleHttp implements Request
      */
     public function asyncPoolRequest($requestData)
     {
+
         $requests = function ($requestData) {
 //            $uri = 'http://127.0.0.1:8126/guzzle-server/perf';
-            $len = count($requestData);
-            for ($i = 0; $i < $len; $i++) {
-                yield new \GuzzleHttp\Psr7\Request($requestData['method'], $requestData['uri']);
+//            $len = count($requestData);
+            foreach ($requestData as $key => $request) {
+                yield new \GuzzleHttp\Psr7\Request($request['method'], $request['uri']);
             }
+//
+//            for ($i = 0; $i < $len; $i++) {
+//                yield new \GuzzleHttp\Psr7\Request($requestData[$i]['method'], $requestData['uri']);
+//            }
         };
 
-        $pool = new Pool($this->client, $requests(count($requestData)), [
+        $pool = new Pool($this->client, $requests($requestData), [
             'concurrency' => 5,
             'fulfilled' => function ($response, $index) {
                 // this is delivered each successful response
@@ -87,12 +98,14 @@ class BeVanGuzzleHttp implements Request
                 $this->rejected[$index] = $reason;
             },
         ]);
-
+        $start_time = time();
+        var_dump($start_time);
         $promise = $pool->promise();
-        $res = $promise->wait();
+        $promise->wait();
 
-        var_dump($res);
-
+        var_dump('耗时:' . (time() - $start_time));
+//        var_dump($this->fulfilled);
+//        var_dump($this->rejected);
         var_dump('结束');
 
         die;
