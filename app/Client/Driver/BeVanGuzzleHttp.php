@@ -45,23 +45,55 @@ class BeVanGuzzleHttp implements Request
         $this->concurrency = is_array($config) ? ($config['concurrency'] ?? 5) : (int)$config;
     }
 
+    /**
+     * http get
+     * @param $url
+     * @param array $params
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function get($url, $params = [])
     {
-        $this->client->get($url, $params);
-    }
-
-    public function post($url, $params = [])
-    {
-        $this->client->post($url, $params);
-    }
-
-    public function request($method, $url, $params = [])
-    {
-        $this->client->request($method, $url, $params);
+        return $this->client->get($url, $params);
     }
 
     /**
-     * simple async http con request (need repair)
+     * http post
+     * @param $url
+     * @param array $params
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function post($url, $params = [])
+    {
+        return $this->client->post($url, $params);
+    }
+
+    /**
+     * restful api
+     * @param $method
+     * @param $url
+     * @param array $params
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function request($method, $url, $params = [])
+    {
+        return $this->client->request($method, $url, $params);
+    }
+
+    /**
+     * async restful api
+     * @param $method
+     * @param $url
+     * @param array $params
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function requestAsync($method, $url, $params = [])
+    {
+        return $this->client->requestAsync($method, $url, $params);
+    }
+
+    /**
+     * simple async http con request (need repair) !!! don't use ,is bading
      * @param $promise
      * @return array
      * @throws \Throwable
@@ -79,7 +111,7 @@ class BeVanGuzzleHttp implements Request
     }
 
     /**
-     * 异步携程 并发 请求
+     * 异步协程 并发 请求
      * @param $requestData
      */
     public function asyncPoolRequest($requestData)
@@ -105,9 +137,13 @@ class BeVanGuzzleHttp implements Request
             'rejected' => function ($reason, $index) {
                 // this is delivered each failed request
 //                $this->rejected[$index] = get_class_methods($reason);
-                $this->rejected[$index]['response'] = $reason->getResponse();
-                $this->rejected[$index]['error'] = $reason->getMessage();
-                $this->rejected[$index]['code'] = $reason->getCode();
+//                $this->rejected[$index]['method'] = get_class_methods($reason);
+//                $this->rejected[$index]['test'] = $reason->getMessage();
+                $this->rejected[$index] = [
+                    'response' => $reason->getResponse(),
+                    'errorMsg' => $reason->getMessage(),
+                    'code' => $reason->getCode()
+                ];
             },
         ]);
 //        $start_time = microtime(true);
@@ -121,9 +157,7 @@ class BeVanGuzzleHttp implements Request
 //
 //            var_dump($requestData);
 //        });
-
         $promise->wait();
-
 
 //        var_dump('耗时:' . ((microtime(true) - $start_time) / 1000) . 'ms');
 //        var_dump($this->fulfilled);
@@ -138,7 +172,5 @@ class BeVanGuzzleHttp implements Request
             'fulfilled' => $this->fulfilled,
             'rejected' => $this->rejected
         ];
-//        var_dump($this->fulfilled);
-//        var_dump($this->rejected);
     }
 }

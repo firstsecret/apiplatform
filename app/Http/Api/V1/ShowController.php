@@ -101,8 +101,8 @@ class ShowController extends BaseController
 
         $promise = [
             '0' => [
-                'method' => 'get',
-                'uri' => 'http://bevan.top/api/testLua3',
+                'method' => 'post',
+                'uri' => 'http://bevan.top/api/testLua2',
                 'options' => []
             ],
             '1' => [
@@ -118,8 +118,8 @@ class ShowController extends BaseController
                 'options' => []
             ],
             '3' => [
-                'method' => 'post',
-                'uri' => 'http://bevan.top/api/testLua2',
+                'method' => 'get',
+                'uri' => 'http://bevan.top/api/testLua3',
                 'options' => []
             ],
         ];
@@ -133,7 +133,7 @@ class ShowController extends BaseController
 
     public function testLua2(Request $request)
     {
-        sleep(3);
+//        sleep(1);
         $reData['name'] = $request->input('name');
         $reData['age'] = $request->input('age');
         return $this->responseClient(200, 'lua2', $reData);
@@ -141,14 +141,14 @@ class ShowController extends BaseController
 
     public function testLua3()
     {
-        sleep(1);
+//        sleep(1);
         throw new \Exception('出现错误了');
         return $this->responseClient(200, 'lua3');
     }
 
     public function testLua4()
     {
-        sleep(2);
+//        sleep(1);
         return $this->responseClient(200, 'lua4');
     }
 }
