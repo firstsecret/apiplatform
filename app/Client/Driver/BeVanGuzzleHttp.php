@@ -84,9 +84,15 @@ class BeVanGuzzleHttp implements Request
      */
     public function asyncPoolRequest($requestData)
     {
-        $requests = function ($requestData) {
+        $client = $this->client;
+        $requests = function ($requestData) use ($client) {
             foreach ($requestData as $key => $request) {
-                yield new \GuzzleHttp\Psr7\Request($request['method'], $request['uri']);
+//                yield new \GuzzleHttp\Psr7\Request($request['method'], $request['uri'], $headers, $body);
+//                yield (new Client())->requestAsync($request['method'], $request['uri'], $request['options']);
+                yield function () use ($client, $request) {
+                    return $client->requestAsync($request['method'], $request['uri'], $request['options']);
+                };
+//                yield new \GuzzleHttp\Psr7\Request($request['method'], $request['uri'], [], []);
             }
         };
 
@@ -94,7 +100,7 @@ class BeVanGuzzleHttp implements Request
             'concurrency' => $this->concurrency,
             'fulfilled' => function ($response, $index) {
                 // this is delivered each successful response
-                $this->fulfilled[$index] = $response->getBody()->getContents();
+                $this->fulfilled[$index] = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
             },
             'rejected' => function ($reason, $index) {
                 // this is delivered each failed request
@@ -106,8 +112,18 @@ class BeVanGuzzleHttp implements Request
         ]);
 //        $start_time = microtime(true);
 //        var_dump($start_time);
+
+        // sync
         $promise = $pool->promise();
+
+//        $promise->then(function ($requestData) {
+//            var_dump('回调的并发请求回调');
+//
+//            var_dump($requestData);
+//        });
+
         $promise->wait();
+
 
 //        var_dump('耗时:' . ((microtime(true) - $start_time) / 1000) . 'ms');
 //        var_dump($this->fulfilled);

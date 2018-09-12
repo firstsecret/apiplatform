@@ -13,6 +13,7 @@ use App\Client\httpClient;
 use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
 use App\Http\Api\BaseController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 
@@ -99,25 +100,27 @@ class ShowController extends BaseController
         $client = new httpClient();
 
         $promise = [
-            '1' => [
+            '0' => [
                 'method' => 'get',
+                'uri' => 'http://bevan.top/api/testLua3',
+                'options' => []
+            ],
+            '1' => [
+                'method' => 'post',
                 'uri' => 'http://bevan.top/api/testLua2',
-                'config' => []
+                'options' => [
+                    'json' => ['name' => 'bevan', 'age' => 18]
+                ]
             ],
             '2' => [
                 'method' => 'get',
-                'uri' => 'http://bevan.top/api/testLua3',
-                'config' => []
+                'uri' => 'http://bevan.top/api/testLua4',
+                'options' => []
             ],
             '3' => [
-                'method' => 'get',
-                'uri' => 'http://bevan.top/api/testLua4',
-                'config' => []
-            ],
-            '4' => [
-                'method' => 'get',
+                'method' => 'post',
                 'uri' => 'http://bevan.top/api/testLua2',
-                'config' => []
+                'options' => []
             ],
         ];
 
@@ -128,10 +131,12 @@ class ShowController extends BaseController
         return $this->responseClient(200, '返回数据', $responseArr);
     }
 
-    public function testLua2()
+    public function testLua2(Request $request)
     {
         sleep(3);
-        return $this->responseClient(200, 'lua2');
+        $reData['name'] = $request->input('name');
+        $reData['age'] = $request->input('age');
+        return $this->responseClient(200, 'lua2', $reData);
     }
 
     public function testLua3()

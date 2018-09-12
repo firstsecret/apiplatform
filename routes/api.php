@@ -69,7 +69,7 @@ $api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', '
 
 $api->version('v1', [], function ($api) {
     $api->get('testLua', '\App\Http\Api\V1\ShowController@testLua');
-    $api->get('testLua2', '\App\Http\Api\V1\ShowController@testLua2');
+    $api->post('testLua2', '\App\Http\Api\V1\ShowController@testLua2');
     $api->get('testLua3', '\App\Http\Api\V1\ShowController@testLua3');
     $api->get('testLua4', '\App\Http\Api\V1\ShowController@testLua4');
 });
