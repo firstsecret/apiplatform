@@ -13,11 +13,8 @@ use App\Services\BaseService;
 
 class baseAppService extends BaseService
 {
-    public $client;
-
     public function __construct()
     {
         // client 配置
-        $this->client = new httpClient([]);
     }
 }

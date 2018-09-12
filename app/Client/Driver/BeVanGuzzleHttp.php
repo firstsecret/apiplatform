@@ -8,11 +8,11 @@
 
 namespace App\Client\Driver;
 
+
 use App\Client\Contracts\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use function GuzzleHttp\Promise\unwrap;
-use function PHPSTORM_META\type;
 
 class BeVanGuzzleHttp implements Request
 {
@@ -28,9 +28,21 @@ class BeVanGuzzleHttp implements Request
      */
     public $rejected;
 
+    /**
+     * 并发数
+     * @var
+     */
+    public $concurrency = 5;
+
     public function __construct($config = [])
     {
+        $this->setConcurrency($config);
         $this->client = new Client($config);
+    }
+
+    public function setConcurrency($config)
+    {
+        $this->concurrency = is_array($config) ? ($config['concurrency'] ?? 5) : (int)$config;
     }
 
     public function get($url, $params = [])
@@ -49,7 +61,7 @@ class BeVanGuzzleHttp implements Request
     }
 
     /**
-     * simple async http con request
+     * simple async http con request (need repair)
      * @param $promise
      * @return array
      * @throws \Throwable
@@ -72,42 +84,45 @@ class BeVanGuzzleHttp implements Request
      */
     public function asyncPoolRequest($requestData)
     {
-
         $requests = function ($requestData) {
-//            $uri = 'http://127.0.0.1:8126/guzzle-server/perf';
-//            $len = count($requestData);
             foreach ($requestData as $key => $request) {
                 yield new \GuzzleHttp\Psr7\Request($request['method'], $request['uri']);
             }
-//
-//            for ($i = 0; $i < $len; $i++) {
-//                yield new \GuzzleHttp\Psr7\Request($requestData[$i]['method'], $requestData['uri']);
-//            }
         };
 
         $pool = new Pool($this->client, $requests($requestData), [
-            'concurrency' => 5,
+            'concurrency' => $this->concurrency,
             'fulfilled' => function ($response, $index) {
                 // this is delivered each successful response
-                // 成功的 响应
-                $this->fulfilled[$index] = $response;
+                $this->fulfilled[$index] = $response->getBody()->getContents();
             },
             'rejected' => function ($reason, $index) {
                 // this is delivered each failed request
-                // 失败的 响应
-                $this->rejected[$index] = $reason;
+//                $this->rejected[$index] = get_class_methods($reason);
+                $this->rejected[$index]['response'] = $reason->getResponse();
+                $this->rejected[$index]['error'] = $reason->getMessage();
+                $this->rejected[$index]['code'] = $reason->getCode();
             },
         ]);
-        $start_time = time();
-        var_dump($start_time);
+//        $start_time = microtime(true);
+//        var_dump($start_time);
         $promise = $pool->promise();
         $promise->wait();
 
-        var_dump('耗时:' . (time() - $start_time));
+//        var_dump('耗时:' . ((microtime(true) - $start_time) / 1000) . 'ms');
 //        var_dump($this->fulfilled);
 //        var_dump($this->rejected);
-        var_dump('结束');
+//        var_dump('结束');
+//        die;
+    }
 
-        die;
+    public function getResponse()
+    {
+        return [
+            'fulfilled' => $this->fulfilled,
+            'rejected' => $this->rejected
+        ];
+//        var_dump($this->fulfilled);
+//        var_dump($this->rejected);
     }
 }

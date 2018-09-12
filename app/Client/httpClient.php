@@ -20,9 +20,15 @@ class httpClient
         $this->request = new $driver($config);
     }
 
+    /**
+     *  兼容 方法， 不建议使用
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     */
     public function __call($name, $arguments)
     {
         // TODO: Implement __call() method.
-        return $this->client->$name($arguments);
+        return $this->request->$name($arguments);
     }
 }

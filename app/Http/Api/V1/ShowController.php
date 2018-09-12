@@ -101,25 +101,31 @@ class ShowController extends BaseController
         $promise = [
             '1' => [
                 'method' => 'get',
-                'uri' => 'http://bevan.top/api/testLua2'
+                'uri' => 'http://bevan.top/api/testLua2',
+                'config' => []
             ],
             '2' => [
                 'method' => 'get',
-                'uri' => 'http://bevan.top/api/testLua3'
+                'uri' => 'http://bevan.top/api/testLua3',
+                'config' => []
             ],
             '3' => [
                 'method' => 'get',
-                'uri' => 'http://bevan.top/api/testLua4'
+                'uri' => 'http://bevan.top/api/testLua4',
+                'config' => []
             ],
             '4' => [
                 'method' => 'get',
-                'uri' => 'http://bevan.top/api/testLua2'
+                'uri' => 'http://bevan.top/api/testLua2',
+                'config' => []
             ],
         ];
 
-        $res = $client->request->asyncPoolRequest($promise);
+        $client->request->asyncPoolRequest($promise);
 
-        dd($res);
+        $responseArr = $client->request->getResponse();
+
+        return $this->responseClient(200, '返回数据', $responseArr);
     }
 
     public function testLua2()
@@ -131,6 +137,7 @@ class ShowController extends BaseController
     public function testLua3()
     {
         sleep(1);
+        throw new \Exception('出现错误了');
         return $this->responseClient(200, 'lua3');
     }
 

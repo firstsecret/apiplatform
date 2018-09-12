@@ -28,10 +28,11 @@ class IndexService extends baseAppService
 
     public function onCurl()
     {
-        $response = $this->client->get('http://bevan.top/api/app1/showtest', ['headers' => [
-            'Authorization' => request()->headers->get('Authorization')
-        ]]);
+//        $response = $this->client->get('http://bevan.top/api/app1/showtest', ['headers' => [
+//            'Authorization' => request()->headers->get('Authorization')
+//        ]]);
+//
+//        return json_decode($response->getBody()->getContents(), true);
 
-        return json_decode($response->getBody()->getContents(), true);
     }
 }
