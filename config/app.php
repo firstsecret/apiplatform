@@ -8,7 +8,7 @@ return [
       |
       |
       */
-    'http_driver' => env('HTTP_CLIENT_DRIVER', 'GuzzleHttp\Client'),
+    'http_driver' => env('HTTP_CLIENT_DRIVER', 'App\Client\Driver\BeVanGuzzleHttp'),
 
 
     /*
@@ -178,7 +178,7 @@ return [
         App\Providers\AdminUserServiceProvider::class,
         App\Providers\InternalProvider::class,
 //        Bevan\Product\Providers\LaravelServiceProvider::class
-        Show\Providers\LaravelServiceProvider::class
+//        Show\Providers\LaravelServiceProvider::class
     ],
 
     /*

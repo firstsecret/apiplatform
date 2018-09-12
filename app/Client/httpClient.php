@@ -9,29 +9,35 @@
 namespace App\Client;
 
 
-use App\Client\Contracts\Request;
 
-class httpClient implements Request
+
+class httpClient
 {
-    public function __construct()
+    public function __construct($config = [])
     {
         // 获取配置的驱动
         $driver = config('app.http_driver');
-        $this->client = new $driver;
+        $this->client = new $driver($config);
     }
 
-    public function get($url, $params = [])
+    public function __call($name, $arguments)
     {
-        return $this->client->get($url, $params);
+        // TODO: Implement __call() method.
+        return $this->client->$name($arguments);
     }
 
-    public function post($url, $params = [])
-    {
-        return $this->client->post($url, $params);
-    }
-
-    public function request($method, $url, $params = [])
-    {
-        return $this->client->request($method, $url, $params);
-    }
+//    public function get($url, $params = [])
+//    {
+//        return $this->client->get($url, $params);
+//    }
+//
+//    public function post($url, $params = [])
+//    {
+//        return $this->client->post($url, $params);
+//    }
+//
+//    public function request($method, $url, $params = [])
+//    {
+//        return $this->client->request($method, $url, $params);
+//    }
 }

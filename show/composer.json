@@ -1,12 +1,12 @@
 {
-    "name": "admin/show",
+    "name": "platformapi/show",
     "description": "a test platformapi package",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "firstsecret",
-            "email": "569072412@qq.com"
+            "email": "zhoubinwei@aliyun.com"
         }
     ],
     "require": {},

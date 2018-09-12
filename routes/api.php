@@ -67,12 +67,14 @@ $api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', '
 });
 //....
 
+$api->version('v1', ['namespace' => '\Show\Api\V1'], function ($api) {
+    $api->get('testLua', ShowController::class . '@testLua');
+});
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
     $api->group(['prefix' => 'cli'], function ($api) {
         // 前台無需授权api
         $api->group([], function ($api) {
-
             $api->group(['limit' => 300, 'expires' => 5], function ($api) {
                 $api->post('login', AuthController::class . '@login');
 

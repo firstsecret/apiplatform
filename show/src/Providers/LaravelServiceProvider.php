@@ -21,8 +21,8 @@ class LaravelServiceProvider extends AbstractServiceProvider
 
         $this->publishes([$path => config_path('showtest.php')], 'config');
         $this->mergeConfigFrom($path, 'showtest');
-        var_dump(config_path('showtest.php'));
-        var_dump($path);
+//        var_dump(config_path('showtest.php'));
+//        var_dump($path);
 //        $this->registerAliases();
     }
 

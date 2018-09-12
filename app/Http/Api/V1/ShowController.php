@@ -77,4 +77,21 @@ class ShowController extends BaseController
 
         return $this->responseClient(200,'任务投递成功','');
     }
+
+    /**
+     *  测试 lua
+     */
+    public function testLua()
+    {
+        $lua = new Lua();
+        $lua->eval(<<<CODE
+    function dummy(foo, bar)
+        print(foo, ",", bar, ngx.var.request_method)
+    end
+CODE
+        );
+        $lua->call("dummy", array("Lua", "geiliable"));
+        $lua->dummy("Lua", "geiliable"); // __call()
+        var_dump($lua->call(array("table", "concat"), array(array(1=>1, 2=>2, 3=>3), "-")));
+    }
 }
