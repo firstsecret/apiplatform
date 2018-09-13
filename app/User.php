@@ -4,6 +4,7 @@ namespace App;
 
 use App\Models\AppUser;
 use App\Models\UuidUser;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -11,7 +12,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
-
+    use SoftDeletes;
     /**
      * The attributes that are mass assignable.
      *
@@ -20,6 +21,8 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name', 'email', 'password', 'telephone', 'type',
     ];
+
+//    protected $dateFormat = 'U';
 
     /**
      * The attributes that should be hidden for arrays.

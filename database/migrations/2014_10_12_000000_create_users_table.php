@@ -20,6 +20,9 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+//            $table->unsignedInteger('created_at')->default(0)->comment('创建时间');
+//            $table->unsignedInteger('updated_at')->default(0)->comment('更新时间');
+//            $table->unsignedInteger('deleted_at')->default(0)->comment('软删除');
         });
     }
 

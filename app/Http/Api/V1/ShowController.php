@@ -13,6 +13,7 @@ use App\Client\httpClient;
 use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
 use App\Http\Api\BaseController;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
@@ -111,7 +112,7 @@ class ShowController extends BaseController
                 'method' => 'post',
                 'uri' => 'http://bevan.top/api/testLua2',
                 'options' => [
-                    'header'=> ['Content-type'=>'html/json'],
+                    'header' => ['Content-type' => 'html/json'],
                     'json' => ['name' => 'bevan', 'age' => 18]
                 ]
             ],
@@ -152,7 +153,11 @@ class ShowController extends BaseController
     public function testLua4()
     {
 //        sleep(1);
-        return $this->responseClient(200, 'lua4');
+//        $user = User::find(2)->toArray();
+        $user = [];
+//        User::where('id', 2)->update(['name' => 'bevan']);
+        $res = User::all();
+        return $this->responseClient(200, 'lua4', $res);
     }
 
     public function testAsync()
