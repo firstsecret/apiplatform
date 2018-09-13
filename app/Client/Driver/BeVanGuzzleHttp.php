@@ -91,8 +91,8 @@ class BeVanGuzzleHttp implements Request
     public function requestAsync($method, $url, $params = [], $successCallBack, $erroCallBack)
     {
         if (!is_callable($successCallBack) || !is_callable($erroCallBack)) throw new HttpClientException(403, '参数不是一个回调方法');
-        
-        $promise = $this->client->requestAsync('GET', 'http://bevan.top/api/testLua4');
+
+        $promise = $this->client->requestAsync($method, $url);
         $promise->then(
             $successCallBack, $erroCallBack
         )->wait();
@@ -146,7 +146,10 @@ class BeVanGuzzleHttp implements Request
             'concurrency' => $this->concurrency,
             'fulfilled' => function ($response, $index) {
                 // this is delivered each successful response
-                $this->fulfilled[$index] = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+                $this->fulfilled[$index]['response'] = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+//                $this->fulfilled[$index]['methods'] = get_class_methods($response);
+//                $this->fulfilled[$index]['class'] = get_class($response);
+                $this->fulfilled[$index]['headers'] = $response->getHeaders();
             },
             'rejected' => function ($reason, $index) {
                 // this is delivered each failed request

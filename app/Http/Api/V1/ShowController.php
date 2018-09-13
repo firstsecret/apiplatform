@@ -111,6 +111,7 @@ class ShowController extends BaseController
                 'method' => 'post',
                 'uri' => 'http://bevan.top/api/testLua2',
                 'options' => [
+                    'header'=> ['Content-type'=>'html/json'],
                     'json' => ['name' => 'bevan', 'age' => 18]
                 ]
             ],
@@ -174,5 +175,75 @@ class ShowController extends BaseController
 
         var_dump('dfddf');
         die;
+    }
+
+    public function testNewLua()
+    {
+        $lua = new \Lua();
+//        $lua->eval(<<<CODE
+//    function dummy(foo, bar)
+//        print(foo, ",", bar)
+//    end
+//CODE
+//        );
+
+//        $lua->eval(<<<CODE
+//    local address = ngx.var.remote_addr
+//    print(address)
+//CODE
+//        );
+
+//        $lua->eval(<<<CODE
+//local http = require "http"
+//local httpc = http.new()
+//local url = "http://bevan.top/api/testLua4"
+//local resStr --响应结果
+//local res, err = httpc:request_uri(url, {
+//    method = "POST",
+//    --args = str,
+//    body = str,
+//    headers = {
+//        ["Content-Type"] = "application/json",
+//    }
+//})
+//
+//if not res then
+//    ngx.log(ngx.WARN,"failed to request: ", err)
+//    return resStr
+//end
+//--请求之后，状态码
+//ngx.status = res.status
+//if ngx.status ~= 200 then
+//    ngx.log(ngx.WARN,"非200状态，ngx.status:"..ngx.status)
+//    return resStr
+//end
+//--header中的信息遍历，只是为了方便看头部信息打的日志，用不到的话，可以不写的
+//for key, val in pairs(res.headers) do
+//    if type(val) == "table" then
+//        ngx.log(ngx.WARN,"table:"..key, ": ", table.concat(val, ", "))
+//    else
+//        ngx.log(ngx.WARN,"one:"..key, ": ", val)
+//    end
+//end
+//--响应的内容
+//resStr = res.body
+//CODE
+//    );
+
+//        $lua->call("dummy", array("Lua", "geiliable\n"));
+//        $lua->dummy("Lua", "geiliable"); // __call()
+//        var_dump($lua->call(array("table", "concat"), array(array(1=>1, 2=>2, 3=>3), "-")));
+
+//        $lua->eval("lua_statements");     //eval lua codes
+//        $lua->include("lua_script_file"); //import a lua script
+
+//        $lua->assign("name", 'bevan'); //assign a php variable to Lua
+//        $lua->register("name", 'testlua'); //register a PHP function to Lua with "name"
+//
+//        $lua->call('testlua', array() /*args*/);
+//        $lua->call($resouce_lua_anonymous_function, array() /*args);
+//   $lua->call(array("table", "method"), array(...., "push_self" => [true | false]) /*args*/);
+//
+//        $lua->{$lua_function}(array()/*args*/);
     }
 }

@@ -17,17 +17,13 @@
 app('api.exception')->register(function (Exception $exception) {
 
 //    dd(get_class($exception));
-//    if(config('app.debug')){
-//        $request=Request::capture();
-//        //交给laravelz自带的错误异常接管类处理
-//        return app('App\Exceptions\Handler')->render($request,$exception);
-//    }else{
-//
-//        if( get_class($exception)=='Illuminate\Validation\ValidationException'){
-//            return Response()->json(['status_code'=>422,'message'=>$exception->validator->errors(),'data'=>''],422);
-//        }
-//
+//    if (config('app.debug')) {
+//        $request = Request::capture();
+//        //交给laravel自带的错误异常接管类处理
+//        return app('App\Exceptions\Handler')->render($request, $exception);
 //    }
+
+
 //    return Response()->json(['status_code'=>$exception->getStatusCode(),'message'=>$exception->validator->errors(),'data'=>''],$exception->getStatusCode());
 //    var_dump(get_class($exception));
     if ($exception instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
@@ -39,11 +35,13 @@ app('api.exception')->register(function (Exception $exception) {
         $err_message = $exception->validator->errors();
 //        return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'respData' => ''], 422);
     } else {
+//        dd($exception->());
         $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
         $err_message = $exception->getMessage() == '' ? '路由不存在' : $exception->getMessage();
 //        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => ''], $status_code);
     }
-
+//    $err_message = (string)strtr($err_message, [' ' => '', "\n" => '', "\t" => '']);
+//    dd(json_encode(['status_code' => $status_code, 'message' => $err_message, 'respData' => []]));
     // 统计 api 失败 请求
     \App\Jobs\CountApiJob::dispatch(ltrim(request()->getPathInfo(), '/'), 'fail');
     // 记录 错误 日志
@@ -73,6 +71,7 @@ $api->version('v1', [], function ($api) {
     $api->get('testLua3', '\App\Http\Api\V1\ShowController@testLua3');
     $api->get('testLua4', '\App\Http\Api\V1\ShowController@testLua4');
     $api->get('testAsync', '\App\Http\Api\V1\ShowController@testAsync');
+    $api->get('testNewLua', '\App\Http\Api\V1\ShowController@testNewLua');
 });
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
