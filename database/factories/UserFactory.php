@@ -20,6 +20,7 @@ $factory->define(App\User::class, function (Faker $faker) {
         'password' => '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // secret
         'remember_token' => str_random(10),
         'type' => mt_rand(0,1),
-        'telephone' => mt_rand(1000000,9999999)
+        'telephone' => mt_rand(1,99999999),
+        'deleted_at' => date('Y-m-d H:i:s',time())
     ];
 });

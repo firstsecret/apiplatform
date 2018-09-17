@@ -23,7 +23,6 @@ app('api.exception')->register(function (Exception $exception) {
 //        return app('App\Exceptions\Handler')->render($request, $exception);
 //    }
 
-
 //    return Response()->json(['status_code'=>$exception->getStatusCode(),'message'=>$exception->validator->errors(),'data'=>''],$exception->getStatusCode());
 //    var_dump(get_class($exception));
     if ($exception instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
@@ -72,6 +71,7 @@ $api->version('v1', [], function ($api) {
     $api->get('testLua4', '\App\Http\Api\V1\ShowController@testLua4');
     $api->get('testAsync', '\App\Http\Api\V1\ShowController@testAsync');
     $api->get('testNewLua', '\App\Http\Api\V1\ShowController@testNewLua');
+    $api->get('testCon', '\App\Http\Api\V1\ShowController@testNewLua');
 });
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {

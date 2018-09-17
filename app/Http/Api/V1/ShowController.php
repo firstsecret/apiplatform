@@ -137,7 +137,6 @@ class ShowController extends BaseController
 
     public function testLua2(Request $request)
     {
-//        sleep(1);
         $reData['name'] = $request->input('name');
         $reData['age'] = $request->input('age');
         return $this->responseClient(200, 'lua2', $reData);
@@ -156,8 +155,8 @@ class ShowController extends BaseController
 //        $user = User::find(2)->toArray();
         $user = [];
 //        User::where('id', 2)->update(['name' => 'bevan']);
-        $res = User::all();
-        return $this->responseClient(200, 'lua4', $res);
+//        $res = User::withTrashed()->get();
+        return $this->responseClient(200, 'lua4', ['test'=>'fdsf','lua'=>'fdfd']);
     }
 
     public function testAsync()

@@ -15,8 +15,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/web',function(){
-   var_dump('web show');
+Route::get('/web', function () {
+    var_dump('web show');
+});
+
+Route::get('testCon', '\App\Http\Api\V1\ShowController@testNewLua');
+
+Route::get('testLua', function () {
+    var_dump('这里是testLua');
 });
 
 Auth::routes();
