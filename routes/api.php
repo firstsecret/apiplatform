@@ -17,11 +17,11 @@
 app('api.exception')->register(function (Exception $exception) {
 
 //    dd(get_class($exception));
-//    if (config('app.debug')) {
-//        $request = Request::capture();
-//        //交给laravel自带的错误异常接管类处理
-//        return app('App\Exceptions\Handler')->render($request, $exception);
-//    }
+    if (config('app.debug')) {
+        $request = Request::capture();
+        //交给laravel自带的错误异常接管类处理
+        return app('App\Exceptions\Handler')->render($request, $exception);
+    }
 
 //    return Response()->json(['status_code'=>$exception->getStatusCode(),'message'=>$exception->validator->errors(),'data'=>''],$exception->getStatusCode());
 //    var_dump(get_class($exception));

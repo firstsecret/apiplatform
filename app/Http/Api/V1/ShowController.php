@@ -156,7 +156,7 @@ class ShowController extends BaseController
         $user = [];
 //        User::where('id', 2)->update(['name' => 'bevan']);
 //        $res = User::withTrashed()->get();
-        return $this->responseClient(200, 'lua4', ['test'=>'fdsf','lua'=>'fdfd']);
+        return $this->responseClient(200, 'lua4', ['test' => 'fdsf', 'lua' => 'fdfd']);
     }
 
     public function testAsync()
@@ -181,9 +181,18 @@ class ShowController extends BaseController
         die;
     }
 
-    public function testNewLua()
+    public function testNewLua(Request $request)
     {
-        $lua = new \Lua();
+
+        $input = $request->all();
+        $headers = $request->header();
+
+        return $this->responseClient(200, '成功', [
+            'headers' => $headers,
+            'input' => $input
+        ]);
+
+//        $lua = new \Lua();
 //        $lua->eval(<<<CODE
 //    function dummy(foo, bar)
 //        print(foo, ",", bar)
