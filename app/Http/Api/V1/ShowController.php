@@ -159,6 +159,14 @@ class ShowController extends BaseController
         return $this->responseClient(200, 'lua4', ['test' => 'fdsf', 'lua' => 'fdfd']);
     }
 
+    public function testLua5(Request $request)
+    {
+        $req_data['headers'] = $request->header();
+        $req_data['input'] = $request->input();
+
+        return $this->responseClient(200, 'success', $req_data);
+    }
+
     public function testAsync()
     {
         $client = new httpClient();

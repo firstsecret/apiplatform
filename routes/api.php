@@ -17,11 +17,11 @@
 app('api.exception')->register(function (Exception $exception) {
 
 //    dd(get_class($exception));
-    if (config('app.debug')) {
-        $request = Request::capture();
-        //交给laravel自带的错误异常接管类处理
-        return app('App\Exceptions\Handler')->render($request, $exception);
-    }
+//    if (config('app.debug')) {
+//        $request = Request::capture();
+//        //交给laravel自带的错误异常接管类处理
+//        return app('App\Exceptions\Handler')->render($request, $exception);
+//    }
 
 //    return Response()->json(['status_code'=>$exception->getStatusCode(),'message'=>$exception->validator->errors(),'data'=>''],$exception->getStatusCode());
 //    var_dump(get_class($exception));
@@ -36,7 +36,7 @@ app('api.exception')->register(function (Exception $exception) {
     } else {
 //        dd($exception->());
         $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
-        $err_message = $exception->getMessage() == '' ? '路由不存在' : $exception->getMessage();
+        $err_message = $exception->getMessage() == '' ? '路由不存在:' . request()->getRequestUri() .',method:' . request()->getMethod() : $exception->getMessage();
 //        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => ''], $status_code);
     }
 //    $err_message = (string)strtr($err_message, [' ' => '', "\n" => '', "\t" => '']);
@@ -72,6 +72,7 @@ $api->version('v1', [], function ($api) {
     $api->get('testAsync', '\App\Http\Api\V1\ShowController@testAsync');
     $api->get('testNewLua', '\App\Http\Api\V1\ShowController@testNewLua');
     $api->get('testCon', '\App\Http\Api\V1\ShowController@testNewLua');
+    $api->post('testLua5', '\App\Http\Api\V1\ShowController@testLua5');
 });
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
