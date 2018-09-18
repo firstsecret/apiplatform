@@ -36,7 +36,8 @@ app('api.exception')->register(function (Exception $exception) {
     } else {
 //        dd($exception->());
         $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
-        $err_message = $exception->getMessage() == '' ? '路由不存在:' . request()->getRequestUri() .',method:' . request()->getMethod() : $exception->getMessage();
+//        $err_message = $exception->getMessage() == '' ? '路由不存在:' . request()->getRequestUri() . ',method:' . request()->getMethod() : $exception->getMessage();
+        $err_message = $exception->getMessage() == '' ? '路由不存在:' . request()->getRequestUri() : $exception->getMessage();
 //        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => ''], $status_code);
     }
 //    $err_message = (string)strtr($err_message, [' ' => '', "\n" => '', "\t" => '']);
@@ -73,6 +74,7 @@ $api->version('v1', [], function ($api) {
     $api->get('testNewLua', '\App\Http\Api\V1\ShowController@testNewLua');
     $api->get('testCon', '\App\Http\Api\V1\ShowController@testNewLua');
     $api->post('testLua5', '\App\Http\Api\V1\ShowController@testLua5');
+    $api->post('testUpload', 'App\Http\Api\V1\ShowController@testUpload');
 });
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {

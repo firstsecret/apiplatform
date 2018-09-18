@@ -17,6 +17,7 @@ end
 
 -- gzip handle
 ngx.req.set_header('Accept-Encoding', 'default')
+
 -- http error deal
 function httpErrorHandler(err)
     print("Http headers deal error:", err)
@@ -51,6 +52,12 @@ for k, v in pairs(res.header) do
     end
 end
 
+-- response handle
+ngx.header['Server'] = 'xiaoyumi'
+
+-- response
+ngx.print(res.body)
+
 -- log
 file = io.open("/tmp/capture.log", "a+")
 file:write(res.body)
@@ -60,9 +67,8 @@ end
 file:close()
 --local res = ngx.location.capture('/testInternal', {args = re_args})
 --ngx.say(res.status)
-ngx.print(res.body)
+
 --if res.status == 200 then
 --    ngx.print(res.body)
---end
---ngx.say(res.status)
+--end)
 

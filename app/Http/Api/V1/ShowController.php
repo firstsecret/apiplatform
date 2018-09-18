@@ -267,4 +267,18 @@ class ShowController extends BaseController
 //
 //        $lua->{$lua_function}(array()/*args*/);
     }
+
+    public function testUpload(Request $request)
+    {
+        $file = $request->file('file');
+
+        if (!$file) throw new \Exception('未获取上传文件', 401);
+
+        $path = $file->store('public/imgs');
+        $path = strstr($path, '/imgs');
+        $get_path = 'storage' . $path;
+
+        $url = asset($get_path);
+        return $this->responseClient(200, 'success', ['path' => $path, 'url' => $url]);
+    }
 }
