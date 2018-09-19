@@ -58,7 +58,7 @@ ngx.header['Server'] = 'xiaoyumi'
 -- response
 ngx.print(res.body)
 
--- log
+-- debug log
 file = io.open("/tmp/capture.log", "a+")
 file:write(res.body)
 for k, v in pairs(res.header) do
