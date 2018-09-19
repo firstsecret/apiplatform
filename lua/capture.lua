@@ -19,6 +19,3 @@ if (vars) then
         ngx.say(key, val)
     end
 end
---for key, val in pairs(args) do
---   ngx.say(key, val)
---end

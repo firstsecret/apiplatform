@@ -1,3 +1,6 @@
+-- require tool
+local tool = require('resty.tool')
+
 -- body
 ngx.req.read_body();
 
@@ -55,16 +58,32 @@ end
 -- response handle
 ngx.header['Server'] = 'xiaoyumi'
 
+-- ctx
+--ngx.ctx.log_msg = res.body
+
 -- response
-ngx.print(res.body)
+if res.status == 200 then
+    ngx.print(res.body)
+else
+    ngx.ctx.log_msg = res.status .. 'body: ' .. res.body .. ',header: ' .. tool.serialize(res.header)
+    ngx.ctx.log_msg = res.status .. 'body: ' .. res.body
+    local err_status_code = res.body['status_code']
+    if err_status_code == nil then
+        err_status_code = 4059
+    end
+    ngx.ctx.err_message = res.body['message']
+    ngx.ctx.err_status_code = err_status_code
+    return ngx.exit(res.status)
+--    ngx.say(ngx.ctx.log_msg)
+end
 
 -- debug log
-file = io.open("/tmp/capture.log", "a+")
-file:write(res.body)
-for k, v in pairs(res.header) do
-    file:write(k .. ':' .. v)
-end
-file:close()
+--file = io.open("/tmp/capture.log", "a+")
+--file:write(res.body)
+--for k, v in pairs(res.header) do
+--    file:write(k .. ':' .. v)
+--end
+--file:close()
 --local res = ngx.location.capture('/testInternal', {args = re_args})
 --ngx.say(res.status)
 

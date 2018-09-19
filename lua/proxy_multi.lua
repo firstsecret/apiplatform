@@ -10,9 +10,17 @@
 local json = require "cjson";
 --获取请求方式
 local request_method = ngx.var.request_method;
+
+-- response header
+ngx.header['Server'] = 'xiaoyumi'
+ngx.header['Content-Type'] = 'Application/json'
+
 --判断请求方式
 if request_method == "GET" then
-    ngx.say(json.encode({"only post"}));
+    local respData = {}
+    respData['status_code'] = 4050
+    respData['msg'] = '只支持post请求'
+    ngx.say(json.encode(respData));
     return;
 end;
 
@@ -21,15 +29,15 @@ ngx.req.read_body();
 local api_p = ngx.req.get_post_args();
 --拼接子请求
 local list = {};
-for api,p in pairs(api_p) do
-    local tmp = {api,{args=p,method=ngx.HTTP_GET}};
+for api, p in pairs(api_p) do
+    local tmp = { api, { args = p, method = ngx.HTTP_GET } };
     table.insert(list, tmp);
 end;
 --发送子请求
-local response = {ngx.location.capture_multi(list)};
+local response = { ngx.location.capture_multi(list) };
 --合并响应
 local data = {};
-for num,resp in pairs(response) do
+for num, resp in pairs(response) do
     resp = json.decode(resp["body"]);
     data[resp["uri"]] = resp;
 end;

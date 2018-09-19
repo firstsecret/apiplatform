@@ -21,7 +21,6 @@ local ip = ngx.var.remote_addr
 local ip_blacklist = ngx.shared.ip_blacklist
 local last_update_time = ip_blacklist:get('last_update_time')
 
-
 -- is overtime
 if (last_update_time == nil or last_update_time < (ngx.now() - cache_ttl)) then
 
@@ -33,27 +32,25 @@ if (last_update_time == nil or last_update_time < (ngx.now() - cache_ttl)) then
     local ok, err = red:connect(redis_host, redis_port)
 
     if not ok then
-        ngx.log(ngx.DEBUG, "Redis Connect error while retrieving ip_blacklist: " .. err)
+        ngx.log(ngx.CRIT, "Redis Connect error while retrieving ip_blacklist: " .. err)
     else
-
         local new_ip_blacklist, err = red:smembers(redis_key)
 
         if (err) then
-            ngx.log(ngx.DEBUG, "Reids Read error while retrieving ip_bliacklist:" .. err)
+            ngx.log(ngx.CRIT, "Reids Read error while retrieving ip_bliacklist:" .. err)
         else
             ip_blacklist:flush_all()
             for index, banned_ip in ipairs(new_ip_blacklist) do
                 ip_blacklist:set(banned_ip, true)
             end
-
             -- update time
             ip_blacklist:set('last_update_time', ngx.now())
         end
     end
 end
---
+
 --
 if ip_blacklist:get(ip) then
-    ngx.log(ngx.DEBUG, "Banned IP detected and refused access: " .. ip)
+    ngx.log(ngx.CRIT, "Banned IP detected and refused access: " .. ip)
     return ngx.exit(ngx.HTTP_NOT_ALLOWED )
 end
