@@ -55,5 +55,5 @@ end
 --
 if ip_blacklist:get(ip) then
     ngx.log(ngx.DEBUG, "Banned IP detected and refused access: " .. ip)
-    return ngx.exit(ngx.HTTP_FORBIDDEN)
+    return ngx.exit(ngx.HTTP_NOT_ALLOWED )
 end
