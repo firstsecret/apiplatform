@@ -58,7 +58,7 @@ class CheckIsDisableService
             if (isset($new_d_service[$user_id])) $disable_service = json_decode($new_d_service[$user_id]['platform_product_id'], true);
         }
 
-        if (in_array($product_id, $disable_service)) throw new PlatformProductException('该服务已被禁止,请联系客服咨询原因');
+        if (in_array($product_id, $disable_service)) throw new PlatformProductException(5027, '该服务已被禁止,请联系客服咨询原因');
     }
 
     /**
@@ -86,7 +86,7 @@ class CheckIsDisableService
             $platform_products = $new_platform_products;
         }
 
-        if (!isset($platform_products[$pathinfo])) throw new PlatformProductException('请求服务不存在,请核对');
+        if (!isset($platform_products[$pathinfo])) throw new PlatformProductException(5028, '请求服务不存在,请核对');
 //        foreach ($platform_products as $product) {
 //            if ($pathinfo == $product['api_path']) {
 //                $product_id = $product['id'];

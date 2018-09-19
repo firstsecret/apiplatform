@@ -67,7 +67,7 @@ class InternalService extends BaseLoginService
             return ['res' => true, 'data' => ['app_key' => $app_key, 'app_secret' => $app_secret, 'uuid' => $uuid]];
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new PlatformProductException('500', '创建失败' . $e->getMessage());
+            throw new PlatformProductException(5020, '创建失败' . $e->getMessage());
         }
 //        return ['res' => false, 'data' => []];
     }
@@ -79,25 +79,25 @@ class InternalService extends BaseLoginService
      */
     protected function checkUnique($data, $model = '\App\User')
     {
-        if (!$this->checkIsPhone($data['telephone'])) throw new PlatformProductException(400, '手机号码不正确');
+        if (!$this->checkIsPhone($data['telephone'])) throw new PlatformProductException(4023, '手机号码不正确');
 
         if ($user = $model::where('name', $data['name'])->first(['id', 'name'])) {
 //            return Response()->json(['status_code' => 200,'msg'=>'用户名已存在', 'data'=> ]);
             $this->errorModel = $user;
 //            $uuidUser = $user->getOpenid($user->id, $this->user->id, $this->user->uuid, get_class($this->user));
 //            if ($uuidUser) return $this->responseClient(203, '用户名已经存在', ['openid' => $uuidUser->openid]);
-            throw new PlatformProductException(403, '用户名已存在');
+            throw new PlatformProductException(4023, '用户名已存在');
         }
 
         if ($user = $model::where('telephone', $data['telephone'])->first(['id', 'telephone'])) {
             $this->errorModel = $user;
-            throw new PlatformProductException(403, '该号码已注册');
+            throw new PlatformProductException(4023, '该号码已注册');
         }
 
         if (isset($data['email']) && $data['email']) {
             if ($user = $model::where('email', $data['email'])->first(['id', 'email'])) {
                 $this->errorModel = $user;
-                throw new PlatformProductException(403, '该邮箱已注册');
+                throw new PlatformProductException(4023, '该邮箱已注册');
             }
         }
     }
@@ -111,7 +111,7 @@ class InternalService extends BaseLoginService
         try {
             $this->checkUnique($data, '\App\User');
         } catch (PlatformProductException $e) {
-            if ($e->getStatusCode() == 403) {
+            if ($e->getStatusCode() == 4023) {
                 $uuidUser = $this->errorModel->getOpenid($this->errorModel->id, $this->user->id, $this->user->uuid, get_class($this->user));
                 if ($uuidUser) $openid = $uuidUser->openid;
                 else $openid = $this->createNewAppUserOpenid();
@@ -169,7 +169,7 @@ class InternalService extends BaseLoginService
             return ['res' => true, 'data' => ['app_key' => $app_key, 'app_secret' => $app_secret, 'openid' => $openid]];
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new PlatformProductException('500', '创建失败' . $e->getMessage());
+            throw new PlatformProductException(5020, '创建失败' . $e->getMessage());
         }
     }
 
@@ -181,7 +181,7 @@ class InternalService extends BaseLoginService
      */
     public function factoryAccessToken($app_key, $app_secret)
     {
-        if (!$app_key || !$app_secret) throw new PlatformProductException(400, 'appkey或appsecret未获取');
+        if (!$app_key || !$app_secret) throw new PlatformProductException(4025, 'appkey或appsecret未获取');
 
         $admin = AppUser::where([
             'app_key' => $app_key,
@@ -193,7 +193,7 @@ class InternalService extends BaseLoginService
         // 获取过期时间
 //        $express_in = config('jwt.ttl') * 60; // second
 
-        if (!$token) throw new PlatformProductException(500, '令牌生成失败');
+        if (!$token) throw new PlatformProductException(5020, '令牌生成失败');
 
         return $token;
     }

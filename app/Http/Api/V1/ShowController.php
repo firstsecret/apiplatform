@@ -12,12 +12,14 @@ namespace App\Http\Api\V1;
 use App\Client\httpClient;
 use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
+use App\Exceptions\BevanJwtAuthException;
 use App\Http\Api\BaseController;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Psr\Http\Message\ResponseInterface;
 
 class ShowController extends BaseController
@@ -280,5 +282,13 @@ class ShowController extends BaseController
 
         $url = asset($get_path);
         return $this->responseClient(200, 'success', ['path' => $path, 'url' => $url]);
+    }
+
+    public function testNewException()
+    {
+//        Redis::SREM('ip_blacklist', '172.30.202.241');
+//        $list = Redis::smembers('ip_blacklist');
+//        dd($list);
+        throw  new BevanJwtAuthException(4033, '新的异常处理', null, 500);
     }
 }

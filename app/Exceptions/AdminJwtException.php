@@ -13,8 +13,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AdminJwtException extends HttpException
 {
-    public function __construct($message = null, \Exception $previous = null, $code = 0)
+    public function __construct($status_code = 4040, $message = null, $code = 0, \Exception $previous = null)
     {
-        parent::__construct(400, $message ?: '未知异常错误', $previous, [], $code);
+        parent::__construct($status_code, $message ?: '未知异常错误', $previous, [], $code);
     }
 }

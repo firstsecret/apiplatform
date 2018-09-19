@@ -70,7 +70,7 @@ class PlatformProductService extends BaseLoginService
     public function openService($product_id, $user_id)
     {
         // 验证用户是否存在
-        if (!User::find($user_id)) throw new PlatformProductException(400, '用户不存在');
+        if (!User::find($user_id)) throw new PlatformProductException(5024, '用户不存在');
         return $this->addService($product_id, $user_id);
     }
 
@@ -178,7 +178,7 @@ class PlatformProductService extends BaseLoginService
         if (is_string($product_ids)) $product_ids = [$product_ids];
 
         foreach ($product_ids as $product_id) {
-            if (in_array($product_id, $users_disable_service)) throw new PlatformProductException(400, '服务已被禁用', []);
+            if (in_array($product_id, $users_disable_service)) throw new PlatformProductException(5026, '服务已被禁用');
         }
 
         return true;

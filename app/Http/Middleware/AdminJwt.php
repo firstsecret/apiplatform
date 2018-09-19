@@ -30,13 +30,13 @@ class AdminJwt extends BevanJwtAuth
 //            $admin = $this->auth->parseToken()->authenticate();
 //
 //            if(empty($admin)){
-//                throw new AdminJwtException('用户不存在');
+//                throw new AdminJwtException(4044,'用户不存在');
 //            }
 
             // is admin or user
 //            if(!cache('admin-' .  $admin->id)){
 //                // user or expire time
-//                throw new AdminJwtException('token非法或已过期');
+//                throw new AdminJwtException(4043,'token非法或已过期');
 //            }
         }
 

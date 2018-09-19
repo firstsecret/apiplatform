@@ -25,12 +25,12 @@ class RefreshToken extends BaseMiddleware
         if (!in_array($request->getPathInfo(), config($model . '.noNeedLogin'))) {
             $auth = JWTAuth::parseToken();
 
-            if (!$token = $auth->setRequest($request)->getToken()) throw new RefreshJwtException('未获取token');
+            if (!$token = $auth->setRequest($request)->getToken()) throw new RefreshJwtException(4010, '未获取token');
 
             try {
                 $user = $auth->authenticate($token);
 
-                if (!$user) throw new RefreshJwtException('未获取到用户');
+                if (!$user) throw new RefreshJwtException(4011, '未获取到用户');
 
 
                 // 判断 模型 是否 正确
@@ -45,7 +45,7 @@ class RefreshToken extends BaseMiddleware
 //                var_dump(get_class($e));
                 try {
 //                sleep(rand(1, 5) / 100);
-                    $newToken = JWTAuth::claims(['model'=>$model])->refresh($token);
+                    $newToken = JWTAuth::claims(['model' => $model])->refresh($token);
 //                    var_dump($newToken);
                     $request->headers->set('Authorization', 'Bearer' . $newToken); // 给当前的请求设置性的token,以备在本次请求中需要调用用户信息
 //                Redis::setex('token_blacklist:' . $token, 30, $newToken);
@@ -56,13 +56,13 @@ class RefreshToken extends BaseMiddleware
                     if ($newToken = cache('token_blacklist:' . $token)) {
                         $request->headers->set('Authorization', 'Bearer ' . $newToken); // 给当前的请求设置性的token,以备在本次请求中需要调用用户信息
 //                        return $next($request);
-                    }else{
+                    } else {
                         // 过期用户
-                        throw new RefreshJwtException('账号信息已过期, 请重新登录');
+                        throw new RefreshJwtException(4012, '账号信息已过期, 请重新登录');
                     }
                 }
             } catch (JWTException $e) {
-                throw new RefreshJwtException('无效的token');
+                throw new RefreshJwtException(4013, '无效的token');
             }
         }
 //        dd('fsdf');

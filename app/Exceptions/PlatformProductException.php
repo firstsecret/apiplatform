@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PlatformProductException extends HttpException
 {
-    public function __construct($statusCode = 400,$message = null, \Exception $previous = null, $code = 0)
+    public function __construct($statusCode = 4020, $message = null, $code = 0, \Exception $previous = null)
     {
         parent::__construct($statusCode, $message ?: '未知异常错误', $previous, [], $code);
     }

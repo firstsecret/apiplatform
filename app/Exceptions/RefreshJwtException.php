@@ -13,8 +13,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RefreshJwtException extends HttpException
 {
-    public function __construct($message = null, \Exception $previous = null, $code = 0)
+    public function __construct($status_code = 4010, $message = null, $code = 0, \Exception $previous = null)
     {
-        parent::__construct(400, $message ?: '未知错误', $previous, [], $code);
+        parent::__construct($status_code, $message ?: '未知错误', $previous, [], $code);
     }
 }

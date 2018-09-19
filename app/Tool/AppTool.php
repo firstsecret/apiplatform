@@ -247,7 +247,7 @@ trait AppTool
     public function checkProductArr($product_ids)
     {
         foreach ($product_ids as $product_id) {
-            if (!is_numeric($product_id)) throw new PlatformProductException('400', '产品编号有误');
+            if (!is_numeric($product_id)) throw new PlatformProductException(5023, '产品编号有误');
         }
     }
 }

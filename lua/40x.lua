@@ -28,5 +28,6 @@ local status_name = status_table[status]
 if status_name == nil then
     status_name = 'NOT_FOUND'
 end
+
 ngx.print('<head><title>'.. status .. '  ' .. status_name ..' </title></head><body bgcolor="white"><center><h1>' .. status .. '  ' .. status_name .. ' </h1></center><hr><center>xiaoyumi<center></body>')
 

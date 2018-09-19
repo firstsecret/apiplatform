@@ -47,7 +47,7 @@ class AdminUserService extends BaseService
             $loginer = JWTAuth::parseToken()->user();
             if ($model == 'admin') {
                 // 是否 拥有 角色权限
-                if (!$loginer->hasRole('opeartor')) throw new AdminJwtException('该类型角色不允许登录');
+                if (!$loginer->hasRole('opeartor')) throw new AdminJwtException(4045,'该类型角色不允许登录');
             }
         }
 
@@ -76,7 +76,7 @@ class AdminUserService extends BaseService
 //        if ($this->model == 'user') {
 //            $user = User::where($msg)->first();
 //
-//            if (!$user) throw new AdminJwtException('用户不存在');
+//            if (!$user) throw new AdminJwtException(4044,'用户不存在');
 //
 //            if ($user->type) config('jwt.ttl', null);
 //        }

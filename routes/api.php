@@ -25,19 +25,31 @@ app('api.exception')->register(function (Exception $exception) {
 
 //    return Response()->json(['status_code'=>$exception->getStatusCode(),'message'=>$exception->validator->errors(),'data'=>''],$exception->getStatusCode());
 //    var_dump(get_class($exception));
-    if ($exception instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
-        $status_code = $exception->getStatusCode();
-        $err_message = $exception->getMessage();
-//        return Response()->json(['status_code' => $exception->getStatusCode(), 'message' => $exception->getMessage(), 'respData' => ''], $exception->getStatusCode());
-    } else if (get_class($exception) == 'Illuminate\Validation\ValidationException') {
+//    if ($exception instanceof \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException) {
+//        $status_code = $exception->getStatusCode();
+//        $err_message = $exception->getMessage();
+//        $code = $exception->getCode();
+////        return Response()->json(['status_code' => $exception->getStatusCode(), 'message' => $exception->getMessage(), 'respData' => ''], $exception->getStatusCode());
+//    } else
+
+    if (get_class($exception) == 'Illuminate\Validation\ValidationException') {
         $status_code = 422;
         $err_message = $exception->validator->errors();
+        $code = 200;
 //        return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'respData' => ''], 422);
     } else {
 //        dd($exception->());
-        $status_code = $exception->getCode() == 0 ? 400 : $exception->getCode();
+        // is has method getStatusCode
+        // status_code
+        $status_code = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : $exception->getCode();
+        $status_code = $status_code == 0 ? 400 : $status_code;
+        // code
+        $code = $exception->getCode();
+        $code = $code == 0 ? 200 : $code;
 //        $err_message = $exception->getMessage() == '' ? '路由不存在:' . request()->getRequestUri() . ',method:' . request()->getMethod() : $exception->getMessage();
-        $err_message = $exception->getMessage() == '' ? '路由不存在:' . request()->getRequestUri() : $exception->getMessage();
+        // error_message
+        $err_message = $exception->getMessage();
+        $err_message = $err_message == '' ? '路由不存在:' . request()->getRequestUri() : $err_message;
 //        return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => ''], $status_code);
     }
 //    $err_message = (string)strtr($err_message, [' ' => '', "\n" => '', "\t" => '']);
@@ -46,11 +58,10 @@ app('api.exception')->register(function (Exception $exception) {
     \App\Jobs\CountApiJob::dispatch(ltrim(request()->getPathInfo(), '/'), 'fail');
     // 记录 错误 日志
     \Illuminate\Support\Facades\Event::fire(new \App\Events\AsyncLogEvent($err_message, 'error'));
-    return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => []], $status_code);
+    return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => []], $code);
 });
 
 $api = app('Dingo\Api\Routing\Router');
-
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //    return $request->user();
 //});
@@ -75,6 +86,7 @@ $api->version('v1', [], function ($api) {
     $api->get('testCon', '\App\Http\Api\V1\ShowController@testNewLua');
     $api->post('testLua5', '\App\Http\Api\V1\ShowController@testLua5');
     $api->post('testUpload', 'App\Http\Api\V1\ShowController@testUpload');
+    $api->get('testNewException', 'App\Http\Api\V1\ShowController@testNewException');
 });
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
