@@ -27,12 +27,10 @@ function httpErrorHandler(err)
 end
 
 status = xpcall(httpHandler, httpErrorHandler)
---print(status)
+
 local request_uri = ngx.var.request_uri
 local request_method = ngx.var.request_method
---ngx.say(request_method)
---ngx.say(request_uri)
---ngx.print(headers)
+
 local res = {}
 if (request_method == 'POST') then
     res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_POST, args = re_args })
@@ -56,8 +54,8 @@ for k, v in pairs(res.header) do
 end
 
 -- response handle
-ngx.header['Server'] = 'xiaoyumi'
-
+--ngx.header['Server'] = 'xiaoyumi'
+tool.rewriteResponse('Server', 'xiaoyumi')
 -- ctx
 --ngx.ctx.log_msg = res.body
 
@@ -74,7 +72,7 @@ else
     ngx.ctx.err_message = res.body['message']
     ngx.ctx.err_status_code = err_status_code
     return ngx.exit(res.status)
---    ngx.say(ngx.ctx.log_msg)
+    --    ngx.say(ngx.ctx.log_msg)
 end
 
 -- debug log

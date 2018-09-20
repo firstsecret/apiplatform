@@ -287,8 +287,9 @@ class ShowController extends BaseController
     public function testNewException()
     {
 //        Redis::SREM('ip_blacklist', '172.30.202.241');
-//        $list = Redis::smembers('ip_blacklist');
-//        dd($list);
-        throw  new BevanJwtAuthException(4033, '新的异常处理', 500, null);
+        Redis::SADD('ip_blacklist', '49.72.219.19');
+        $list = Redis::smembers('ip_blacklist');
+        dd($list);
+//        throw  new BevanJwtAuthException(4033, '新的异常处理', 500, null);
     }
 }
