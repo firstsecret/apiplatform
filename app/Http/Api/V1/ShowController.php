@@ -315,11 +315,11 @@ class ShowController extends BaseController
 
     public function appMapRedis()
     {
-        $users = AppUser::where('model', 'App\User')->get(['id', 'app_key', 'app_secret'])->toArray();
+        $users = AppUser::where('model', 'App\User')->get(['id', 'app_key', 'app_secret','type'])->toArray();
 
         // 建议 分片 处理
         foreach ($users as $u) {
-            Redis::set($u['app_key'], $u['app_secret']);
+            Redis::set($u['app_key'], $u['app_secret'] . $u['type']);
         }
 
         return $this->responseClient(200, '成功', []);
