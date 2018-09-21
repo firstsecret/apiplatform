@@ -14,6 +14,8 @@ use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
 use App\Exceptions\BevanJwtAuthException;
 use App\Http\Api\BaseController;
+use App\Models\AppUser;
+use App\Models\PlatformProduct;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -21,6 +23,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Psr\Http\Message\ResponseInterface;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ShowController extends BaseController
 {
@@ -291,5 +294,34 @@ class ShowController extends BaseController
         $list = Redis::smembers('ip_blacklist');
         dd($list);
 //        throw  new BevanJwtAuthException(4033, '新的异常处理', 500, null);
+    }
+
+    public function testJWT()
+    {
+        $user = User::findOrFail(1);
+
+        $token = JWTAuth::claims(['model' => 'user'])->fromUser($user);
+
+        return $this->tokenResponse($token);
+    }
+
+    public function getNetJWT(Request $request)
+    {
+        return $this->responseClient(200, 'get', [
+            'headers' => $request->header(),
+            'input' => $request->input()
+        ]);
+    }
+
+    public function appMapRedis()
+    {
+        $users = AppUser::where('model', 'App\User')->get(['id', 'app_key', 'app_secret'])->toArray();
+
+        // 建议 分片 处理
+        foreach ($users as $u) {
+            Redis::set($u['app_key'], $u['app_secret']);
+        }
+
+        return $this->responseClient(200, '成功', []);
     }
 }

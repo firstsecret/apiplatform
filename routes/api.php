@@ -87,6 +87,9 @@ $api->version('v1', [], function ($api) {
     $api->post('testLua5', '\App\Http\Api\V1\ShowController@testLua5');
     $api->post('testUpload', 'App\Http\Api\V1\ShowController@testUpload');
     $api->get('testNewException', 'App\Http\Api\V1\ShowController@testNewException');
+    $api->get('testJWT', 'App\Http\Api\V1\ShowController@testJWT');
+    $api->get('getNetJWT', 'App\Http\Api\V1\ShowController@getNetJWT');
+    $api->get('appMapRedis', 'App\Http\Api\V1\ShowController@appMapRedis');
 });
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
