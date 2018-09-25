@@ -15,10 +15,10 @@ class RewriteResponse
      */
     public function handle($request, Closure $next)
     {
-        $response = $next($request);
+//        $response = $next($request);
 
-        $response->headers->set('RequestUri', $request->getPathInfo());
+//        response()->headers->set('RequestUri', $request->getPathInfo());
 
-        return $response;
+        return $next($request)->header('RequestUri',  $request->getPathInfo());
     }
 }

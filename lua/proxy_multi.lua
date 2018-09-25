@@ -36,7 +36,7 @@ local list = {};
 for api, p in pairs(api_p) do
     local tmp = {}
     if p then
-        tmp = { '/internal' .. api };
+        tmp = { '/internal' .. api, { args = p } };
     else
         tmp = { '/internal' .. api };
     end
@@ -51,11 +51,13 @@ local response = { ngx.location.capture_multi(list) };
 local data = {};
 for num, resp in pairs(response) do
     --    ngx.say(num)
-        ngx.print(json.encode(resp))
+    --    ngx.print(json.encode(resp))
+    local header = resp['header']
     --      ngx.print(json.encode(resp["body"]))
---    resp = json.decode(resp);
---    data[num] = resp
---        data[resp["uri"]] = resp;
+    --    resp = json.decode(resp);
+    --    data[num] = resp
+    ngx.print(json.encode(header))
+--    data[header['RequestUri']] = resp['body'];
 end;
 --响应到客户端
 --ngx.say(json.encode(data));

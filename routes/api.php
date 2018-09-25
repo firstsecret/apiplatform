@@ -54,11 +54,14 @@ app('api.exception')->register(function (Exception $exception) {
     }
 //    $err_message = (string)strtr($err_message, [' ' => '', "\n" => '', "\t" => '']);
 //    dd(json_encode(['status_code' => $status_code, 'message' => $err_message, 'respData' => []]));
+    // 响应 header 头 处理
+//    response()->headers->set('RequestUri','dsfdsa');
+//    Response()->headers->set('RequestUri', request()->getPathInfo());
     // 统计 api 失败 请求
     \App\Jobs\CountApiJob::dispatch(ltrim(request()->getPathInfo(), '/'), 'fail');
     // 记录 错误 日志
     \Illuminate\Support\Facades\Event::fire(new \App\Events\AsyncLogEvent($err_message, 'error'));
-    return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => []], $code);
+    return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => []], $code)->header('RequestUri', request()->getPathInfo());
 });
 
 $api = app('Dingo\Api\Routing\Router');
