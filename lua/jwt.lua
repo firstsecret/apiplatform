@@ -20,7 +20,9 @@ local app_secret = args['app_secret']
 local express_in = 0
 
 if app_key == nil or app_secret == nil then
-    ngx.print(cjson.encode({ status_code = 4011, message = "appkey或appsecret缺失" }))
+    local resp_table = { status_code = 4011, message = "appkey或appsecret缺失" }
+    tool.setNgxVar('resp_body', tool.serialize(resp_table))
+    ngx.print(cjson.encode(resp_table))
     return
 end
 
@@ -43,7 +45,9 @@ local app_key_type = 0
 
 if not ok then
     ngx.log(ngx.CRIT, "Redis Connect error while retrieving ip_blacklist: " .. err)
-    ngx.print(cjson.encode({ status_code = 5009, message = "服务出错,请联系管理人员进行服务恢复" }))
+    local resp_table = { status_code = 5009, message = "服务出错,请联系管理人员进行服务恢复" }
+    tool.setNgxVar('resp_body', tool.serialize(resp_table))
+    ngx.print(cjson.encode(resp_table))
     return
 else
     local r_app_secret = red:get(app_key)
