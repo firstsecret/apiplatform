@@ -55,6 +55,7 @@ end
 
 -- response handle
 --ngx.header['Server'] = 'xiaoyumi'
+tool.rewriteResponse('RequestUri', request_uri)
 tool.rewriteResponse('Server', 'xiaoyumi')
 -- ctx
 --ngx.ctx.log_msg = res.body
@@ -69,7 +70,10 @@ tool.rewriteResponse('Server', 'xiaoyumi')
 --ngx.say(ngx.arg[1])
 --ngx.var.resp_body = res.body
 tool.setNgxVar('resp_body', res.body)
-
+local resp_headers = res.header
+for k, h in pairs(resp_headers) do
+--    ngx.say(k .. ':' .. h)
+end
 if res.status == 200 then
     ngx.print(res.body)
 else

@@ -154,14 +154,15 @@ class ShowController extends BaseController
         return $this->responseClient(200, 'lua3');
     }
 
-    public function testLua4()
+    public function testLua4(Request $request)
     {
 //        sleep(1);
 //        $user = User::find(2)->toArray();
         $user = [];
 //        User::where('id', 2)->update(['name' => 'bevan']);
 //        $res = User::withTrashed()->get();
-        return $this->responseClient(200, 'lua4', ['test' => 'fdsf', 'lua' => 'fdfd']);
+        $realIp = $request->header('X-Real-IP');
+        return $this->responseClient(200, 'lua4', ['test' => 'fdsf', 'lua' => 'fdfd', 'real_ip' => $realIp]);
     }
 
     public function testLua5(Request $request)
@@ -180,7 +181,7 @@ class ShowController extends BaseController
             // end
 //            var_dump(get_class_methods($res));
 //
-            var_dump('isok');
+//            var_dump('isok');
 //            Log::info(get_class_methods($res));
             return $this->responseClient(200, '回调返回成功', ['name' => 'bevan']);
         }, function ($e) {
@@ -196,7 +197,7 @@ class ShowController extends BaseController
 
     public function testNewLua(Request $request)
     {
-
+//        dd($request);
         $input = $request->all();
         $headers = $request->header();
 
