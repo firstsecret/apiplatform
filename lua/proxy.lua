@@ -68,7 +68,7 @@ tool.rewriteResponse('Server', 'xiaoyumi')
 --end
 --ngx.say(ngx.arg[1])
 --ngx.var.resp_body = res.body
-too.setNgxVar('resp_body', res.body)
+tool.setNgxVar('resp_body', res.body)
 
 if res.status == 200 then
     ngx.print(res.body)

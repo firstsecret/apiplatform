@@ -25,7 +25,7 @@ status_table[500] = 'INTERNAL_SERVER_ERROR'
 status_table[501] = 'METHOD_NOT_IMPLEMENTED'
 status_table[503] = 'SERVICE_UNAVAILABLE'
 status_table[504] = 'GATEWAY_TIMEOUT'
-ngx.say(ngx.var.uri)
+--ngx.say(ngx.var.uri)
 local status_name = status_table[status]
 if status_name == nil then
     status_name = 'NOT_FOUND'

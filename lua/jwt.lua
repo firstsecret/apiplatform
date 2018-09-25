@@ -84,6 +84,7 @@ if app_key_type == 1 then
             header = { typ = "JWT", alg = "HS256" },
             payload = {}
         })
+
 elseif app_key_type == 0 then
     --    ngx.say('is 0')
     local host_port = ngx.var.server_port

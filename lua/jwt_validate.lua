@@ -23,14 +23,21 @@ if jwt_token == nil then
 end
 
 if jwt_token == nil then
-    ngx.print(cjson.encode({ status_code = 4001, message = "未获取token" }))
+    ngx.print(cjson.encode({ status_code = 4001, message = "请携带access_token" }))
     return
 end
 
-local jwt_obj = jwt:verify(key, jwt_token, {
-    lifetime_grace_period = 0,
-    require_exp_claim = true
-})
+token_len = string.len(jwt_token)
+--ngx.say(token_len)
+local jwt_obj = {}
+if token_len < 100 then
+    jwt_obj = jwt:verify(key, jwt_token)
+else
+    jwt_obj = jwt:verify(key, jwt_token, {
+        lifetime_grace_period = 0,
+        require_exp_claim = true
+    })
+end
 
 --local jwt_obj = jwt:verify(key, jwt_token)
 
