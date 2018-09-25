@@ -23,7 +23,8 @@ ngx.req.set_header('Accept-Encoding', 'default')
 
 -- http error deal
 function httpErrorHandler(err)
-    print("Http headers deal error:", err)
+    --    print("Http headers deal error:", err)
+    tool.respClient(4070, 'http头信息格式不正确')
 end
 
 status = xpcall(httpHandler, httpErrorHandler)
@@ -71,10 +72,11 @@ tool.rewriteResponse('Server', 'xiaoyumi')
 --ngx.var.resp_body = res.body
 tool.setNgxVar('resp_body', res.body)
 local resp_headers = res.header
-for k, h in pairs(resp_headers) do
---    ngx.say(k .. ':' .. h)
-end
+--for k, h in pairs(resp_headers) do
+
 if res.status == 200 then
+    -- 后期 与 服务方 确定 返回 信息
+    --    tool.respClient()
     ngx.print(res.body)
 else
     ngx.ctx.log_msg = res.status .. 'body: ' .. res.body .. ',header: ' .. tool.serialize(res.header)

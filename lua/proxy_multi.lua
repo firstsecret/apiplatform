@@ -30,13 +30,18 @@ end;
 --读取 post 参数.表单需要是 x-www-form-urlencoded
 ngx.req.read_body();
 local api_p = ngx.req.get_post_args();
-
+--ngx.print(ngx.HTTP_GET)
 --拼接子请求
 local list = {};
 for api, p in pairs(api_p) do
     local tmp = {}
-    if p then
-        tmp = { '/internal' .. api, { args = p } };
+    local api_p = json.decode(p)
+    if type(api_p) ~= 'table' then
+        tool.respClient(4053, '参数不正确')
+    end
+
+    if api_p then
+        tmp = { '/internal' .. api, { args = api_p['args'] } };
     else
         tmp = { '/internal' .. api };
     end
@@ -56,10 +61,10 @@ for num, resp in pairs(response) do
     --      ngx.print(json.encode(resp["body"]))
     --    resp = json.decode(resp);
     --    data[num] = resp
-    ngx.print(json.encode(header))
---    data[header['RequestUri']] = resp['body'];
+    --    ngx.print(json.encode(header))
+    data[header['RequestUri']] = resp['body'];
 end;
 --响应到客户端
---ngx.say(json.encode(data));
+ngx.say(json.encode(data));
 
 

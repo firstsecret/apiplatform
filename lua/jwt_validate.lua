@@ -23,7 +23,7 @@ if jwt_token == nil then
 end
 
 if jwt_token == nil then
-    ngx.print(cjson.encode({ status_code = 4001, message = "请携带access_token" }))
+    tool.respClient(4001, '请携带access_token')
     return
 end
 
@@ -50,6 +50,5 @@ else
     response_table['status_code'] = 4005
     response_table['message'] = jwt_obj['reason']
 end
-ngx.print(cjson.encode(jwt_obj))
---ngx.print(cjson.encode(response_table))
+tool.respClient(response_table['status_code'], response_table['message'])
 
