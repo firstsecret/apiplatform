@@ -64,7 +64,7 @@ class UpdateApiMap implements ShouldQueue
 
     public function updateAllMap()
     {
-        PlatformProduct::chunk(100, function ($products) {
+        PlatformProduct::chunk(200, function ($products) {
             foreach ($products as $p) {
 //                var_dump($u->type . ':' . $u->app_key . ',user_id:' . $u->id);
                 Redis::set($p['api_path'], $p['internal_api_path']);
