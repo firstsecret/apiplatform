@@ -31,7 +31,7 @@ status = xpcall(httpHandler, httpErrorHandler)
 
 local request_uri = ngx.var.request_uri
 local request_method = ngx.var.request_method
-
+--ngx.say(request_method)
 local res = {}
 if (request_method == 'POST') then
     res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_POST, args = re_args })

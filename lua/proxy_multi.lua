@@ -8,6 +8,7 @@
 
 --加载 json 库
 local json = require "cjson";
+local tool = require "resty.tool"
 --获取请求方式
 local request_method = ngx.var.request_method;
 
@@ -30,41 +31,39 @@ end;
 --读取 post 参数.表单需要是 x-www-form-urlencoded
 ngx.req.read_body();
 local api_p = ngx.req.get_post_args();
---ngx.print(ngx.HTTP_GET)
+
 --拼接子请求
 local list = {};
 for api, p in pairs(api_p) do
     local tmp = {}
-    local api_p = json.decode(p)
-    if type(api_p) ~= 'table' then
+
+    local p_table = json.decode(p)
+
+    if type(p_table) ~= 'table' then
         tool.respClient(4053, '参数不正确')
     end
 
-    if api_p then
-        tmp = { '/internal' .. api, { args = api_p['args'] } };
+    local ngx_http_flag = ngx.HTTP_GET
+    if p_table['method'] then
+        ngx_http_flag = tool.getCpatureMethod(p_table['method'])
+    end
+
+    if p_table then
+        tmp = { '/internal' .. api, { args = p_table['args'], method = ngx_http_flag, body = p_table['body'] or "" } };
     else
         tmp = { '/internal' .. api };
     end
-    --    ngx.say(tmp)
     table.insert(list, tmp);
 end;
---ngx.say(list)
 
---发送子请求
 local response = { ngx.location.capture_multi(list) };
---合并响应
+
 local data = {};
 for num, resp in pairs(response) do
-    --    ngx.say(num)
-    --    ngx.print(json.encode(resp))
     local header = resp['header']
-    --      ngx.print(json.encode(resp["body"]))
-    --    resp = json.decode(resp);
-    --    data[num] = resp
-    --    ngx.print(json.encode(header))
     data[header['RequestUri']] = resp['body'];
 end;
---响应到客户端
+
 ngx.say(json.encode(data));
 
 
