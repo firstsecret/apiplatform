@@ -42,7 +42,7 @@ end
 --local jwt_obj = jwt:verify(key, jwt_token)
 
 local response_table = {}
---ngx.say(jwt_obj['verified'])
+
 if jwt_obj['verified'] then
     response_table['status_code'] = 0000
     response_table['message'] = '验证成功'
