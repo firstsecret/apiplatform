@@ -338,4 +338,11 @@ class ShowController extends BaseController
 
         return $this->responseClient(200, '成功', []);
     }
+
+    public function testAdminConfig()
+    {
+//        AppUser::find(1);
+//        dd(config('test_admin_key'));
+        var_dump(config('test_admin_secret'));
+    }
 }

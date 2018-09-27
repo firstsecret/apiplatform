@@ -12,12 +12,12 @@ return [
     /*
      * Laravel-admin name.
      */
-    'name' => 'Laravel-admin',
+    'name' => 'api平台后台管理系统',
 
     /*
      * Logo in admin panel header.
      */
-    'logo' => '<b>Laravel</b> admin',
+    'logo' => '<b>api平台</b> admin',
 
     /*
      * Mini-logo in admin panel header.
@@ -44,7 +44,7 @@ return [
     /*
      * Laravel-admin html title.
      */
-    'title' => 'Admin',
+    'title' => 'api后台管理系统',
 
     /*
      * Use `https`.
