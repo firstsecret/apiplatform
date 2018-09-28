@@ -343,6 +343,9 @@ class ShowController extends BaseController
     {
 //        AppUser::find(1);
 //        dd(config('test_admin_key'));
-        var_dump(config('test_admin_secret'));
+//        var_dump(config('test_admin_secret'));
+//        dd(User::find(7)->appuser());
+
+//        tfdfad
     }
 }

@@ -7,6 +7,8 @@
  */
 set_time_limit(0);
 
+echo date('Y-m-d H:i:s', time());die;
+
 /**
  *  app 应用方
  */

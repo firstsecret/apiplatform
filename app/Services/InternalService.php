@@ -47,8 +47,8 @@ class InternalService extends BaseLoginService
             ]);
 
             // app_user
-            $app_key = md5($this->randomStr(11));
-            $app_secret = md5($this->randomStr(11));
+            $app_key = $this->factoryUserAppkey();
+            $app_secret = $this->factoryUserAppkey();
             AppUser::updateOrCreate([
                 'user_id' => $admin->id,
                 'model' => get_class($admin),

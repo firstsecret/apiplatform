@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Encore\Admin\Reporter\Reporter;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -34,7 +35,10 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        parent::report($exception);
+        if ($this->shouldReport($exception)) {
+            Reporter::report($exception);
+        }
+//        parent::report($exception);
     }
 
     /**

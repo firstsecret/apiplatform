@@ -202,6 +202,11 @@ trait AppTool
         return substr($str, 0, 8);
     }
 
+    function factoryUserAppkey()
+    {
+        return md5($this->customCreateUUID());
+    }
+
     /**
      *  统一返回
      * @param $status_code

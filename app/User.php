@@ -48,6 +48,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne('App\Models\AppUser', 'user_id')->where('model', $model)->first(['app_key', 'app_secret', 'user_id', 'created_at', 'model']);
     }
 
+    function appuser()
+    {
+        return $this->hasOne('App\Models\AppUser','user_id')->where('model',self::class);
+    }
+
     function getUserApp($pk)
     {
         return AppUser::where('user_id', $pk)->where('model', 'App\User')->first(['app_key', 'app_secret', 'user_id', 'created_at', 'model']);
