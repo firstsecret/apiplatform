@@ -47,11 +47,11 @@ class UserController extends Controller
     {
         $data = $request->input();
 
-        if (array_key_exists('password',$data) && empty($data['password'])) {
+        if (array_key_exists('password', $data) && empty($data['password'])) {
             unset($data['password']);
             unset($data['password_confirmation']);
         }
-        
+
         return $this->form()->update($id, $data);
     }
 
@@ -235,11 +235,5 @@ class UserController extends Controller
         });
     }
 
-
-//    public function store(Request $request)
-//    {
-//        $request->input('app_key', $this->factoryUserAppkey());
-//        $request->input('app_secret', $this->factoryUserAppkey());
-//    }
 
 }
