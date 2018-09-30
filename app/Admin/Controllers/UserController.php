@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\ModelForm;
 use Encore\Admin\Show;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 
 class UserController extends Controller
 {
@@ -98,6 +99,7 @@ class UserController extends Controller
     {
         return Admin::grid(User::class, function (Grid $grid) {
             // 过滤
+
             $grid->filter(function ($filter) {
                 // 去掉默认的id过滤器
                 $filter->disableIdFilter();
@@ -153,18 +155,19 @@ class UserController extends Controller
             $grid->created_at('创建时间')->sortable();
             $grid->updated_at('更新时间')->sortable();
 
-//            $is_sortDelete = $request->input('__scope');
-            $get_scope = $request->input('_scope_');
+            $input_query = Input::query();
+
 //            dd( $request->input());
-            $grid->actions(function ($actions) use ($get_scope) {
-                if($get_scope == 'deleted_at'){
+            $grid->actions(function ($actions) use ($input_query) {
+                if (isset($input_query['_scope_']) && $input_query['_scope_'] == 'deleted_at') {
                     $actions->disableDelete();
+                    $actions->disableEdit();
                 }
+//                    $actions->disableDelete();
+
 //                $actions->disableEdit();
 //                $actions->disableView();
             });
-
-
 
             $grid->paginate(20);
         });
@@ -220,23 +223,37 @@ class UserController extends Controller
             $content->header($this->title);
             $content->description('用户详情');
 
-            $content->body(Admin::show(User::findOrFail($id), function (Show $show) {
+            $content->body(Admin::show(User::withTrashed()->findOrFail($id), function (Show $show) {
 
                 $show->panel()
                     ->style('info')
                     ->title('用户基本信息')
-                    ->tools(function ($tools) {
+                    ->tools(function ($tools) use ($show) {
                         //                        $tools->disableEdit();
+                        if ($show->deleted_at()) {
+                            $tools->disableDelete();
+                            $tools->disableEdit();
+                        }
                     });;
 
                 $show->id('ID');
                 $show->name('名称');
                 $show->email('邮箱');
                 $show->telephone('手机号码');
-                $show->created_at();
-                $show->updated_at();
+                $show->created_at('创建时间');
+                $show->updated_at('更新时间');
+                $show->deleted_at('删除时间');
 
-                $show->appuser('授权信息', function ($appuser) {
+                $show->appuser('授权信息', function ($appuser) use($show) {
+                    $appuser->panel()
+                        ->style('info')
+                        ->tools(function ($tools) use ($show){
+                             if($show->deleted_at()){
+                                 $tools->disableDelete();
+                                 $tools->disableEdit();
+                             }
+                        });
+
                     $appuser->app_key();
                     $appuser->app_secret();
                     $appuser->type('授权类型')->as(function ($type) {

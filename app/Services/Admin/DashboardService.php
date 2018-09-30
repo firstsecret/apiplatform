@@ -12,13 +12,23 @@ namespace App\Services\Admin;
 use App\Client\httpClient;
 use App\User;
 
+/**
+ * Class DashboardService  支持 curl 与 guzzlehttp(推荐,也是默认) 驱动 获取
+ * @author Bevan
+ * @package App\Services\Admin
+ */
 class DashboardService
 {
     protected $c;
 
+    protected $base_uri;
+
     public function __construct()
     {
-        $this->c = new httpClient(['driver' => 'curl']);
+        $this->c = new httpClient();
+//        $this->c = new httpClient(['driver'=>'curl']);
+
+        $this->base_uri = config('server_status_base_uri');
     }
 
     public function totalUser()
@@ -28,18 +38,50 @@ class DashboardService
 
     public function nginxStatus()
     {
-        $data = $this->c->request->get('http://127.0.0.1:81/status');
-//        print_r($data);
-        return $this->formatNginxStatus($data);
+        $data = $this->c->request->get($this->base_uri . '/status');
+
+        return is_object($data) ? $this->formatNginxStatusObject($data->getBody()->getContents()) : $this->formatNginxStatus($data);
     }
 
     public function phpfpmStatus()
     {
-        $data = $this->c->request->get('http://127.0.0.1:81/fpm_status');
+        $data = $this->c->request->get($this->base_uri . '/fpm_status');
 
-//        print_r($data);
+        return is_object($data) ? $this->formatPHPfpmStatusObject($data->getBody()->getContents()) : $this->formatPHPfpmStatus($data);
+    }
 
-        return $this->formatPHPfpmStatus($data);
+    /**
+     *
+     * @param $data
+     * @return array
+     */
+    protected function formatPHPfpmStatusObject($data)
+    {
+        $arr = explode("\n", $data);
+
+        $na = [];
+
+        foreach ($arr as $i) {
+            $tmp = explode(':', $i);
+
+            switch (count($tmp)) {
+                case 0:
+                    break;
+                case 1:
+                    if ($tmp[0]) $na[str_replace(" ", '_', trim($tmp[0]))] = '';
+                    break;
+                case 2:
+                    $na[str_replace(" ", '_', trim($tmp[0]))] = trim($tmp[1]);
+                    break;
+                default:
+                    $key = str_replace(" ", '_', trim($tmp[0]));
+                    unset($tmp[0]);
+                    $str = implode(':', $tmp);
+                    $na[$key] = date('Y-m-d H:i:s', strtotime(trim($str)));
+                    break;
+            }
+        }
+        return $na;
     }
 
     protected function formatPHPfpmStatus($data)
@@ -100,10 +142,69 @@ class DashboardService
         return $return_data;
     }
 
-    protected function formatNginxStatus($str)
+    protected function handleStatus($str)
+    {
+        $t = array_filter(explode(" ", $str));
+        $t[1] = isset($t[1]) ? trim($t[1]) : "0";
+        return $t;
+    }
+
+    protected function formatNginxStatusObject($data)
+    {
+        $arr = array_filter(explode("\n", $data));
+        $return_arr = [];
+
+        foreach ($arr as $k => $i) {
+            switch ($k) {
+                case 0:
+                    $tmp = explode(':', $i);
+                    $return_arr[lcfirst(str_replace(" ", '_', trim($tmp[0])))] = trim($tmp[1]);
+                    break;
+                case 3:
+                    $tmp = explode(':', $i);
+                    $rw = $this->handleStatus($tmp[1]);
+                    $return_arr[lcfirst($tmp[0])] = $rw[1];
+                    $back = $this->handleStatus($tmp[2]);
+                    $return_arr[lcfirst($rw[2])] = $back[1];
+                    $return_arr[$back[2]] = trim($tmp[3]);
+                    break;
+                default:
+
+                    $res = $this->getNginxRequestNum($arr[2]);
+
+                    $return_arr = array_merge($return_arr, $res);
+                    break;
+            }
+        }
+        return $return_arr;
+    }
+
+    protected function getNginxRequestNum($str)
     {
         preg_match('/.*?(\d+)\s+(\d+)\s+(\d+).*?/', $str, $match);
+        $arr['server'] = $match[1];
+        $arr['accepts_handled'] = $match[2];
+        $arr['requests'] = $match[3];
+        return $arr;
+    }
 
-        return $match[3];
+    protected function formatNginxStatus($str)
+    {
+//        dd($str);
+        $return_data = $this->getNginxRequestNum($str);
+        // 目前的 活跃连接数
+        preg_match('/.*?Active connections:.*?(\w+).*?/', $str, $match);
+        $return_data['active_connections'] = $match[1];
+        // 读取客户端的连接数
+        preg_match('/.*?Reading:.*?(\w+).*?/', $str, $match);
+        $return_data['reading'] = $match[1];
+        // 响应数据到客户端的数量
+        preg_match('/.*?Writing:.*?(\w+).*?/', $str, $match);
+        $return_data['writing'] = $match[1];
+        // Nginx 已经处理完正在等候下一次请求指令的驻留连接
+        preg_match('/.*?Waiting:.*?(\w+).*?/', $str, $match);
+        $return_data['waiting'] = $match[1];
+
+        return $return_data;
     }
 }

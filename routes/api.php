@@ -15,7 +15,6 @@
 //$dispatcher = app('Dingo\Api\Dispatcher');
 
 app('api.exception')->register(function (Exception $exception) {
-
 //    dd(get_class($exception));
 //    if (config('app.debug')) {
 //        $request = Request::capture();
