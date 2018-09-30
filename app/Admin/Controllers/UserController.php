@@ -34,6 +34,7 @@ class UserController extends Controller
      */
     public function index()
     {
+
         return Admin::content(function (Content $content) {
 
             $content->header($this->title);
@@ -107,6 +108,7 @@ class UserController extends Controller
                 $filter->between('created_at', '创建时间')->datetime();
                 $filter->between('updated_at', '更新时间')->datetime();
                 $filter->between('deleted_at', '删除时间')->datetime();
+
             });
 
             $grid->id('ID')->sortable();
@@ -141,7 +143,6 @@ class UserController extends Controller
 //            }, 'Profile');
             // 是否 永久型的 授权
 
-
             $grid->type('状态')->switch($this->states);
 //            $grid->type('状态')->display(function ($type){
 //               return $type ? "<button type=\"button\" class=\"btn-xs btn btn-success active\">已激活</button>" : "<button type=\"button\" class=\"btn-xs btn btn-default\">未激活</button>";
@@ -151,6 +152,19 @@ class UserController extends Controller
             });
             $grid->created_at('创建时间')->sortable();
             $grid->updated_at('更新时间')->sortable();
+
+//            $is_sortDelete = $request->input('__scope');
+            $get_scope = $request->input('_scope_');
+//            dd( $request->input());
+            $grid->actions(function ($actions) use ($get_scope) {
+                if($get_scope == 'deleted_at'){
+                    $actions->disableDelete();
+                }
+//                $actions->disableEdit();
+//                $actions->disableView();
+            });
+
+
 
             $grid->paginate(20);
         });
