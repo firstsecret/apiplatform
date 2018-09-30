@@ -16,7 +16,7 @@ class httpClient
     public function __construct($config = [])
     {
         // 获取配置的驱动
-        $driver = $config['driver'] ?: config('app.http_driver');
+        $driver = isset($config['driver']) ? $this->mapDriver($config['driver']) : config('app.http_driver');
         unset($config['driver']);
         $this->request = new $driver($config);
     }

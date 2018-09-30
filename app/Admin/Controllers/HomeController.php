@@ -27,14 +27,15 @@ class HomeController extends Controller
             $content->header('首页控制台');
             $content->description('首页...');
 
-            $requestAll = $this->service->nginxStatus();
+            $requestNginxAll = $this->service->nginxStatus();
 
+            $phpfpm = $this->service->phpfpmStatus();
 
-            $content->row(function ($row) use ($requestAll) {
+            $content->row(function ($row) use ($requestNginxAll, $phpfpm) {
                 $row->column(3, new InfoBox('总用户数', 'users', 'aqua', '/', $this->service->totalUser()));
-                $row->column(3, new InfoBox('正在处理的连接', 'exchange', 'green', '/', '150%'));
-                $row->column(3, new InfoBox('已处理请求数', 'location-arrow', 'yellow', '/', $requestAll));
-                $row->column(3, new InfoBox('Documents', 'file', 'red', '/', '698726'));
+                $row->column(3, new InfoBox('已处理请求数', 'location-arrow', 'yellow', '/', $requestNginxAll));
+                $row->column(3, new InfoBox('历史最大活跃进程数', 'file', 'green', '/', $phpfpm['max_active_processes']));
+                $row->column(3, new InfoBox('历史最高请求等待队列数', 'exchange', 'red', '/', $phpfpm['max_listen_queue']));
             });
 
 //            $content->row(Dashboard::title());

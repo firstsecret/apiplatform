@@ -9,11 +9,18 @@
 namespace App\Services\Admin;
 
 
+use App\Client\httpClient;
 use App\User;
-use  GuzzleHttp\Client;
 
 class DashboardService
 {
+    protected $c;
+
+    public function __construct()
+    {
+        $this->c = new httpClient(['driver' => 'curl']);
+    }
+
     public function totalUser()
     {
         return User::count('id');
@@ -21,27 +28,81 @@ class DashboardService
 
     public function nginxStatus()
     {
-        $curl = curl_init();
-        //设置抓取的url
-        curl_setopt($curl, CURLOPT_URL, 'http://127.0.0.1:81/status');
-        //设置头文件的信息作为数据流输出
-        curl_setopt($curl, CURLOPT_HEADER, 1);
-        //设置获取的信息以文件流的形式返回，而不是直接输出。
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        //执行命令
-        $data = curl_exec($curl);
-        //关闭URL请求
-        curl_close($curl);
-        //显示获得的数据
-//        var_dump(gettype($data));
-        print_r($data);
+        $data = $this->c->request->get('http://127.0.0.1:81/status');
+//        print_r($data);
         return $this->formatNginxStatus($data);
     }
 
+    public function phpfpmStatus()
+    {
+        $data = $this->c->request->get('http://127.0.0.1:81/fpm_status');
+
+//        print_r($data);
+
+        return $this->formatPHPfpmStatus($data);
+    }
+
+    protected function formatPHPfpmStatus($data)
+    {
+        $return_data = [];
+        // 连接池名
+        preg_match('/.*?pool:.*?(\w+).*?/', $data, $match);
+        $return_data['pool'] = $match['1'];
+
+        // 当前池接受的请求数
+        preg_match('/.*?accepted conn:.*?(\d+).*?/', $data, $match);
+        $return_data['accepted_conn'] = $match[1];
+
+        // 总进程数量
+        preg_match('/.*?total processes:.*?(\d+).*?/', $data, $match);
+        $return_data['total_processes'] = $match['1'];
+
+        // 最大排队数
+        preg_match('/.*?max listen queue:.*?(\d+).*?/', $data, $match);
+        $return_data['max_listen_queue'] = $match['1'];
+
+        // 空闲进程
+        preg_match('/.*?idle processes:.*?(\d+).*?/', $data, $match);
+        $return_data['idle_processes'] = $match[1];
+
+        // 活跃进程
+        preg_match('/.*?active processes:.*?(\d+).*?/', $data, $match);
+        $return_data['active_processes'] = $match[1];
+
+        // 总进程数
+        preg_match('/.*?total processes:.*?(\d+).*?/', $data, $match);
+        $return_data['total_processes'] = $match[1];
+
+        // 最大活跃进程数
+        preg_match('/.*?max active processes:.*?(\d+).*?/', $data, $match);
+        $return_data['max_active_processes'] = $match[1];
+
+        // 进程最大数量 限制 次数
+        preg_match('/.*?max children reached:.*?(\d+).*?/', $data, $match);
+        $return_data['max_children_reached'] = $match[1];
+
+        // 运行时间
+        preg_match('/.*?start since:.*?(\d+).*?/', $data, $match);
+        $return_data['start_since'] = $match[1];
+
+        // 进程管理方式
+        preg_match('/.*?process manager:.*?(\w+).*?/', $data, $match);
+        $return_data['process_manager'] = $match[1];
+
+        // 启动时间
+        preg_match('/.*?start time:\s+(.*)/', $data, $match);
+        $return_data['start_time'] = date('Y-m-d H:i:s', strtotime($match[1]));
+
+        // 目前请求的排队数
+        preg_match('/.*?listen queue:.*?(\w+).*?/', $data, $match);
+        $return_data['listen_queue'] = $match[1];
+
+        return $return_data;
+    }
 
     protected function formatNginxStatus($str)
     {
-        preg_match('/.*?(\d+)\s+(\d+)\s+(\d+).*?/',$str,$match);
+        preg_match('/.*?(\d+)\s+(\d+)\s+(\d+).*?/', $str, $match);
 
         return $match[3];
     }
