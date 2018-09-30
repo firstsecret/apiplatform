@@ -16,7 +16,8 @@ class httpClient
     public function __construct($config = [])
     {
         // 获取配置的驱动
-        $driver = config('app.http_driver');
+        $driver = $config['driver'] ?: config('app.http_driver');
+        unset($config['driver']);
         $this->request = new $driver($config);
     }
 
@@ -30,5 +31,13 @@ class httpClient
     {
         // TODO: Implement __call() method.
         return $this->request->$name($arguments);
+    }
+
+    protected function mapDriver($d)
+    {
+        return [
+            'curl' => 'App\Client\Driver\CurlHttp',
+            'guzzle' => 'App\Client\Driver\BeVanGuzzleHttp'
+        ][$d];
     }
 }

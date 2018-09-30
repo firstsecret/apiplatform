@@ -21,16 +21,6 @@ class DashboardService
 
     public function nginxStatus()
     {
-//        $client = new Client([
-//            // Base URI is used with relative requests
-//            'base_uri' => 'http://127.0.0.1:81',
-//            // You can set any number of default request options.
-//            'timeout' => 2.0,
-//        ]);
-//        $response = $client->get('/status');
-//        $this->formatNginxStatus($response);
-//        dd($response->getBody());
-
         $curl = curl_init();
         //设置抓取的url
         curl_setopt($curl, CURLOPT_URL, 'http://127.0.0.1:81/status');
@@ -44,15 +34,15 @@ class DashboardService
         curl_close($curl);
         //显示获得的数据
 //        var_dump(gettype($data));
-//        print_r($data);
-        $this->formatNginxStatus($data);
+        print_r($data);
+        return $this->formatNginxStatus($data);
     }
 
 
     protected function formatNginxStatus($str)
     {
-        preg_match('/(.*?)server accepts handled requests (\d+)\s+(\d+)\s+(\d+).*?/',$str,$match);
+        preg_match('/.*?(\d+)\s+(\d+)\s+(\d+).*?/',$str,$match);
 
-        dd($match);
+        return $match[3];
     }
 }

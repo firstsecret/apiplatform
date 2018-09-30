@@ -27,21 +27,21 @@ class HomeController extends Controller
             $content->header('首页控制台');
             $content->description('首页...');
 
-            $this->service->nginxStatus();
+            $requestAll = $this->service->nginxStatus();
 
 
-            $content->row(function ($row) {
+            $content->row(function ($row) use ($requestAll) {
                 $row->column(3, new InfoBox('总用户数', 'users', 'aqua', '/', $this->service->totalUser()));
                 $row->column(3, new InfoBox('正在处理的连接', 'exchange', 'green', '/', '150%'));
-                $row->column(3, new InfoBox('总请求数', 'location-arrow', 'yellow', '/', '2786'));
+                $row->column(3, new InfoBox('已处理请求数', 'location-arrow', 'yellow', '/', $requestAll));
                 $row->column(3, new InfoBox('Documents', 'file', 'red', '/', '698726'));
             });
 
-            $content->row(Dashboard::title());
+//            $content->row(Dashboard::title());
 
             $content->row(function (Row $row) {
 
-                $row->column(4, function (Column $column) {
+                $row->column(12, function (Column $column) {
                     $column->append(Dashboard::environment());
                 });
 //
