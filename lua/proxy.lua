@@ -1,5 +1,7 @@
 -- require tool
 local tool = require('resty.tool')
+local zhttp = require("resty.http")
+--local string = require('resty.string')
 
 -- body
 ngx.req.read_body();
@@ -33,31 +35,122 @@ local request_uri = ngx.var.request_uri
 local request_method = ngx.var.request_method
 --ngx.say(request_method)
 local res = {}
-if (request_method == 'POST') then
-    res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_POST, args = re_args })
-elseif (request_method == 'GET') then
-    res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_GET, args = re_args })
-elseif (request_method == 'PUT') then
-    res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_PUT, args = re_args })
-elseif (request_method == 'DELETE') then
-    res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_DELETE, args = re_args })
-elseif (request_method == 'OPTIONS') then
-    res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_OPTIONS, args = re_args })
+
+
+-- http module
+local httpc = zhttp.new()
+
+-- redis
+local redis = tool.getRedis()
+
+-- 获取 服务 请求 列表
+-- 根据服务端的 心跳包 确定 服务是否 已挂
+local post_args = ngx.req.get_post_args()
+local post_str = ''
+for k, v in pairs(post_args) do
+    post_str = post_str .. k .. '=' .. v .. '&'
 end
+--string.len(post_str)
+local len = string.len(post_str) - 1
+--ngx.print(len)
+post_str = string.sub(post_str, 1, string.len(post_str) - 1)
+
+
+-- dev
+local dev_module = redis:get('apiplatform_service_dev')
+local request_base_uri = redis:get('apiplatform_service_base_uri')
+local url = request_base_uri .. request_uri
+if dev_module == 'true' then
+    local timeout = timeout or 5000
+    httpc:set_timeout(timeout)
+    local ngx_http_flag = tool.getCpatureMethod(request_method)
+    local body = ngx.req.read_body();
+
+    local res, err_ = httpc:request_uri(url, {
+        method = ngx_http_flag,
+        body = body,
+        headers = {
+            ["Content-Type"] = "application/x-www-form-urlencoded",
+        }
+    })
+
+
+
+    -- error handle
+    if not res then
+        ngx.log(ngx.CRIT, 'http request service error:' .. err_)
+        tool.respClient(5103, '服务异常')
+    else
+        ngx.print(url)
+        ngx.print(res.header)
+
+        -- 重写header头
+--        for k, v in pairs(res.header) do
+--            if k ~= "Transfer-Encoding" and k ~= "Connection" then
+--                ngx.header[k] = v
+--            end
+--        end
+--        ngx.print('dfd')
+--        tool.rewriteResponse('RequestUri', request_uri)
+--        tool.rewriteResponse('Server', 'xiaoyumi')
+--        tool.setNgxVar('resp_body', res.body)
+----        local resp_headers = res.header
+--
+--        if res.status == 200 then
+--            ngx.print(res.body)
+--        else
+--            ngx.ctx.log_msg = res.status .. 'body: ' .. res.body .. ',header: ' .. tool.serialize(res.header)
+--            ngx.ctx.log_msg = res.status .. 'body: ' .. res.body
+--            local err_status_code = res.body['status_code']
+--            if err_status_code == nil then
+--                err_status_code = 4059
+--            end
+--            ngx.ctx.err_message = res.body['message']
+--            ngx.ctx.err_status_code = err_status_code
+--            return ngx.exit(res.status)
+--        end
+    end
+
+    --    for k, v in pairs(res.header) do
+    --        if k ~= "Transfer-Encoding" and k ~= "Connection" then
+    --            ngx.header[k] = v
+    --        end
+    --    end
+
+    -- response handle
+    --ngx.header['Server'] = 'xiaoyumi'
+    --    tool.rewriteResponse('RequestUri', request_uri)
+    --    tool.rewriteResponse('Server', 'xiaoyumi')
+
+else
+    tool.respClient(5555, '正式环境未开发完成')
+end
+
+--if (request_method == 'POST') then
+--    res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_POST, args = re_args })
+--elseif (request_method == 'GET') then
+--    res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_GET, args = re_args })
+--elseif (request_method == 'PUT') then
+--    res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_PUT, args = re_args })
+--elseif (request_method == 'DELETE') then
+--    res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_DELETE, args = re_args })
+--elseif (request_method == 'OPTIONS') then
+--    res = ngx.location.capture('/internal/' .. request_uri, { method = ngx.HTTP_OPTIONS, args = re_args })
+--end
 --ngx.say(request_uri)
 --ngx.req.set_header("Content-Type", "application/json;charset=utf8");
 --ngx.req.set_header("Accept", "application/json");
 --get response header
-for k, v in pairs(res.header) do
-    if k ~= "Transfer-Encoding" and k ~= "Connection" then
-        ngx.header[k] = v
-    end
-end
+--for k, v in pairs(res.header) do
+--    if k ~= "Transfer-Encoding" and k ~= "Connection" then
+--        ngx.header[k] = v
+--    end
+--end
 
 -- response handle
 --ngx.header['Server'] = 'xiaoyumi'
-tool.rewriteResponse('RequestUri', request_uri)
-tool.rewriteResponse('Server', 'xiaoyumi')
+--tool.rewriteResponse('RequestUri', request_uri)
+--tool.rewriteResponse('Server', 'xiaoyumi')
 -- ctx
 --ngx.ctx.log_msg = res.body
 
@@ -70,26 +163,26 @@ tool.rewriteResponse('Server', 'xiaoyumi')
 --end
 --ngx.say(ngx.arg[1])
 --ngx.var.resp_body = res.body
-tool.setNgxVar('resp_body', res.body)
-local resp_headers = res.header
+--tool.setNgxVar('resp_body', res.body)
+--local resp_headers = res.header
 --for k, h in pairs(resp_headers) do
 
-if res.status == 200 then
-    -- 后期 与 服务方 确定 返回 信息
-    --    tool.respClient()
-    ngx.print(res.body)
-else
-    ngx.ctx.log_msg = res.status .. 'body: ' .. res.body .. ',header: ' .. tool.serialize(res.header)
-    ngx.ctx.log_msg = res.status .. 'body: ' .. res.body
-    local err_status_code = res.body['status_code']
-    if err_status_code == nil then
-        err_status_code = 4059
-    end
-    ngx.ctx.err_message = res.body['message']
-    ngx.ctx.err_status_code = err_status_code
-    return ngx.exit(res.status)
-    --    ngx.say(ngx.ctx.log_msg)
-end
+--if res.status == 200 then
+--    -- 后期 与 服务方 确定 返回 信息
+--    --    tool.respClient()
+--    ngx.print(res.body)
+--else
+--    ngx.ctx.log_msg = res.status .. 'body: ' .. res.body .. ',header: ' .. tool.serialize(res.header)
+--    ngx.ctx.log_msg = res.status .. 'body: ' .. res.body
+--    local err_status_code = res.body['status_code']
+--    if err_status_code == nil then
+--        err_status_code = 4059
+--    end
+--    ngx.ctx.err_message = res.body['message']
+--    ngx.ctx.err_status_code = err_status_code
+--    return ngx.exit(res.status)
+--    --    ngx.say(ngx.ctx.log_msg)
+--end
 
 -- debug log
 --file = io.open("/tmp/capture.log", "a+")
@@ -104,4 +197,3 @@ end
 --if res.status == 200 then
 --    ngx.print(res.body)
 --end)
-

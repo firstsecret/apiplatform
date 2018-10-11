@@ -6,7 +6,7 @@
 -- To change this template use File | Settings | File Templates.
 --
 
--- log
+-- send log
 local log_msg = ngx.ctx.log_msg
 --if log_msg == nil then
 --    log_msg = 'no message'

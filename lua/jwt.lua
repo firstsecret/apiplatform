@@ -6,11 +6,10 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-local cjson = require "cjson"
+--local cjson = require "cjson"
 local jwt = require "resty.jwt"
 local tool = require "resty.tool"
 local random = require "resty.random"
-
 
 -- check user
 local args = ngx.req.get_uri_args()
@@ -27,31 +26,31 @@ if app_key == nil or app_secret == nil then
 end
 
 -- redis
-local redis_host = '127.0.0.1'
-local redis_port = '6379'
+--local redis_host = '127.0.0.1'
+--local redis_port = '6379'
 
 -- don't too long
-local redis_connection_timeout = 100
+--local redis_connection_timeout = 100
 
-local redis = require "resty.redis"
-local red = redis:new()
 
-red:set_timeout(redis_connection_timeout)
+--local red = redis:new()
 
-local ok, err = red:connect(redis_host, redis_port)
+--red:set_timeout(redis_connection_timeout)
 
+--local ok, err = red:connect(redis_host, redis_port)
+local red = tool.getRedis()
 local real_app_secret
 local app_key_type = 0
 
-if not ok then
-    ngx.log(ngx.CRIT, "Redis Connect error while retrieving ip_blacklist: " .. err)
-    local resp_table = { status_code = 5009, message = "服务出错,请联系管理人员进行服务恢复" }
-    tool.setNgxVar('resp_body', tool.serialize(resp_table))
-    tool.respClient(resp_table['status_code'], resp_table['message'])
-    return
-else
+--if not ok then
+--    ngx.log(ngx.CRIT, "Redis Connect error while retrieving ip_blacklist: " .. err)
+--    local resp_table = { status_code = 5009, message = "服务出错,请联系管理人员进行服务恢复" }
+--    tool.setNgxVar('resp_body', tool.serialize(resp_table))
+--    tool.respClient(resp_table['status_code'], resp_table['message'])
+--    return
+--else
     local r_app_secret = red:get(app_key)
-    if r_app_secret == nil then
+    if r_app_secret == nil or type(r_app_secret) == 'userdata' then
         tool.respClient(4009, 'appkey不存在')
         return
     else
@@ -65,7 +64,7 @@ else
             return
         end
     end
-end
+--end
 
 --
 local key = tool.getJWTSecret()
