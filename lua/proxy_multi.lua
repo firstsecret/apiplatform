@@ -9,6 +9,7 @@
 --加载 json 库
 local json = require "cjson";
 local tool = require "resty.tool"
+local zhttp = require("resty.http")
 --获取请求方式
 local request_method = ngx.var.request_method;
 
@@ -32,38 +33,118 @@ end;
 ngx.req.read_body();
 local api_p = ngx.req.get_post_args();
 
+
+-- init redis
+-- redis
+local redis = tool.getRedis()
+local httpc = zhttp.new()
 --拼接子请求
-local list = {};
-for api, p in pairs(api_p) do
-    local tmp = {}
 
-    local p_table = json.decode(p)
+-- is dev env
+local dev_module = redis:get('apiplatform_service_dev')
+local request_base_uri = redis:get('apiplatform_service_base_uri')
 
-    if type(p_table) ~= 'table' then
-        tool.respClient(4053, '参数不正确')
+
+if dev_module == 'true' then
+    local timeout = timeout or 5000
+    httpc:set_timeout(timeout)
+
+    local list = {}
+
+    for api, p in pairs(api_p) do
+        local tmp = {}
+
+        local p_table = json.decode(p)
+
+
+        if type(p_table) ~= 'table' then
+            tool.respClient(4053, '参数不正确')
+        end
+
+        if p_table then
+            tmp = {
+                path = request_base_uri .. api,
+                method = p_table['method'] or "GET",
+                headers = {},
+                body = p_table['body'] or "",
+                query = p_table['args'] or ""
+            }
+        else
+            tmp = {
+                path = request_base_uri .. api,
+                headers = {},
+                method = "GET",
+                body = "",
+                query = ""
+            }
+        end
+        table.insert(list, tmp);
     end
-
-    local ngx_http_flag = ngx.HTTP_GET
-    if p_table['method'] then
-        ngx_http_flag = tool.getCpatureMethod(p_table['method'])
-    end
-
-    if p_table then
-        tmp = { '/internal' .. api, { args = p_table['args'], method = ngx_http_flag, body = p_table['body'] or "" } };
+    httpc:connect('127.0.0.1',81)
+    httpc:set_timeout(5)
+    --    ngx.say(json.encode(list))
+    local responses,err_ = httpc:request_pipeline{
+        {
+            path = "/b",
+            headers = {}
+        }
+    }
+--    ngx.print(json.encode(responses))
+    if not responses or next(responses) == nil then
+        ngx.print(type(err_))
+        ngx.print(json.encode(err_))
+        --            ngx.log(ngx.CRIT, 'http request service error:' .. err_)
+        tool.respClient(5103, '服务异常' .. err_)
     else
-        tmp = { '/internal' .. api };
+        for i, r in ipairs(responses) do
+            ngx.print(json.encode(r))
+            if r.status then
+                ngx.say(r.status)
+                ngx.say(r:read_body())
+            end
+        end
     end
-    table.insert(list, tmp);
-end;
+else
+    tool.respClient(5555, '正式环境未开发完成')
+end
 
-local response = { ngx.location.capture_multi(list) };
 
-local data = {};
-for num, resp in pairs(response) do
-    local header = resp['header']
-    data[header['RequestUri']] = resp['body'];
-end;
 
-ngx.say(json.encode(data));
+-- send requests
+
+
+
+--local list = {};
+--for api, p in pairs(api_p) do
+--    local tmp = {}
+--
+--    local p_table = json.decode(p)
+--
+--    if type(p_table) ~= 'table' then
+--        tool.respClient(4053, '参数不正确')
+--    end
+--
+--    local ngx_http_flag = ngx.HTTP_GET
+--    if p_table['method'] then
+--        ngx_http_flag = tool.getCpatureMethod(p_table['method'])
+--    end
+--
+--    if p_table then
+--        tmp = { '/internal' .. api, { args = p_table['args'], method = ngx_http_flag, body = p_table['body'] or "" } };
+--    else
+--        tmp = { '/internal' .. api };
+--    end
+--    table.insert(list, tmp);
+--end;
+--
+--local response = { ngx.location.capture_multi(list) };
+--
+--local data = {};
+--for num, resp in pairs(response) do
+--    local header = resp['header']
+--    data[header['RequestUri']] = resp['body'];
+--end;
+--
+--ngx.say(json.encode(data));
 
 

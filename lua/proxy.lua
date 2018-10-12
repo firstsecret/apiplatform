@@ -6,23 +6,25 @@ local zhttp = require("resty.http")
 -- body
 ngx.req.read_body();
 
-local re_args = ngx.req.get_uri_args()
+--local re_args = ngx.req.get_uri_args()
 --re_args.insert(get_headers)
 -- get headers
 
 -- set header
 -- http handle
+local capture_headers = {}
 function httpHandler()
     local re_headers = ngx.req.get_headers()
     for key, val in pairs(re_headers) do
         --        ngx.say(key)
+        capture_headers[key] = val
         ngx.req.set_header(key, val);
     end
 end
 
 -- gzip handle
 ngx.req.set_header('Accept-Encoding', 'default')
-
+capture_headers['Accept-Encoding'] = 'default'
 -- http error deal
 function httpErrorHandler(err)
     --    print("Http headers deal error:", err)
@@ -45,70 +47,72 @@ local redis = tool.getRedis()
 
 -- 获取 服务 请求 列表
 -- 根据服务端的 心跳包 确定 服务是否 已挂
+
+
+-- post args handle
 local post_args = ngx.req.get_post_args()
 local post_str = ''
 for k, v in pairs(post_args) do
     post_str = post_str .. k .. '=' .. v .. '&'
 end
 --string.len(post_str)
-local len = string.len(post_str) - 1
+--local len = string.len(post_str) - 1
 --ngx.print(len)
 post_str = string.sub(post_str, 1, string.len(post_str) - 1)
 
 
--- dev
+-- dev env
 local dev_module = redis:get('apiplatform_service_dev')
 local request_base_uri = redis:get('apiplatform_service_base_uri')
-local url = request_base_uri .. request_uri
+--local url = request_base_uri .. request_uri
+--ngx.say(request_uri)
 if dev_module == 'true' then
     local timeout = timeout or 5000
     httpc:set_timeout(timeout)
-    local ngx_http_flag = tool.getCpatureMethod(request_method)
+--    local ngx_http_flag = tool.getCpatureMethod(request_method)
     local body = ngx.req.read_body();
-
-    local res, err_ = httpc:request_uri(url, {
-        method = ngx_http_flag,
+--    ngx.print(url)
+    local res, err_ = httpc:request_uri(request_base_uri, {
+        path = request_uri,
+        method = request_method,
         body = body,
-        headers = {
-            ["Content-Type"] = "application/x-www-form-urlencoded",
-        }
+        headers = capture_headers,
+--                headers = {
+--                    ["Content-Type"] = "application/x-www-form-urlencoded",
+--                }
     })
-
-
 
     -- error handle
     if not res then
         ngx.log(ngx.CRIT, 'http request service error:' .. err_)
-        tool.respClient(5103, '服务异常')
+        tool.respClient(5103, '服务异常' .. err_)
     else
-        ngx.print(url)
-        ngx.print(res.header)
-
+        ngx.print(res.body)
         -- 重写header头
---        for k, v in pairs(res.header) do
---            if k ~= "Transfer-Encoding" and k ~= "Connection" then
---                ngx.header[k] = v
---            end
---        end
---        ngx.print('dfd')
---        tool.rewriteResponse('RequestUri', request_uri)
---        tool.rewriteResponse('Server', 'xiaoyumi')
---        tool.setNgxVar('resp_body', res.body)
-----        local resp_headers = res.header
---
---        if res.status == 200 then
---            ngx.print(res.body)
---        else
---            ngx.ctx.log_msg = res.status .. 'body: ' .. res.body .. ',header: ' .. tool.serialize(res.header)
---            ngx.ctx.log_msg = res.status .. 'body: ' .. res.body
---            local err_status_code = res.body['status_code']
---            if err_status_code == nil then
---                err_status_code = 4059
---            end
---            ngx.ctx.err_message = res.body['message']
---            ngx.ctx.err_status_code = err_status_code
---            return ngx.exit(res.status)
---        end
+        --        for k, v in pairs(res.header) do
+        --            if k ~= "Transfer-Encoding" and k ~= "Connection" then
+        --                ngx.header[k] = v
+        --            end
+        --        end
+        --        ngx.print('dfd')
+        --        tool.rewriteResponse('RequestUri', request_uri)
+        --        tool.rewriteResponse('Server', 'xiaoyumi')
+        --        tool.setNgxVar('resp_body', res.body)
+        --        local resp_headers = res.header
+        --
+        -- if res.status == 200 then
+        -- ngx.print(res.body)
+        -- else
+        -- ngx.ctx.log_msg = res.status .. 'body: ' .. res.body .. ',header: ' .. tool.serialize(res.header)
+        -- ngx.ctx.log_msg = res.status .. 'body: ' .. res.body
+        -- local err_status_code = res.body['status_code']
+        -- if err_status_code == nil then
+        -- err_status_code = 4059
+        -- end
+        -- ngx.ctx.err_message = res.body['message']
+        -- ngx.ctx.err_status_code = err_status_code
+        -- return ngx.exit(res.status)
+        -- end
     end
 
     --    for k, v in pairs(res.header) do
