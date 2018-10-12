@@ -56,14 +56,13 @@ if dev_module == 'true' then
 
         local p_table = json.decode(p)
 
-
         if type(p_table) ~= 'table' then
             tool.respClient(4053, '参数不正确')
         end
 
         if p_table then
             tmp = {
-                path = request_base_uri .. api,
+                path = api,
                 method = p_table['method'] or "GET",
                 headers = {},
                 body = p_table['body'] or "",
@@ -71,7 +70,7 @@ if dev_module == 'true' then
             }
         else
             tmp = {
-                path = request_base_uri .. api,
+                path = api,
                 headers = {},
                 method = "GET",
                 body = "",
@@ -81,15 +80,11 @@ if dev_module == 'true' then
         table.insert(list, tmp);
     end
     httpc:connect('127.0.0.1',81)
-    httpc:set_timeout(5)
-    --    ngx.say(json.encode(list))
-    local responses,err_ = httpc:request_pipeline{
-        {
-            path = "/b",
-            headers = {}
-        }
-    }
+    httpc:set_timeout(5000)
+--        ngx.say(json.encode(list))
+    local responses,err_ = httpc:request_pipeline(list)
 --    ngx.print(json.encode(responses))
+--    ngx.print(json.encode(err_))
     if not responses or next(responses) == nil then
         ngx.print(type(err_))
         ngx.print(json.encode(err_))
@@ -97,9 +92,9 @@ if dev_module == 'true' then
         tool.respClient(5103, '服务异常' .. err_)
     else
         for i, r in ipairs(responses) do
-            ngx.print(json.encode(r))
+--            ngx.print(json.encode(r))
             if r.status then
-                ngx.say(r.status)
+--                ngx.say(r.status)
                 ngx.say(r:read_body())
             end
         end
