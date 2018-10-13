@@ -78,7 +78,7 @@ if dev_module == 'true' then
                 headers_t = {}
             end
 
-            headers_t['X-Real-IP'] = ngx.var.remote_addr
+            headers_t['X-Forwarded-For'] = ngx.var.remote_addr
             headers_t['Accept-Encoding'] = 'default'
 
             tmp = {
@@ -90,7 +90,7 @@ if dev_module == 'true' then
             }
         else
             local headers_t = {}
-            headers_t['X-Read-IP'] = ngx.var.remote_addr
+            headers_t['X-Forwarded-For'] = ngx.var.remote_addr
             headers_t['Accept-Encoding'] = 'default'
             tmp = {
                 path = api,
@@ -116,7 +116,7 @@ if dev_module == 'true' then
         tool.respClient(5103, '服务异常')
     else
         for i, r in ipairs(responses) do
-                        ngx.print(json.encode(r))
+--                        ngx.print(json.encode(r))
             if r.status then
                 table.insert(response_list, json.decode(r:read_body()))
                 --                ngx.print(i)

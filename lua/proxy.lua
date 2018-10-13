@@ -40,7 +40,7 @@ local request_method = ngx.var.request_method
 --ngx.print(json.encode(ngx.var.remote_addr))
 
 -- add real ip
-capture_headers['X-Real-IP'] = ngx.var.remote_addr
+capture_headers['X-Forwarded-For'] = ngx.var.remote_addr
 
 -- http module
 local httpc = zhttp.new()

@@ -161,8 +161,9 @@ class ShowController extends BaseController
         $user = [];
 //        User::where('id', 2)->update(['name' => 'bevan']);
 //        $res = User::withTrashed()->get();
-        $realIp = $request->header('X-Real-IP');
-        return $this->responseClient(200, 'lua4', ['test' => 'fdsf', 'lua' => 'fdfd', 'real_ip' => $realIp]);
+        $realIp = $request->header('X-Forwarded-For');
+
+        return $this->responseClient(200, 'lua4', ['test' => 'fdsf', 'remote_addr' =>$request->ip(), 'real_ip' => $realIp]);
     }
 
     public function testLua5(Request $request)
