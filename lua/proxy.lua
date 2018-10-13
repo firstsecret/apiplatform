@@ -63,7 +63,7 @@ post_str = string.sub(post_str, 1, string.len(post_str) - 1)
 
 -- dev env
 local dev_module = redis:get('apiplatform_service_dev')
-local request_base_uri = redis:get('apiplatform_service_base_uri')
+local request_base_uri = 'http://' .. redis:get('apiplatform_service_base_uri')
 --local url = request_base_uri .. request_uri
 --ngx.say(request_uri)
 if dev_module == 'true' then

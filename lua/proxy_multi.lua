@@ -43,7 +43,20 @@ local httpc = zhttp.new()
 -- is dev env
 local dev_module = redis:get('apiplatform_service_dev')
 local request_base_uri = redis:get('apiplatform_service_base_uri')
+local request_port = 80
+--ngx.print(request_base_uri)
+local request_msg = tool.split(request_base_uri, ':')
+--
+for k, v in pairs(request_msg) do
+    if k == 1 then
+        request_base_uri = v
+    else
+        request_port = v
+    end
+end
 
+
+local response_list = {}
 
 if dev_module == 'true' then
     local timeout = timeout or 5000
@@ -79,23 +92,25 @@ if dev_module == 'true' then
         end
         table.insert(list, tmp);
     end
-    httpc:connect('127.0.0.1',81)
-    httpc:set_timeout(5000)
---        ngx.say(json.encode(list))
-    local responses,err_ = httpc:request_pipeline(list)
---    ngx.print(json.encode(responses))
---    ngx.print(json.encode(err_))
+    httpc:connect(request_base_uri, request_port)
+    httpc:set_timeout(3000)
+    --        ngx.say(json.encode(list))
+    local responses, err_ = httpc:request_pipeline(list)
+    --    ngx.print(json.encode(responses))
+    --    ngx.print(json.encode(err_))
     if not responses or next(responses) == nil then
-        ngx.print(type(err_))
-        ngx.print(json.encode(err_))
-        --            ngx.log(ngx.CRIT, 'http request service error:' .. err_)
-        tool.respClient(5103, '服务异常' .. err_)
+        --        ngx.print(type(err_))
+        --        ngx.print(json.encode(err_))
+        ngx.log(ngx.CRIT, 'http request multi service error:' .. err_)
+        tool.respClient(5103, '服务异常')
     else
         for i, r in ipairs(responses) do
---            ngx.print(json.encode(r))
+            --            ngx.print(json.encode(r))
             if r.status then
---                ngx.say(r.status)
-                ngx.say(r:read_body())
+                table.insert(response_list, json.decode(r:read_body()))
+                --                ngx.print(i)
+                --                ngx.say(r.status)
+                --                ngx.print(r:read_body())
             end
         end
     end
@@ -103,7 +118,11 @@ else
     tool.respClient(5555, '正式环境未开发完成')
 end
 
+-- response hander handle
 
+
+-- response
+tool.respClient(200, 'success', response_list)
 
 -- send requests
 
