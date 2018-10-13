@@ -59,9 +59,6 @@ end
 local response_list = {}
 
 if dev_module == 'true' then
-    local timeout = timeout or 5000
-    httpc:set_timeout(timeout)
-
     local list = {}
 
     for api, p in pairs(api_p) do
@@ -74,17 +71,30 @@ if dev_module == 'true' then
         end
 
         if p_table then
+            local headers_t = {}
+            if p_table["headers"] then
+                headers_t = json.decode(p_table["headers"])
+            else
+                headers_t = {}
+            end
+
+            headers_t['X-Real-IP'] = ngx.var.remote_addr
+            headers_t['Accept-Encoding'] = 'default'
+
             tmp = {
                 path = api,
                 method = p_table['method'] or "GET",
-                headers = {},
+                headers = headers_t,
                 body = p_table['body'] or "",
                 query = p_table['args'] or ""
             }
         else
+            local headers_t = {}
+            headers_t['X-Read-IP'] = ngx.var.remote_addr
+            headers_t['Accept-Encoding'] = 'default'
             tmp = {
                 path = api,
-                headers = {},
+                headers = headers_t,
                 method = "GET",
                 body = "",
                 query = ""
@@ -93,7 +103,8 @@ if dev_module == 'true' then
         table.insert(list, tmp);
     end
     httpc:connect(request_base_uri, request_port)
-    httpc:set_timeout(3000)
+    local timeout = timeout or 5000
+    httpc:set_timeout(timeout)
     --        ngx.say(json.encode(list))
     local responses, err_ = httpc:request_pipeline(list)
     --    ngx.print(json.encode(responses))
@@ -105,7 +116,7 @@ if dev_module == 'true' then
         tool.respClient(5103, '服务异常')
     else
         for i, r in ipairs(responses) do
-            --            ngx.print(json.encode(r))
+                        ngx.print(json.encode(r))
             if r.status then
                 table.insert(response_list, json.decode(r:read_body()))
                 --                ngx.print(i)

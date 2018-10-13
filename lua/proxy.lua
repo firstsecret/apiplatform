@@ -1,6 +1,7 @@
 -- require tool
 local tool = require('resty.tool')
 local zhttp = require("resty.http")
+--local json = require "cjson";
 --local string = require('resty.string')
 
 -- body
@@ -36,8 +37,10 @@ status = xpcall(httpHandler, httpErrorHandler)
 local request_uri = ngx.var.request_uri
 local request_method = ngx.var.request_method
 --ngx.say(request_method)
-local res = {}
+--ngx.print(json.encode(ngx.var.remote_addr))
 
+-- add real ip
+capture_headers['X-Real-IP'] = ngx.var.remote_addr
 
 -- http module
 local httpc = zhttp.new()
@@ -60,26 +63,37 @@ end
 --ngx.print(len)
 post_str = string.sub(post_str, 1, string.len(post_str) - 1)
 
+-- response header handler
+--for k, v in pairs(res.header) do
+--    if k ~= "Transfer-Encoding" and k ~= "Connection" then
+--        ngx.header[k] = v
+--    end
+--end
+--
+--     response handle
+tool.rewriteResponse('Server', 'xiaoyumi')
+tool.rewriteResponse('Content-Type', 'Application/json')
 
 -- dev env
 local dev_module = redis:get('apiplatform_service_dev')
 local request_base_uri = 'http://' .. redis:get('apiplatform_service_base_uri')
 --local url = request_base_uri .. request_uri
 --ngx.say(request_uri)
+
 if dev_module == 'true' then
     local timeout = timeout or 5000
     httpc:set_timeout(timeout)
---    local ngx_http_flag = tool.getCpatureMethod(request_method)
+    --    local ngx_http_flag = tool.getCpatureMethod(request_method)
     local body = ngx.req.read_body();
---    ngx.print(url)
+    --    ngx.print(url)
     local res, err_ = httpc:request_uri(request_base_uri, {
         path = request_uri,
         method = request_method,
         body = body,
         headers = capture_headers,
---                headers = {
---                    ["Content-Type"] = "application/x-www-form-urlencoded",
---                }
+        --                headers = {
+        --                    ["Content-Type"] = "application/x-www-form-urlencoded",
+        --                }
     })
 
     -- error handle
@@ -114,18 +128,6 @@ if dev_module == 'true' then
         -- return ngx.exit(res.status)
         -- end
     end
-
-    --    for k, v in pairs(res.header) do
-    --        if k ~= "Transfer-Encoding" and k ~= "Connection" then
-    --            ngx.header[k] = v
-    --        end
-    --    end
-
-    -- response handle
-    --ngx.header['Server'] = 'xiaoyumi'
-    --    tool.rewriteResponse('RequestUri', request_uri)
-    --    tool.rewriteResponse('Server', 'xiaoyumi')
-
 else
     tool.respClient(5555, '正式环境未开发完成')
 end
