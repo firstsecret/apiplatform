@@ -49,9 +49,9 @@ class VerificateRequstData
         if ($requesterApp->app_key != $appKey || $requesterApp->app_secret != $appUser->app_secret) throw new SignException(4003, '授权不一致,请求失败');
 
         $sign = $request->input('sign');
-
-        $reqData = strtr($request->input('reqData'), [' ' => '', "\n" => '']); // client 请求数据
         // 消除空格
+        $reqData = strtr($request->input('reqData'), [' ' => '', "\n" => '']); // client 请求数据
+
         $appSecret = $appUser->app_secret;
 
         $makeSign = $signMethod($reqData . $sequenceID . $appSecret);

@@ -70,7 +70,21 @@ class ShowController extends BaseController
         $va = Cache::get('test_service');
 
         dd($va);
+    }
 
+    public function testSign()
+    {
+        $app_key = '4a5a48028c6b973820e2d719be41e384';
+        $app_secret = 'c2069e2ffd507a83f85e92d1543e14fd';
+        $sequenceId = 123456;
+        $reqData = [
+            'name' => 'bevan',
+            'age' => 18
+        ];
+
+        $sign = md5(json_encode($reqData, JSON_UNESCAPED_UNICODE) . $sequenceId . $app_secret);
+
+        return $this->responseClient(200, 'success', ['app_key' => $app_key, 'sequenceId' => $sequenceId, 'reqData' => $reqData, 'sign' => $sign]);
     }
 
     public function testEvent()
@@ -163,7 +177,7 @@ class ShowController extends BaseController
 //        $res = User::withTrashed()->get();
         $realIp = $request->header('X-Forwarded-For');
 
-        return $this->responseClient(200, 'lua4', ['test' => 'fdsf', 'remote_addr' =>$request->ip(), 'real_ip' => $realIp]);
+        return $this->responseClient(200, 'lua4', ['test' => 'fdsf', 'remote_addr' => $request->ip(), 'real_ip' => $realIp]);
     }
 
     public function testLua5(Request $request)
@@ -348,5 +362,12 @@ class ShowController extends BaseController
 //        dd(User::find(7)->appuser());
 
 //        tfdfad
+    }
+
+    public function testApiCount()
+    {
+        $count = Redis::get('api_request_condition');
+
+        dd($count);
     }
 }

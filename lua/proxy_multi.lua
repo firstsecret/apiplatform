@@ -126,7 +126,7 @@ if dev_module == 'true' then
         end
     end
 else
-    tool.respClient(5555, '正式环境未开发完成')
+    return tool.respClient(5555, '正式环境未开发完成')
 end
 
 -- response hander handle

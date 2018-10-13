@@ -80,6 +80,8 @@ $api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', '
 
 $api->version('v1', ['middleware' => ['api.rewriteResp']], function ($api) {
     $api->get('testLua', '\App\Http\Api\V1\ShowController@testLua');
+    $api->get('testSign', 'App\Http\Api\V1\ShowController@testSign');
+    $api->get('testApiCount', '\App\Http\Api\V1\ShowController@testApiCount');
     $api->post('testLua2', '\App\Http\Api\V1\ShowController@testLua2');
     $api->get('testLua3', '\App\Http\Api\V1\ShowController@testLua3');
     $api->any('testLua4', '\App\Http\Api\V1\ShowController@testLua4');
@@ -92,7 +94,7 @@ $api->version('v1', ['middleware' => ['api.rewriteResp']], function ($api) {
     $api->get('testJWT', 'App\Http\Api\V1\ShowController@testJWT');
     $api->get('getNetJWT', 'App\Http\Api\V1\ShowController@getNetJWT');
     $api->get('appMapRedis', 'App\Http\Api\V1\ShowController@appMapRedis');
-    $api->get('testAdminConfig','App\Http\Api\V1\ShowController@testAdminConfig');
+    $api->get('testAdminConfig', 'App\Http\Api\V1\ShowController@testAdminConfig');
 });
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {
