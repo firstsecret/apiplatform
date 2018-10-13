@@ -9,7 +9,6 @@
 --加载 json 库
 local json = require "cjson";
 local tool = require "resty.tool"
-local md5 = require "resty.md5"
 local zhttp = require("resty.http")
 
 -- get request method
@@ -56,7 +55,8 @@ if request_args['reqData'] == nil then
     return tool.respClient(4064, '缺少reqData')
 end
 
-local secret_method = request_args['method'] or 'md5'
+-- 暂时 只 支持 md5
+--local secret_method = request_args['method'] or 'md5'
 
 --
 local redis = tool.getRedis()
