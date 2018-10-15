@@ -16,10 +16,6 @@ local request_method = ngx.var.request_method;
 -- gzip handle
 ngx.req.set_header('Accept-Encoding', 'default')
 
--- response header
-ngx.header['Server'] = 'xiaoyumi'
-ngx.header['Content-Type'] = 'Application/json'
-
 --判断请求方式
 if request_method == "GET" then
     local respData = {}

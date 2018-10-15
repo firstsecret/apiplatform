@@ -71,8 +71,6 @@ post_str = string.sub(post_str, 1, string.len(post_str) - 1)
 --end
 --
 --     response handle
-tool.rewriteResponse('Server', 'xiaoyumi')
-tool.rewriteResponse('Content-Type', 'Application/json')
 
 -- dev env
 local dev_module = redis:get('apiplatform_service_dev')
@@ -110,7 +108,6 @@ if dev_module == 'true' then
         --        end
         --        ngx.print('dfd')
         --        tool.rewriteResponse('RequestUri', request_uri)
-        --        tool.rewriteResponse('Server', 'xiaoyumi')
         --        tool.setNgxVar('resp_body', res.body)
         --        local resp_headers = res.header
         --
@@ -154,9 +151,8 @@ end
 --end
 
 -- response handle
---ngx.header['Server'] = 'xiaoyumi'
+
 --tool.rewriteResponse('RequestUri', request_uri)
---tool.rewriteResponse('Server', 'xiaoyumi')
 -- ctx
 --ngx.ctx.log_msg = res.body
 
