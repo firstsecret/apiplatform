@@ -76,17 +76,21 @@ else
 
     -- is requested
     if old_req_record and old_req_record ~= ngx.null then
-        local differ = tonumber(req_timestamp) - tonumber(old_req_record)
+--        local differ = tonumber(req_timestamp) - tonumber(old_req_record)
         -- in 5 minutes
-        if differ < 1 then
-            -- update
-            redis:set(remote_addr .. request_uri, req_timestamp)
-            tool.respClient(4065, '请乎频繁的重复提交')
-            return
-        end
+        return tool.respClient(4065, '请乎频繁的重复提交')
+--        if differ < 300 then
+--            -- update
+--            redis:set(remote_addr .. request_uri, req_timestamp)
+--            -- expire
+--            redis:expire(remote_addr .. request_uri, 300)
+--
+--            return
+--        end
     else
         -- do record
         redis:set(remote_addr .. request_uri, req_timestamp)
+        redis:expire(remote_addr .. request_uri, 300)
     end
 
     -- check data valid
