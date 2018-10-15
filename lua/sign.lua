@@ -7,9 +7,9 @@
 --
 
 --加载 json 库
-local json = require "cjson";
+--local json = require "cjson";
 local tool = require "resty.tool"
-local zhttp = require("resty.http")
+--local zhttp = require("resty.http")
 
 -- get request method
 local request_method = ngx.var.request_method;
