@@ -25,4 +25,9 @@ class PlatformProduct extends Model
     {
         return $this->belongsTo('App\Models\PlatformProductCategory');
     }
+
+    public function services()
+    {
+        return $this->belongsToMany('App\Models\Service','product_services','product_id','service_id');
+    }
 }

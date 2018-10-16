@@ -12,5 +12,5 @@ Route::group([
 
     $router->get('/', 'HomeController@index');
     $router->resource('auth/frontUsers', UserController::class);
-    $router->resource('Services', ServiceController::class);
+    $router->resource('Services', NodeServicesController::class);
 });

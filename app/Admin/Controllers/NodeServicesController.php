@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\PlatformProduct;
 use App\Models\Service;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
@@ -10,11 +11,9 @@ use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 
-class ServiceController extends Controller
+class NodeServicesController extends Controller
 {
     use HasResourceActions;
-
-    public $title = '服务管理';
 
     /**
      * Index interface.
@@ -25,8 +24,8 @@ class ServiceController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header($this->title)
-            ->description('服务节点与产品列表')
+            ->header('Index')
+            ->description('description')
             ->body($this->grid());
     }
 
@@ -69,8 +68,8 @@ class ServiceController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('添加服务节点')
-            ->description('增加一个新的后台服务节点')
+            ->header('Create')
+            ->description('description')
             ->body($this->form());
     }
 
@@ -86,7 +85,6 @@ class ServiceController extends Controller
         $grid->id('Id');
         $grid->service_host('Service host');
         $grid->service_host_port('Service host port');
-        $grid->product_ids('Product ids');
         $grid->created_at('Created at');
         $grid->updated_at('Updated at');
 
@@ -106,7 +104,6 @@ class ServiceController extends Controller
         $show->id('Id');
         $show->service_host('Service host');
         $show->service_host_port('Service host port');
-        $show->product_ids('Product ids');
         $show->created_at('Created at');
         $show->updated_at('Updated at');
 
@@ -124,7 +121,8 @@ class ServiceController extends Controller
 
         $form->text('service_host', 'Service host')->default('127.0.0.1');
         $form->text('service_host_port', 'Service host port')->default('80');
-        $form->textarea('product_ids', 'Product ids');
+
+        $form->multipleSelect('product_ids','API产品服务')->options(PlatformProduct::all()->pluck('name', 'id'));
 
         return $form;
     }
