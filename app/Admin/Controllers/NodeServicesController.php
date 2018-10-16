@@ -122,7 +122,7 @@ class NodeServicesController extends Controller
         $form->text('service_host', 'Service host')->default('127.0.0.1');
         $form->text('service_host_port', 'Service host port')->default('80');
 
-        $form->multipleSelect('product_ids','API产品服务')->options(PlatformProduct::all()->pluck('name', 'id'));
+        $form->multipleSelect('product_id','API产品服务')->options(PlatformProduct::all()->pluck('name', 'id'));
 
         return $form;
     }
