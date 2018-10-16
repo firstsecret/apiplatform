@@ -14,7 +14,6 @@ local ok, err = hc.spawn_checker {
     type = "http",
 
     http_req = "GET /healthcheck.txt HTTP/1.1\r\nHost: api.com\r\n\r\n",
-
     interval = 2000,
     --timeout = 2000,
     fall = 3,
@@ -24,6 +23,7 @@ local ok, err = hc.spawn_checker {
 }
 
 if not ok then
-    ngx.log(ngx.ERR, "failed to spawn health checker: ", err)
+    ngx.log(ngx.ERR, "[health check]failed to spawn health checker: ", err)
     return
 end
+--ngx.log(ngx.ERR, "failed to spawn health checker: ", err)

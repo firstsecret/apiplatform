@@ -6,7 +6,7 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-local cjson = require "cjson"
+--local cjson = require "cjson"
 local jwt = require "resty.jwt"
 local tool = require "resty.tool"
 

@@ -97,7 +97,7 @@ else
     reqData_str = tool.trim(string.gsub(reqData_str, " ", ""))
 
     local factory_sign = reqData_str .. request_args['sequenceId'] .. app_secret
-    --
+
     factory_sign = ngx.md5(factory_sign)
 
     --    ngx.print(factory_sign)
@@ -109,6 +109,8 @@ else
     end
     --
 end
+
+
 
 
 

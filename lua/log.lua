@@ -16,3 +16,5 @@
 --if error_status_code ~= nil then
 --    ngx.log(ngx.ERR, log_msg)
 --end
+
+--ngx.log(ngx.ERR, "test log:")
