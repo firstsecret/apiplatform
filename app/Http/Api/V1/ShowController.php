@@ -33,13 +33,13 @@ class ShowController extends BaseController
     public function index()
     {
 //        echo 'ok api';
-        $appkey = urlencode('439d8c975f26e5005dcdbf41b0d84161');
-        $appsecret = urlencode('08aee6276db142f4b8ac98fb8ee0ed1b');
-//        $appsecret = urlencode('');
-
-        // curl
-
-        $url = 'http://laravelapi.local/api/cli/token?app_key=' . $appkey . '&$app_secret=' . $appsecret;
+//        $appkey = urlencode('439d8c975f26e5005dcdbf41b0d84161');
+//        $appsecret = urlencode('08aee6276db142f4b8ac98fb8ee0ed1b');
+////        $appsecret = urlencode('');
+//
+//        // curl
+//
+//        $url = 'http://laravelapi.local/api/cli/token?app_key=' . $appkey . '&$app_secret=' . $appsecret;
 
 //        $ch = curl_init();
 //        curl_setopt($ch,CURLOPT_URL,$url);
@@ -64,12 +64,20 @@ class ShowController extends BaseController
 //        var_dump($res);die;
 
 
-        Cache::add('test_service', [1 => [1, 3, 4], 2 => [3, 46]], 3);
+//        Cache::add('test_service', [1 => [1, 3, 4], 2 => [3, 46]], 3);
+//
+//
+//        $va = Cache::get('test_service');
+//
+//        dd($va);
+        \Illuminate\Support\Facades\DB::listen(function ($query) {
+            // $query->sql
+            // $query->bindings
+            // $query->time
+            echo $query->sql . ',time:'. $query->time / 1000 . '<br>';
+        });
 
-
-        $va = Cache::get('test_service');
-
-        dd($va);
+        dd(PlatformProduct::find(2)->services);
     }
 
     public function testSign()
