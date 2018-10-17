@@ -10,6 +10,8 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\DB;
+
 
 class NodeServicesController extends Controller
 {
@@ -39,8 +41,8 @@ class NodeServicesController extends Controller
     public function show($id, Content $content)
     {
         return $content
-            ->header('Detail')
-            ->description('description')
+            ->header('节点详情')
+            ->description('节点详情')
             ->body($this->detail($id));
     }
 
@@ -71,6 +73,18 @@ class NodeServicesController extends Controller
             ->header('Create')
             ->description('description')
             ->body($this->form());
+    }
+
+    public function destroy($id)
+    {
+        DB::transaction(function () use ($id) {
+            Service::find($id)->products()->detach();
+            $this->form()->destroy($id);
+        });
+        return response()->json([
+            'status' => true,
+            'message' => trans('admin.delete_succeeded'),
+        ]);
     }
 
     /**
@@ -107,8 +121,28 @@ class NodeServicesController extends Controller
         $show->created_at('Created at');
         $show->updated_at('Updated at');
 
+        $show->products('提供服务产品列表', function ($products) {
+            $products->panel()
+                ->style('info')
+                ->tools(function ($tools) {
+//                        $tools->disableDelete();
+//                        $tools->disableEdit();
+                });
+
+            $products->name('服务产品名称');
+            $products->api_path('服务产品对外uri');
+            $products->internal_api_path('内部请求的uri');
+            $products->request_method('请求的方式');
+            $products->internal_request_method('内部请求的方式');
+        });
+
         return $show;
     }
+
+//    public function store(Request $request)
+//    {
+//        dd($request->all());
+//    }
 
     /**
      * Make a form builder.
@@ -122,7 +156,7 @@ class NodeServicesController extends Controller
         $form->text('service_host', 'Service host')->default('127.0.0.1');
         $form->text('service_host_port', 'Service host port')->default('80');
 
-        $form->multipleSelect('product_id','API产品服务')->options(PlatformProduct::all()->pluck('name', 'id'));
+        $form->multipleSelect('products', 'API产品服务')->options(PlatformProduct::all(['name', 'id'])->pluck('name', 'id'));
 
         return $form;
     }

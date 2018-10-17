@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateTwoPlatformProductTable extends Migration
+class AlterThreePlatformProductTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class UpdateTwoPlatformProductTable extends Migration
     {
         Schema::table('platform_products', function (Blueprint $table) {
             //
-            $table->string('request_method', 12)->default('GET')->comment('请求的方式');
+            $table->string('internal_request_method',16)->default('GET');
         });
     }
 
@@ -28,7 +28,7 @@ class UpdateTwoPlatformProductTable extends Migration
     {
         Schema::table('platform_products', function (Blueprint $table) {
             //
-            $table->dropColumn('request_method');
+            $table->dropColumn('internal_request_method');
         });
     }
 }

@@ -74,9 +74,9 @@ class ShowController extends BaseController
 //        dd($va);
 
 //        var_dump(PlatformProductCategory::with('products')->find(3));die;
-        var_dump(PlatformProduct::with('services')->find(2)->toArray());die;
-        
-        dd(PlatformProduct::find(2)->services);
+//        var_dump(PlatformProduct::with('services')->find(2)->toArray());die;
+
+        dd(PlatformProduct::with('services')->find(2)->toArray());
 
     }
 
