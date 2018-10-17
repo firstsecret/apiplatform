@@ -14,9 +14,9 @@ Route::group([
     $router->resource('auth/frontUsers', UserController::class);
     $router->resource('services', NodeServicesController::class);
     $router->resource('platformProduct', PlatformProductController::class);
+    $router->resource('platformProductCategory', PlatformProductCategoryController::class);
 
-
-    // admin api
+    //custom admin api
     $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('unbindServicePlatformProduct/{service_id}/{product_id}', NodeServicesController::class . '@unbindServicePlatformProduct');
     });

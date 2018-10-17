@@ -234,7 +234,7 @@ class UserController extends Controller
                             $tools->disableDelete();
                             $tools->disableEdit();
                         }
-                    });;
+                    });
 
                 $show->id('ID');
                 $show->name('名称');

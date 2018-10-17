@@ -97,6 +97,12 @@ class NodeServicesController extends Controller
     {
         $grid = new Grid(new Service);
 
+        $grid->tools(function ($tools) {
+//            $tools->batch(function ($batch) {
+//                $batch->disableDelete();
+//            });
+        });
+
         $grid->id('Id');
         $grid->service_host('Service host');
         $grid->service_host_port('Service host port');
@@ -115,6 +121,15 @@ class NodeServicesController extends Controller
     protected function detail($id)
     {
         $show = new Show(Service::findOrFail($id));
+//        dd(get_class_methods($show));
+        $show->panel()
+            ->style('info')
+            ->title('节点详情')
+            ->tools(function ($tools) {
+                //                        $tools->disableEdit();
+                $tools->disableDelete();
+                $tools->disableEdit();
+            });
 
         $show->id('Id');
         $show->service_host('Service host');
@@ -122,17 +137,32 @@ class NodeServicesController extends Controller
         $show->created_at('Created at');
         $show->updated_at('Updated at');
 
+//        $show->tools(function ($tools) {
+////            $tools->batch(function ($batch) {
+////                $batch->disableDelete();
+////            });
+//        });
         // add script
         $script = $this->getUnbindScript();
         $service_id = $id;
+
         Admin::script($script);
-        $show->products('提供服务产品列表', function ($products) use ($show, $service_id) {
-            $show->panel()
-                ->tools(function ($tools) {
-                    $tools->disableEdit();
-                    $tools->disableList();
-                    $tools->disableDelete();
-                });;
+
+        $show->products('节点上服务列表', function ($products) use ($service_id) {
+
+            $products->tools(function ($tools) {
+                $tools->batch(function ($batch) {
+                    $batch->disableDelete();
+                });
+            });
+
+            // fitler
+            $products->filter(function ($filter){
+                $filter->disableIdFilter();
+                $filter->like('name', '名称');
+//                $filter->scope('deleted_at', '已删除服务')->onlyTrashed();
+            });
+
             $products->setResource('/admin/platformProduct');
 
             $products->id('ID');
@@ -145,7 +175,7 @@ class NodeServicesController extends Controller
             $products->actions(function ($actions) use ($service_id) {
                 $platform_product_id = $actions->getKey('id');
 
-                $btn = '<a data-href="/admin/api/unbindServicePlatformProduct/' . $service_id . '/' . $platform_product_id . '" class="unbindServicePlatformProduct"  title="移除该产品" href=""><i class="fa fa-eraser"></i></a>';
+                $btn = '<a data-href="/admin/api/unbindServicePlatformProduct/' . $service_id . '/' . $platform_product_id . '" class="unbindServicePlatformProduct"  title="移除该服务" href=""><i class="fa fa-eraser"></i></a>';
                 $actions->disableDelete();
 //                $actions->disableEdit();
 //                $actions->disableView();
@@ -184,12 +214,12 @@ class NodeServicesController extends Controller
      */
     public function unbindServicePlatformProduct($service_id, $product_id)
     {
-        throw new \Exception('异常');
+//        throw new \Exception('异常');
         Service::find($service_id)->products()->detach($product_id);
 
         return response()->json([
             'status' => true,
-            'message' => trans('admin.unbind_succeeded') . $product_id,
+            'message' => trans('admin.unbind_succeeded'),
         ]);
 
 //        dd($platform_product_id);

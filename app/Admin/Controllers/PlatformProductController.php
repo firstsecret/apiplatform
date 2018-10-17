@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\PlatformProduct;
 use App\Http\Controllers\Controller;
+use App\Models\PlatformProductCategory;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -14,6 +15,19 @@ class PlatformProductController extends Controller
 {
     use HasResourceActions;
 
+    public $title = '服务产品管理';
+
+    /**
+     * support http methods
+     * @var array
+     */
+    protected $support_http_methods = [
+        'GET' => 'GET',
+        'PUT' => 'PUT',
+        'POST' => 'POST',
+        'DELETE' => 'DELETE'
+    ];
+
     /**
      * Index interface.
      *
@@ -23,8 +37,8 @@ class PlatformProductController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Index')
-            ->description('description')
+            ->header($this->title)
+            ->description('服务产品列表')
             ->body($this->grid());
     }
 
@@ -53,8 +67,8 @@ class PlatformProductController extends Controller
     public function edit($id, Content $content)
     {
         return $content
-            ->header('Edit')
-            ->description('description')
+            ->header($this->title)
+            ->description('编辑服务产品')
             ->body($this->form()->edit($id));
     }
 
@@ -67,8 +81,8 @@ class PlatformProductController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Create')
-            ->description('description')
+            ->header($this->title)
+            ->description('添加新的服务产品')
             ->body($this->form());
     }
 
@@ -81,6 +95,21 @@ class PlatformProductController extends Controller
     {
         $grid = new Grid(new PlatformProduct);
 
+        $categorys = PlatformProductCategory::all(['name', 'id'])->pluck('name', 'id');
+
+        // filter
+        $grid->filter(function ($filter) use ($categorys) {
+            $filter->disableIdFilter();
+
+            $filter->like('name', '名称');
+
+            $filter->equal('category_id', '分类')->select($categorys);
+
+            $filter->between('created_at', '创建时间')->datetime();
+            $filter->between('updated_at', '更新时间')->datetime();
+        });
+
+
         $grid->id('Id');
         $grid->name('产品名称');
         $grid->detail('产品描述')->limit(30);
@@ -88,7 +117,7 @@ class PlatformProductController extends Controller
         $grid->updated_at('更新时间');
 //        $grid->category_id('Category id');
 //        $grid->deleted_at('Deleted at');
-        $grid->column('category.name','所属分类');
+        $grid->column('category.name', '所属分类');
         $grid->api_path('请求uri');
         $grid->internal_api_path('内部请求uri');
         $grid->request_method('请求方式');
@@ -105,19 +134,38 @@ class PlatformProductController extends Controller
      */
     protected function detail($id)
     {
-        $show = new Show(PlatformProduct::findOrFail($id));
+        $platformProduct = PlatformProduct::findOrFail($id);
+        $show = new Show($platformProduct);
+
+        $show->panel()
+            ->style('info')
+            ->tools(function ($tools) {
+                $tools->disableDelete();
+            });
 
         $show->id('Id');
-        $show->name('Name');
-        $show->detail('Detail');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
-        $show->category_id('Category id');
-        $show->deleted_at('Deleted at');
-        $show->api_path('Api path');
-        $show->internal_api_path('Internal api path');
-        $show->request_method('Request method');
-        $show->internal_request_method('Internal request method');
+        $show->name('产品名称');
+        $show->detail('简要描述');
+        $show->created_at('创建时间');
+        $show->updated_at('更新时间');
+        $show->category('所属分类', function ($category) {
+            $category->panel()
+                ->style('info')
+                ->tools(function ($tools) {
+                    $tools->disableDelete();
+                });
+
+            $category->setResource('/admin/platformProductCategory');
+
+            $category->name('分类名称');
+            $category->detail('分类简述');
+        });
+//        $show->category_id('Category id');
+        if ($platformProduct->deleted_at) $show->deleted_at('删除时间');
+        $show->api_path('api uri')->default();
+        $show->internal_api_path('内部请求api uri');
+        $show->request_method('请求方式');
+        $show->internal_request_method('内部请求方式');
 
         return $show;
     }
@@ -131,13 +179,16 @@ class PlatformProductController extends Controller
     {
         $form = new Form(new PlatformProduct);
 
-        $form->text('name', 'Name');
-        $form->text('detail', 'Detail');
-        $form->number('category_id', 'Category id');
-        $form->text('api_path', 'Api path');
-        $form->text('internal_api_path', 'Internal api path');
-        $form->text('request_method', 'Request method')->default('GET');
-        $form->text('internal_request_method', 'Internal request method')->default('GET');
+        $form->text('name', '产品服务名称');
+        $form->text('detail', '简要描述');
+        $form->select('category', '所属分类')->options(PlatformProductCategory::all(['id', 'name'])->pluck('name', 'id'))->rules('required', ['required' => '必须选择分类']);
+//        $form->number('category_id', 'Category id');
+        $form->text('api_path', 'api uri');
+        $form->text('internal_api_path', '内部请求api uri')->help('例:/api/test');
+//        $form->text('request_method', '请求方式')->default('GET');
+        $form->select('request_method', '请求方式')->options($this->support_http_methods)->default('GET');
+//        $form->text('internal_request_method', '内部请求方式')->default('GET');
+        $form->select('internal_request_method', '内部请求方式')->options($this->support_http_methods)->default('GET');
 
         return $form;
     }
