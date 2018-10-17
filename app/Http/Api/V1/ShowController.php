@@ -16,6 +16,8 @@ use App\Exceptions\BevanJwtAuthException;
 use App\Http\Api\BaseController;
 use App\Models\AppUser;
 use App\Models\PlatformProduct;
+use App\Models\PlatformProductCategory;
+use App\Models\ProductServices;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -33,13 +35,13 @@ class ShowController extends BaseController
     public function index()
     {
 //        echo 'ok api';
-        $appkey = urlencode('439d8c975f26e5005dcdbf41b0d84161');
-        $appsecret = urlencode('08aee6276db142f4b8ac98fb8ee0ed1b');
-//        $appsecret = urlencode('');
-
-        // curl
-
-        $url = 'http://laravelapi.local/api/cli/token?app_key=' . $appkey . '&$app_secret=' . $appsecret;
+//        $appkey = urlencode('439d8c975f26e5005dcdbf41b0d84161');
+//        $appsecret = urlencode('08aee6276db142f4b8ac98fb8ee0ed1b');
+////        $appsecret = urlencode('');
+//
+//        // curl
+//
+//        $url = 'http://laravelapi.local/api/cli/token?app_key=' . $appkey . '&$app_secret=' . $appsecret;
 
 //        $ch = curl_init();
 //        curl_setopt($ch,CURLOPT_URL,$url);
@@ -64,12 +66,14 @@ class ShowController extends BaseController
 //        var_dump($res);die;
 
 
-        Cache::add('test_service', [1 => [1, 3, 4], 2 => [3, 46]], 3);
-
-
-        $va = Cache::get('test_service');
-
-        dd($va);
+//        Cache::add('test_service', [1 => [1, 3, 4], 2 => [3, 46]], 3);
+//
+//
+//        $va = Cache::get('test_service');
+//
+//        dd($va);
+//        var_dump(PlatformProductCategory::with('products')->find(3));die;
+        var_dump(PlatformProduct::with('services')->find(2)->toArray());die;
     }
 
     public function testSign()
