@@ -72,8 +72,12 @@ class ShowController extends BaseController
 //        $va = Cache::get('test_service');
 //
 //        dd($va);
+
 //        var_dump(PlatformProductCategory::with('products')->find(3));die;
         var_dump(PlatformProduct::with('services')->find(2)->toArray());die;
+        
+        dd(PlatformProduct::find(2)->services);
+
     }
 
     public function testSign()
