@@ -26,7 +26,7 @@ class DashboardService
     public function __construct()
     {
         $this->c = new httpClient();
-//        $this->c = new httpClient(['driver'=>'curl']);
+//        $this->c = new httpClient(['driver' => 'curl']);
 
         $this->base_uri = config('server_status_base_uri');
     }
@@ -48,6 +48,68 @@ class DashboardService
         $data = $this->c->request->get($this->base_uri . '/fpm_status');
 
         return is_object($data) ? $this->formatPHPfpmStatusObject($data->getBody()->getContents()) : $this->formatPHPfpmStatus($data);
+    }
+
+    public function health_check()
+    {
+        $data = $this->c->request->get($this->base_uri . '/health_status');
+
+        return is_object($data) ? $this->formatHealthStatusObject($data->getBody()->getContents()) : $this->formatHealthStatus($data);
+    }
+
+    /**
+     * health check handle
+     * @param $data
+     */
+    protected function formatHealthStatusObject($data)
+    {
+//        dd($data);
+        $arr = array_filter(explode("\n", $data));
+
+        $return_data = [];
+        $now_upstream = '';
+        foreach ($arr as $k => $item) {
+            if ($k == 0) {
+                $tmp_arr = explode(':', $item);
+//               dd($tmp_arr);
+                $return_data[str_replace(" ", '_', strtolower(trim($tmp_arr[0])))] = trim($tmp_arr[1]);
+            } else if (preg_match('/^Upstream(.*)?$/i', $item, $m)) {
+                // init new upstream
+                $t_upstream = trim($m[1]);
+                if (!isset($return_data['upstream'][$t_upstream])) $return_data['upstream'][$t_upstream] = [];
+                $now_upstream = $t_upstream;
+                unset($m);
+            } else if ($ip_arr = $this->isIp($item)) {
+                $return_data['upstream'][$now_upstream][$ip_arr[0]] = $ip_arr[1];
+            }
+        }
+        return $return_data;
+    }
+
+    protected function isIp($str)
+    {
+//        var_dump($str);
+        $res = preg_match('/.*?[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}.*?$/', $str, $m);
+
+        if ($res) {
+            $mm = trim($m[0]);
+
+            $arr = explode(" ", $mm);
+
+            return $arr;
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * 兼容模式
+     * @param $data
+     * @return array
+     */
+    protected function formatHealthStatus($data)
+    {
+        return [];
     }
 
     /**
@@ -190,7 +252,6 @@ class DashboardService
 
     protected function formatNginxStatus($str)
     {
-//        dd($str);
         $return_data = $this->getNginxRequestNum($str);
         // 目前的 活跃连接数
         preg_match('/.*?Active connections:.*?(\w+).*?/', $str, $match);

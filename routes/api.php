@@ -78,6 +78,7 @@ $api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', '
 });
 //....
 
+// tmp test api
 $api->version('v1', ['middleware' => ['api.rewriteResp']], function ($api) {
     $api->get('testLua', '\App\Http\Api\V1\ShowController@testLua');
     $api->get('testTmp', '\App\Http\Api\V1\ShowController@index');
@@ -163,7 +164,7 @@ $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\A
                     // 生成 一个新的内部 用户
                     $api->post('createNewInternal', AuthController::class . '@createNewInternal');
                     // 更新redis 中的 服务 api map
-                    $api->get('updateServiceApiMap', ManagerController::class . '@updateServiceApiMap');
+//                    $api->get('updateServiceApiMap', ManagerController::class . '@updateServiceApiMap');
                 });
             });
             // 后台登录

@@ -27,13 +27,16 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->call(function () {
-            DB::table('roles')->insert([
-                'name' => 'test',
-                'detail' => 'cron test',
-                'guard_name' => 'test'
-            ]);
-        })->everyMinute();
+//        $schedule->call(function () {
+//            DB::table('roles')->insert([
+//                'name' => 'test',
+//                'detail' => 'cron test',
+//                'guard_name' => 'test'
+//            ]);
+//        })->everyMinute();
+
+        // 心跳 检测 处理
+
     }
 
     /**
