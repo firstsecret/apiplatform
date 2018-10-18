@@ -52,8 +52,8 @@ class PlatformProductController extends Controller
     public function show($id, Content $content)
     {
         return $content
-            ->header('Detail')
-            ->description('description')
+            ->header($this->title)
+            ->description('服务产品详情')
             ->body($this->detail($id));
     }
 
@@ -95,7 +95,7 @@ class PlatformProductController extends Controller
     {
         $grid = new Grid(new PlatformProduct);
 
-        $categorys = PlatformProductCategory::all(['name', 'id'])->pluck('name', 'id');
+        $categorys = PlatformProductCategory::all(['title', 'id'])->pluck('title', 'id');
 
         // filter
         $grid->filter(function ($filter) use ($categorys) {
@@ -157,7 +157,7 @@ class PlatformProductController extends Controller
 
             $category->setResource('/admin/platformProductCategory');
 
-            $category->name('分类名称');
+            $category->title('分类名称');
             $category->detail('分类简述');
         });
 //        $show->category_id('Category id');
@@ -181,7 +181,7 @@ class PlatformProductController extends Controller
 
         $form->text('name', '产品服务名称');
         $form->text('detail', '简要描述');
-        $form->select('category', '所属分类')->options(PlatformProductCategory::all(['id', 'name'])->pluck('name', 'id'))->rules('required', ['required' => '必须选择分类']);
+        $form->select('category', '所属分类')->options(PlatformProductCategory::all(['id', 'title'])->pluck('title', 'id'))->rules('required', ['required' => '必须选择分类']);
 //        $form->number('category_id', 'Category id');
         $form->text('api_path', 'api uri');
         $form->text('internal_api_path', '内部请求api uri')->help('例:/api/test');

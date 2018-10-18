@@ -18,6 +18,7 @@ class NodeServicesController extends Controller
 {
     use HasResourceActions;
 
+    public $title = '节点管理';
     /**
      * Index interface.
      *
@@ -27,8 +28,8 @@ class NodeServicesController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Index')
-            ->description('description')
+            ->header($this->title)
+            ->description('节点列表')
             ->body($this->grid());
     }
 
@@ -42,7 +43,7 @@ class NodeServicesController extends Controller
     public function show($id, Content $content)
     {
         return $content
-            ->header('节点详情')
+            ->header($this->title)
             ->description('节点详情')
             ->body($this->detail($id));
     }
@@ -57,8 +58,8 @@ class NodeServicesController extends Controller
     public function edit($id, Content $content)
     {
         return $content
-            ->header('Edit')
-            ->description('description')
+            ->header($this->title)
+            ->description('节点编辑')
             ->body($this->form()->edit($id));
     }
 
@@ -71,8 +72,8 @@ class NodeServicesController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Create')
-            ->description('description')
+            ->header($this->title)
+            ->description('节点创建')
             ->body($this->form());
     }
 
