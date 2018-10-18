@@ -9,10 +9,14 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Traits\ModelTree;
 
 class PlatformProductCategoryController extends Controller
 {
     use HasResourceActions;
+    use ModelTree;
+
+    public $title = '服务产品分类';
 
     /**
      * Index interface.
@@ -23,9 +27,9 @@ class PlatformProductCategoryController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Index')
-            ->description('description')
-            ->body($this->grid());
+            ->header($this->title)
+            ->description('服务产品分类列表')
+            ->body(PlatformProductCategory::tree());
     }
 
     /**
@@ -38,8 +42,8 @@ class PlatformProductCategoryController extends Controller
     public function show($id, Content $content)
     {
         return $content
-            ->header('Detail')
-            ->description('description')
+            ->header($this->title)
+            ->description('服务产品分类详情')
             ->body($this->detail($id));
     }
 
@@ -53,9 +57,9 @@ class PlatformProductCategoryController extends Controller
     public function edit($id, Content $content)
     {
         return $content
-            ->header('Edit')
-            ->description('description')
-            ->body($this->form()->edit($id));
+            ->header($this->title)
+            ->description('服务产品分类编辑')
+            ->body($this->form($id)->edit($id));
     }
 
     /**
@@ -67,8 +71,8 @@ class PlatformProductCategoryController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Create')
-            ->description('description')
+            ->header($this->title)
+            ->description('服务产品分类创建')
             ->body($this->form());
     }
 
@@ -82,11 +86,11 @@ class PlatformProductCategoryController extends Controller
         $grid = new Grid(new PlatformProductCategory);
 
         $grid->id('Id');
-        $grid->parent_id('Parent id');
-        $grid->name('Name');
-        $grid->detail('Detail');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
+        $grid->parent_id('上级分类id');
+        $grid->name('分类名');
+        $grid->detail('分类简要描述');
+        $grid->created_at('创建时间');
+        $grid->updated_at('更新时间');
 
         return $grid;
     }
@@ -102,11 +106,11 @@ class PlatformProductCategoryController extends Controller
         $show = new Show(PlatformProductCategory::findOrFail($id));
 
         $show->id('Id');
-        $show->parent_id('Parent id');
-        $show->name('Name');
-        $show->detail('Detail');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+        $show->parent_id('上级分类id');
+        $show->name('分类名');
+        $show->detail('分类简要描述');
+        $show->created_at('创建时间');
+        $show->updated_at('更新时间');
 
         return $show;
     }
@@ -116,13 +120,20 @@ class PlatformProductCategoryController extends Controller
      *
      * @return Form
      */
-    protected function form()
+    protected function form($id = '')
     {
-        $form = new Form(new PlatformProductCategory);
+        // 获取 分类
+        $ppCategoryModel = new PlatformProductCategory;
+//        $categories = $id ? $ppCategoryModel->getWithoutSelfCatgories($id) : $ppCategoryModel->getAllCatgories();
+        $categories = $ppCategoryModel->getAllCatgories();
 
-        $form->number('parent_id', 'Parent id');
-        $form->text('name', 'Name');
-        $form->text('detail', 'Detail');
+        $form = new Form($ppCategoryModel);
+
+//        $form->number('parent_id', '上级分类');
+        $form->select('parent_id', '上级分类')->options($categories->pluck('title', 'id'))->rules('required', ['required' => '上级分类必选']);
+
+        $form->text('name', '分类名称');
+        $form->text('detail', '分类描述');
 
         return $form;
     }
