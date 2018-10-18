@@ -5,7 +5,6 @@ namespace App\Models;
 use Encore\Admin\Traits\AdminBuilder;
 use Encore\Admin\Traits\ModelTree;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class PlatformProductCategory extends Model
 {
@@ -33,12 +32,15 @@ class PlatformProductCategory extends Model
     {
         $m = self::all(['title', 'id', 'detail', 'parent_id'])->sortBy(function ($category, $key) {
             return $category->order;
-        });
+        })->toArray();
 
         $cm = collect($this->sortWithDeep($m));
 //        dd(get_class_methods($m));
 
 //        return self::all(['title', 'id', 'detail', 'parent_id']);
+        // 添加顶级分类
+
+
         return $cm;
     }
 

@@ -129,12 +129,15 @@ class PlatformProductCategoryController extends Controller
 
         $form = new Form($ppCategoryModel);
 
+        $options = $categories->pluck('title', 'id')->toArray();
+        array_unshift($options, '顶级分类');
+
 //        $form->number('parent_id', '上级分类');
-        $form->select('parent_id', '上级分类')->options($categories->pluck('title', 'id'))->rules('required', ['required' => '上级分类必选']);
+        $form->select('parent_id', '上级分类')->options($options)->rules('required', ['required' => '上级分类必选']);
 
-        $form->text('name', '分类名称');
-        $form->text('detail', '分类描述');
-
+        $form->text('title', '分类名称')->rules('required', ['required' => '缺少分类名']);
+        $form->text('detail', '分类描述')->rules('required', ['required' => '缺少分类描述']);
+        $form->number('order', '排序')->default(0)->help('值越大越靠前');
         return $form;
     }
 }
