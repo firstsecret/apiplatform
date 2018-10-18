@@ -50,6 +50,28 @@ class HomeController extends Controller
 
 //            $content->row(Dashboard::title());
 
+            $script = <<<EOT
+    var wsServer = 'ws://47.52.45.228:8555';
+var websocket = new WebSocket(wsServer);
+websocket.onopen = function (evt) {
+    console.log("Connected to WebSocket server.");
+};
+
+websocket.onclose = function (evt) {
+    console.log("Disconnected");
+};
+
+websocket.onmessage = function (evt) {
+    console.log('Retrieved data from server: ' + evt.data);
+};
+
+websocket.onerror = function (evt, e) {
+    console.log('Error occured: ' + evt.data);
+};
+EOT;
+
+            Admin::script($script);
+
             $content->row(function (Row $row) use ($health_check) {
 //                echo '<pre>';
                 foreach ($health_check['upstream'] as $nodeName => $upstream) {
