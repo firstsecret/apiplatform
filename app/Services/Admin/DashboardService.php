@@ -88,7 +88,6 @@ class DashboardService
 
     protected function isIp($str)
     {
-//        var_dump($str);
         $res = preg_match('/.*?[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}.*?$/', $str, $m);
 
         if ($res) {

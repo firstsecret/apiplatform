@@ -4,7 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\DB;
+
 
 class Kernel extends ConsoleKernel
 {
@@ -27,16 +27,13 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-//        $schedule->call(function () {
-//            DB::table('roles')->insert([
-//                'name' => 'test',
-//                'detail' => 'cron test',
-//                'guard_name' => 'test'
-//            ]);
-//        })->everyMinute();
 
         // 心跳 检测 处理
+        // cpu 状态 获取
+        $schedule->call(function () {
+            // cpu 实时状态获取
 
+        })->everyMinute();
     }
 
     /**
