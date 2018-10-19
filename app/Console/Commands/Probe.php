@@ -85,6 +85,7 @@ class Probe extends Command
             $sInfo = $this->initServStatus($sInfo);
         } else if ($data['act'] == 'mm') {
             $sInfo = $this->getServerInfo()['svrInfo'];
+            $sInfo['currentTime'] = date("Y-m-d H:i:s");
 //            $jsonRes = json_encode($sInfo, JSON_UNESCAPED_UNICODE);
         }
         $jsonRes = json_encode(['act' => $data['act'], 'data' => $sInfo], JSON_UNESCAPED_UNICODE);
