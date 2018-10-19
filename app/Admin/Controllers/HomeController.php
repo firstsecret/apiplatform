@@ -50,117 +50,17 @@ class HomeController extends Controller
 
 //            $content->row(Dashboard::title());
 
-            $script = <<<EOT
-                var wsServer = 'ws://47.52.45.228:8555';
-                var websocket = new WebSocket(wsServer);
-                var nowCpuStatus = {
-                  
-                }
-                var startInterval
-                websocket.onopen = function (evt) {
-                
-                    // handle first
-                    websocket.send(JSON.stringify({"act":"rt"}))
-//                    getCpuStatus()   
-                    startInterval = setInterval(function(){
-                      if ("cpuPercent" in nowCpuStatus) {getCpuStatus(); clearInterval(startInterval)}
-                    },1000)
-                };
-                
-                websocket.onclose = function (evt) {
-                    console.log("Disconnected");
-                };
-                
-                websocket.onmessage = function (evt) {
-                    nowCpuStatus = JSON.parse(evt.data)
-//                    console.log('on message')
-                    // handle first
-                };
-                
-                websocket.onerror = function (evt, e) {
-                    console.log(e)
-                    console.log('Error occured: ' + evt.data);
-                };
-
-                function getCpuStatus()
-                {
-                    console.log('cpu status start!')
-                    var cpuChart = echarts.init(document.getElementById('cpustatus'));
-
-                    var data = [];
-                    var time = [];
-                    var _data = [];
-                    var cpuPercent = 0;
-                    var now = +new Date();
-
-                    function randomData()
-                    {
-                        now = new Date(+now + 1000);
-                        time = (now).getTime();
-                        websocket.send(JSON.stringify({"act":"rt"}))
-                        cpuPercent = nowCpuStatus.cpuPercent
-                        _data = {
-                            name: time,
-                            value: [
-                                time,
-                                cpuPercent
-                            ]
-                        };
-                        return _data;
-                    }
-
-                    for (var i = 0; i < 60; i++) {
-                        data.push(randomData());  
-                    }
-
-                    var option = {
-                        title: {
-                            show: true,
-                            text: 'CPU使用率',
-                            left: 'center'
-                        },
-                        xAxis: {
-                            type : 'time',
-                            splitLine: {
-                                show: false
-                            }
-                        },
-                        yAxis: {
-                            type: 'value',
-                            boundaryGap: [0, '100%'],
-                            max: 100,
-                            splitLine: {
-                                show: true
-                            },
-                            axisLabel: {
-                                formatter: '{value} %'
-                            }
-                        },
-                        series: [{
-                            name: 'CPU使用率',
-                            type: 'line',
-                            showSymbol: false,
-                            hoverAnimation: false,
-                            data: data
-                        }]
-                    };
-                    cpuChart.setOption(option);
-                    timeTicket = setInterval(function () {
-                        data.shift();
-                        data.push(randomData());
-
-                        cpuChart.setOption({
-                            series: [{
-                                data: data
-                            }]
-                        });
-                    }, 1000);
-                }
-                
-//                getCpuStatus()
-EOT;
+            $script = $this->getCpuScript();
 
             Admin::script($script);
+
+            $mscript = $this->getMemoryScript();
+
+            Admin::script($mscript);
+
+            $monceScript = $this->initMemoryScript();
+
+            Admin::script($monceScript);
 
             $content->row(function (Row $row) use ($health_check) {
 //                echo '<pre>';
@@ -174,14 +74,20 @@ EOT;
                     $column->append(Dashboard::environment());
                 });
 //
+                // cpu status
                 $row->column(4, function (Column $column) {
                     $column->append(DashboardController::cpustatus());
                 });
-//
+
+                $row->column(8, function (Column $column) {
+                    $column->append(DashboardController::memorystatus());
+                });
 //                $row->column(4, function (Column $column) {
 //                    $column->append(Dashboard::dependencies());
 //                });
             });
         });
     }
+
+
 }

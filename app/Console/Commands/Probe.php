@@ -47,8 +47,6 @@ class Probe extends Command
             $this->startServer();
         } else if ($status == 'restart') {
             $this->info('is not support now！');
-//            $this->ws->shutdown();
-//            $this->startServer();
         } else {
             $this->info('no command match！');
         }
@@ -59,9 +57,9 @@ class Probe extends Command
         $ws = new \swoole_websocket_server("0.0.0.0", 8555);
 
         //监听WebSocket连接打开事件
-
         $ws->set(array(
-            'worker_num' => 1,    //worker process num
+            'worker_num' => 2,    //worker process num
+            'buffer_output_size' => 4 * 1024 * 1024,  // 4M
 //            'backlog' => 128,   //listen backlog
 //            'max_request' => 50,
 //            'daemonize' => 1,
@@ -79,19 +77,21 @@ class Probe extends Command
 
     public function onMessage($ws, $frame)
     {
-//        echo "Message: {$frame->data}\n";
-
         // get cpu status
         $data = json_decode($frame->data, true);
 
         if ($data['act'] == 'rt') {
             $sInfo = $this->getServerInfo();
-
-            $jsonRes = $this->initServStatus($sInfo);
-
-            $ws->push($frame->fd, $jsonRes);
+            $sInfo = $this->initServStatus($sInfo);
+        } else if ($data['act'] == 'mm') {
+            $sInfo = $this->getServerInfo()['svrInfo'];
+//            $jsonRes = json_encode($sInfo, JSON_UNESCAPED_UNICODE);
         }
-//        $ws->push($frame->fd, "ffffserver: {$frame->data}");
+        $jsonRes = json_encode(['act' => $data['act'], 'data' => $sInfo], JSON_UNESCAPED_UNICODE);
+
+        if ($ws->exist($frame->fd)) $ws->push($frame->fd, $jsonRes);
+        // force clear
+        else $ws->close($frame->fd, true);
     }
 
     public function getServerInfo()
@@ -102,8 +102,7 @@ class Probe extends Command
     public function onClose($ws, $fd)
     {
 //        echo "client-{$fd} is closed\n";
-        // force clear
-        $ws->close($fd, true);
+
     }
 
     public function onOpen($ws, $request)
@@ -116,32 +115,31 @@ class Probe extends Command
 
     public function initServStatus($sInfo)
     {
-        $svrInof = $sInfo['svrInof'];
+        $svrInfo = $sInfo['svrInfo'];
 //        $svrShow = $sInfo['svrShow'];
 
         $currentTime = date("Y-m-d H:i:s");
 
-        $uptime = $svrInof['uptime'];
+        $uptime = $svrInfo['uptime'];
 
         $res = array(
             'currentTime' => $currentTime,
             'uptime' => $uptime,
-            'cpuPercent' => $svrInof['cpu']['percent'],
-            'MemoryUsed' => $svrInof['mUsed'],
-            'MemoryFree' => $svrInof['mFree'],
-            'MemoryPercent' => $svrInof['mPercent'],
-            'MemoryCachedPercent' => $svrInof['mCachedPercent'],
-            'MemoryCached' => $svrInof['mCached'],
-            'MemoryRealUsed' => $svrInof['mRealUsed'],
-            'MemoryRealFree' => $svrInof['mRealFree'],
-            'MemoryRealPercent' => $svrInof['mRealPercent'],
-            'Buffers' => $svrInof['mBuffers'],
-            'SwapFree' => $svrInof['swapFree'],
-            'SwapUsed' => $svrInof['swapUsed'],
-            'SwapPercent' => $svrInof['swapPercent']
+            'cpuPercent' => $svrInfo['cpu']['percent'],
+            'MemoryUsed' => $svrInfo['mUsed'],
+            'MemoryFree' => $svrInfo['mFree'],
+            'MemoryPercent' => $svrInfo['mPercent'],
+            'MemoryCachedPercent' => $svrInfo['mCachedPercent'],
+            'MemoryCached' => $svrInfo['mCached'],
+            'MemoryRealUsed' => $svrInfo['mRealUsed'],
+            'MemoryRealFree' => $svrInfo['mRealFree'],
+            'MemoryRealPercent' => $svrInfo['mRealPercent'],
+            'Buffers' => $svrInfo['mBuffers'],
+            'SwapFree' => $svrInfo['swapFree'],
+            'SwapUsed' => $svrInfo['swapUsed'],
+            'SwapPercent' => $svrInfo['swapPercent']
         );
-        $jsonRes = json_encode($res, JSON_UNESCAPED_UNICODE);
 
-        return $jsonRes;
+        return $res;
     }
 }

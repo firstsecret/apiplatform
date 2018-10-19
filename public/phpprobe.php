@@ -1093,6 +1093,8 @@ if(filter_input(INPUT_GET, 'act') == 'ort' && $svrInfo['nBool'])
 
                     timeTicket = setInterval(function () {
                         $.getJSON("?act=rt&callback=?", function (data) {
+                            // console.log('ok')
+                            // console.log(data[0])
                             for (var i=0; i<percent.length; i++)
                             {
                                 if(data[percent[i]] !== null) option.series[i].data[0].value = data[percent[i]];

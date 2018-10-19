@@ -29,4 +29,9 @@ class DashboardController
     {
         return view('admin.dashboard.cpustatus');
     }
+
+    public static function memorystatus()
+    {
+        return view('admin.dashboard.memorystatus');
+    }
 }
