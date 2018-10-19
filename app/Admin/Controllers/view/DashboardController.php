@@ -24,4 +24,9 @@ class DashboardController
 
         return view('admin.dashboard.healthstatus', compact('envs', 'nodeName'));
     }
+
+    public static function cpustatus()
+    {
+        return view('admin.dashboard.cpustatus');
+    }
 }
