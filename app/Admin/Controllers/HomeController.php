@@ -53,10 +53,18 @@ class HomeController extends Controller
             $script = <<<EOT
                 var wsServer = 'ws://47.52.45.228:8555';
                 var websocket = new WebSocket(wsServer);
+                var nowCpuStatus = {
+                  
+                }
+                var startInterval
                 websocket.onopen = function (evt) {
-//                    console.log("Connected to WebSocket server.");
-
+                
+                    // handle first
                     websocket.send(JSON.stringify({"act":"rt"}))
+//                    getCpuStatus()   
+                    startInterval = setInterval(function(){
+                      if ("cpuPercent" in nowCpuStatus) {getCpuStatus(); clearInterval(startInterval)}
+                    },1000)
                 };
                 
                 websocket.onclose = function (evt) {
@@ -64,7 +72,9 @@ class HomeController extends Controller
                 };
                 
                 websocket.onmessage = function (evt) {
-                    console.log(evt.data);
+                    nowCpuStatus = JSON.parse(evt.data)
+//                    console.log('on message')
+                    // handle first
                 };
                 
                 websocket.onerror = function (evt, e) {
@@ -74,6 +84,7 @@ class HomeController extends Controller
 
                 function getCpuStatus()
                 {
+                    console.log('cpu status start!')
                     var cpuChart = echarts.init(document.getElementById('cpustatus'));
 
                     var data = [];
@@ -86,9 +97,8 @@ class HomeController extends Controller
                     {
                         now = new Date(+now + 1000);
                         time = (now).getTime();
-                        $.getJSON("?act=rt&callback=?", function (d) {
-                            cpuPercent = d['cpuPercent'];
-                        });
+                        websocket.send(JSON.stringify({"act":"rt"}))
+                        cpuPercent = nowCpuStatus.cpuPercent
                         _data = {
                             name: time,
                             value: [
@@ -100,7 +110,7 @@ class HomeController extends Controller
                     }
 
                     for (var i = 0; i < 60; i++) {
-                        data.push(randomData());
+                        data.push(randomData());  
                     }
 
                     var option = {

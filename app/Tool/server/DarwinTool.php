@@ -10,7 +10,7 @@ namespace App\Tool\server;
 
 trait DarwinTool
 {
-    use ServerTool;
+//    use ServerTool;
 
     // Darwin
     function svr_darwin()

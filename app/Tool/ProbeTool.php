@@ -11,12 +11,14 @@ namespace App\Tool;
 use App\Tool\server\DarwinTool;
 use App\Tool\server\FreebsdTool;
 use App\Tool\server\LinuxTool;
+use App\Tool\server\ServerTool;
 use App\Tool\server\WinntTool;
 
 //use App\Tool\server\ServerTool;
 
 trait ProbeTool
 {
+    use ServerTool;
     use DarwinTool;
     use LinuxTool;
     use FreebsdTool;

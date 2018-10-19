@@ -11,7 +11,7 @@ namespace App\Tool\server;
 
 trait WinntTool
 {
-    use ServerTool;
+//    use ServerTool;
 
     function svr_winnt()
     {

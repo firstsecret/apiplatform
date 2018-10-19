@@ -11,7 +11,7 @@ namespace App\Tool\server;
 
 trait FreebsdTool
 {
-    use ServerTool;
+//    use ServerTool;
 
     public function svr_freebsd()
     {
