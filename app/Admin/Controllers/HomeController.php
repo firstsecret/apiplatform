@@ -62,6 +62,14 @@ class HomeController extends Controller
 
             Admin::script($monceScript);
 
+            $serverScript = $this->serverScript();
+
+            Admin::script($serverScript);
+
+            $netScrpit = $this->netScript();
+
+            Admin::script($netScrpit);
+
             $content->row(function (Row $row) use ($health_check) {
 //                echo '<pre>';
                 foreach ($health_check['upstream'] as $nodeName => $upstream) {
@@ -69,19 +77,33 @@ class HomeController extends Controller
                         $column->append(DashboardController::healthStatus($nodeName, $upstream));
                     });
                 }
-//                exit;
+
+                // server status
+                $row->column(12, function (Column $column) {
+                    $column->append(DashboardController::serverstatus());
+                });
+
+                // net status
+                $row->column(12, function(Column $column){
+                   $column->append(DashboardController::netstatus());
+                });
+
+                // memory status
+                $row->column(12, function (Column $column) {
+                    $column->append(DashboardController::memorystatus());
+                });
+
+//                env;
                 $row->column(12, function (Column $column) {
                     $column->append(Dashboard::environment());
                 });
-//
+                //
                 // cpu status
-                $row->column(4, function (Column $column) {
-                    $column->append(DashboardController::cpustatus());
-                });
+//                $row->column(4, function (Column $column) {
+//                    $column->append(DashboardController::cpustatus());
+//                });
 
-                $row->column(8, function (Column $column) {
-                    $column->append(DashboardController::memorystatus());
-                });
+
 //                $row->column(4, function (Column $column) {
 //                    $column->append(Dashboard::dependencies());
 //                });

@@ -34,4 +34,14 @@ class DashboardController
     {
         return view('admin.dashboard.memorystatus');
     }
+
+    public static function serverstatus()
+    {
+        return view('admin.dashboard.serverstatus');
+    }
+
+    public static function netstatus()
+    {
+        return view('admin.dashboard.netstatus');
+    }
 }

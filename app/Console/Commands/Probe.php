@@ -78,17 +78,15 @@ class Probe extends Command
     public function onMessage($ws, $frame)
     {
         // get cpu status
-        $data = json_decode($frame->data, true);
+//        $data = json_decode($frame->data, true);
 
-        if ($data['act'] == 'rt') {
-            $sInfo = $this->getServerInfo();
-            $sInfo = $this->initServStatus($sInfo);
-        } else if ($data['act'] == 'mm') {
-            $sInfo = $this->getServerInfo()['svrInfo'];
-            $sInfo['currentTime'] = date("Y-m-d H:i:s");
-//            $jsonRes = json_encode($sInfo, JSON_UNESCAPED_UNICODE);
-        }
-        $jsonRes = json_encode(['act' => $data['act'], 'data' => $sInfo], JSON_UNESCAPED_UNICODE);
+        $sInfoBase = $this->getServerInfo();
+        $sInfo = $this->initServStatus($sInfoBase);
+        $svrInfo = $sInfoBase['svrInfo'];
+        $svrInfo = array_merge($svrInfo, $sInfo);
+//        $svrInfo['currentTime'] = $sInfo['currentTime'];
+
+        $jsonRes = json_encode(['act' => 'default', 'data' => ['svrInfo' => $svrInfo]], JSON_UNESCAPED_UNICODE);
 
         if ($ws->exist($frame->fd)) $ws->push($frame->fd, $jsonRes);
         // force clear
