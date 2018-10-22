@@ -57,6 +57,50 @@ class DashboardService
         return is_object($data) ? $this->formatHealthStatusObject($data->getBody()->getContents()) : $this->formatHealthStatus($data);
     }
 
+    public function getServerStatus()
+    {
+        $promise = [
+            [
+                'method' => 'get',
+                'uri' => $this->base_uri . '/health_status',
+                'options' => []
+            ],
+            [
+                'method' => 'get',
+                'uri' => $this->base_uri . '/fpm_status',
+                'options' => []
+            ],
+            [
+                'method' => 'get',
+                'uri' => $this->base_uri . '/status',
+                'options' => []
+            ],
+        ];
+
+        $this->c->request->asyncPoolRequest($promise);
+
+        $responseArr = $this->c->request->getResponse();
+
+        $all_server_status = [];
+
+        foreach ($responseArr['fulfilled'] as $k => $resp) {
+            switch ($k) {
+                case 0:
+                    $all_server_status['health_check'] = $this->formatHealthStatusObject($resp['response']);
+                    break;
+                case 1:
+                    $all_server_status['fpm_status'] = $this->formatPHPfpmStatusObject($resp['response']);
+                    break;
+                case 2:
+                    $all_server_status['status'] = $this->formatNginxStatusObject($resp['response']);
+                    break;
+            }
+        }
+
+        return $all_server_status;
+//        dd($responseArr);
+    }
+
     /**
      * health check handle
      * @param $data

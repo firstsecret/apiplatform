@@ -32,14 +32,16 @@ class HomeController extends Controller
 
             $content->header('首页控制台');
             $content->description('首页...');
-
-            $serviceBaseInfo = $this->getServiceBaseInfo();
-            $cpuInfo = $this->linux_Network();
+            $server_status = $this->service->getServerStatus();
+            $phpfpm = $server_status['fpm_status'];
+            $requestNginxAll = $server_status['status'];
+            $health_check = $server_status['health_check'];
 //            dd($cpuInfo);
-            $phpfpm = $this->service->phpfpmStatus();
-            $requestNginxAll = $this->service->nginxStatus();
+//            $phpfpm = $this->service->phpfpmStatus();
+//            $requestNginxAll = $this->service->nginxStatus();
 
-            $health_check = $this->service->health_check();
+//            $health_check = $this->service->health_check();
+
 //            dd($health_check);
             $content->row(function ($row) use ($requestNginxAll, $phpfpm) {
                 $row->column(3, new InfoBoxGender('总用户数', 'users', 'aqua', '/', $this->service->totalUser()));
@@ -50,29 +52,7 @@ class HomeController extends Controller
 
 //            $content->row(Dashboard::title());
 
-            $script = $this->getCpuScript();
-
-            Admin::script($script);
-
-            $mscript = $this->getMemoryScript();
-
-            Admin::script($mscript);
-
-            $monceScript = $this->initMemoryScript();
-
-            Admin::script($monceScript);
-
-            $serverScript = $this->serverScript();
-
-            Admin::script($serverScript);
-
-            $netScrpit = $this->netScript();
-
-            Admin::script($netScrpit);
-
-            $hddScript = $this->hddScript();
-
-            Admin::script($hddScript);
+            $this->loadExtScript();
 
             $content->row(function (Row $row) use ($health_check) {
 //                echo '<pre>';
@@ -119,5 +99,30 @@ class HomeController extends Controller
         });
     }
 
+    protected function loadExtScript()
+    {
+        $script = $this->getCpuScript();
 
+        Admin::script($script);
+
+        $mscript = $this->getMemoryScript();
+
+        Admin::script($mscript);
+
+        $monceScript = $this->initMemoryScript();
+
+        Admin::script($monceScript);
+
+        $serverScript = $this->serverScript();
+
+        Admin::script($serverScript);
+
+        $netScrpit = $this->netScript();
+
+        Admin::script($netScrpit);
+
+        $hddScript = $this->hddScript();
+
+        Admin::script($hddScript);
+    }
 }

@@ -146,7 +146,7 @@ class BeVanGuzzleHttp implements Request
             'concurrency' => $this->concurrency,
             'fulfilled' => function ($response, $index) {
                 // this is delivered each successful response
-                $this->fulfilled[$index]['response'] = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+                $this->fulfilled[$index]['response'] = $response->getBody()->getContents();
 //                $this->fulfilled[$index]['methods'] = get_class_methods($response);
 //                $this->fulfilled[$index]['class'] = get_class($response);
                 $this->fulfilled[$index]['headers'] = $response->getHeaders();
