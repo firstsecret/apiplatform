@@ -18,6 +18,7 @@ use App\Models\AppUser;
 use App\Models\PlatformProduct;
 use App\Models\PlatformProductCategory;
 use App\Models\ProductServices;
+use App\Services\Admin\AppKeySecretService;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -347,12 +348,21 @@ class ShowController extends BaseController
 //        }
 
         // 分块
-        AppUser::chunk(2, function ($users) {
-            foreach ($users as $u) {
-//                var_dump($u->type . ':' . $u->app_key . ',user_id:' . $u->id);
-                Redis::set($u['app_key'], $u['app_secret'] . $u['type']);
-            }
-        });
+//        AppUser::chunk(2, function ($users) {
+//            foreach ($users as $u) {
+////                var_dump($u->type . ':' . $u->app_key . ',user_id:' . $u->id);
+//                Redis::set($u['app_key'], $u['app_secret'] . $u['type']);
+//            }
+//        });
+
+        $valid_time = Redis::get('app_key_last_valid_time');
+
+        $diff = time() - (int)$valid_time;
+
+        if (empty(Redis::keys('app_key:*')) || $diff >= 24 * 3600) {
+            // update
+            (new AppKeySecretService())->mapAppkeysecret();
+        }
 
         // cursor handle
 //        foreach (AppUser::where('model', 'App\User')->cursor() as $user) {

@@ -74,7 +74,17 @@ post_str = string.sub(post_str, 1, string.len(post_str) - 1)
 
 -- dev env
 local dev_module = redis:get('apiplatform_service_dev')
-local request_base_uri = 'http://' .. redis:get('apiplatform_service_base_uri')
+if dev_module == ngx.null then
+    dev_module = 'true'
+end
+
+local apiplatform_service_base_uri = redis:get('apiplatform_service_base_uri')
+
+if apiplatform_service_base_uri == ngx.null then
+    tool.respClient(5123,'服务提供已关闭')
+end
+
+local request_base_uri = 'http://' .. apiplatform_service_base_uri
 --local url = request_base_uri .. request_uri
 --ngx.say(request_uri)
 

@@ -49,7 +49,7 @@ local app_key_type = 0
 --    tool.respClient(resp_table['status_code'], resp_table['message'])
 --    return
 --else
-    local r_app_secret = red:get(app_key)
+    local r_app_secret = red:get('app_key:' .. app_key)
 --    ngx.print(r_app_secret)
     if r_app_secret == nil or r_app_secret == ngx.null then
         tool.respClient(4009, 'appkey不存在')

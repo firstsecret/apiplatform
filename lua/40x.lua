@@ -33,7 +33,7 @@ if status_name == nil then
 end
 
 -- response rewrite
---ngx.say('is ok')
+
 tool.rewriteResponse('Server', 'xiaoyumi')
 --ngx.say('is  now')
 ngx.print('<head><title>' .. status .. '  ' .. status_name .. ' </title></head><body bgcolor="white"><center><h1>' .. status .. '  ' .. status_name .. ' </h1></center><hr><center>xiaoyumi<center></body>')

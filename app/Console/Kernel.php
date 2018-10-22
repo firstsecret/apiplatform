@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\CheckAppKeySecretJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -17,6 +18,8 @@ class Kernel extends ConsoleKernel
         //
     ];
 
+//    protected $description = '定时检查更新redis中appkey与appsecret';
+
     /**
      * Define the application's command schedule.
      *
@@ -28,12 +31,11 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
 
-        // 心跳 检测 处理
-        // cpu 状态 获取
         $schedule->call(function () {
-            // cpu 实时状态获取
-
-        })->everyMinute();
+            // check user app key and secret
+            CheckAppKeySecretJob::dispatch();
+//            \App\Jobs\CountApiJob::dispatch(ltrim(request()->getPathInfo(), '/'), 'fail');
+        })->everyThirtyMinutes();
     }
 
     /**
