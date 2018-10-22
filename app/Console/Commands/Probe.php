@@ -85,6 +85,9 @@ class Probe extends Command
         $svrInfo = $sInfoBase['svrInfo'];
         $svrInfo = array_merge($svrInfo, $sInfo);
 //        $svrInfo['currentTime'] = $sInfo['currentTime'];
+        // hdd status
+        // hdd
+        $svrInfo = $this->hddstatus($svrInfo);
 
         $jsonRes = json_encode(['act' => 'default', 'data' => ['svrInfo' => $svrInfo]], JSON_UNESCAPED_UNICODE);
 

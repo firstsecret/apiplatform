@@ -66,6 +66,21 @@ trait ProbeTool
         return ['svrShow' => $svrShow, 'svrInfo' => $svrInfo];
     }
 
+    public function hddstatus($svrInfo)
+    {
+        $hddTotal = disk_total_space(".");
+        $hddFree = disk_free_space(".");
+        $hddUsed = $hddTotal - $hddFree;
+        $hddPercent = (floatval($hddTotal) != 0) ? round($hddUsed / $hddTotal * 100, 2) : 0;
+
+        $svrInfo['hddTotal'] = $this->size_format($hddTotal,3);
+        $svrInfo['hddFree'] = $hddFree;
+        $svrInfo['hddUsed'] = $hddUsed;
+        $svrInfo['hddPercent'] = $hddPercent;
+
+        return $svrInfo;
+    }
+
     public function getCpuScript()
     {
         return <<<EOT
@@ -85,6 +100,7 @@ trait ProbeTool
                         getNetStatus();
                         getMemory();
                         initNetStatus();
+                        initHdd();
                         clearInterval(startInterval);
                       }
                     },1000)
@@ -99,20 +115,23 @@ trait ProbeTool
                     nowCpuStatus = respData.data.svrInfo
                     initMemory()
                     memoryStatus = respData.data.svrInfo
-//                    if(respData.act == 'rt'){
-//                        nowCpuStatus = respData.data
-//                        console.log(nowCpuStatus)
-//                    }else if(respData.act == 'mm') {
-//                        memoryStatus = respData.data
-//                        // init memory setting
-//                        initMemory()
-//                    }
                 };
                 
                 websocket.onerror = function (evt, e) {
                     console.log(e)
                     console.log('Error occured: ' + evt.data);
                 };
+                
+                function size_format(bytes, decimals=4)
+                {
+                    if (bytes === 0) return '0 B';  
+
+                    var k = 1024;  
+                    sizes = ['B','KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];  
+                    i = Math.floor(Math.log(bytes) / Math.log(k));
+
+                    return (bytes / Math.pow(k, i)).toPrecision(decimals) + ' ' + sizes[i];
+                }
 
                 function getCpuStatus()
                 {
@@ -205,7 +224,7 @@ EOT;
          
           function initMemory()
           {
-               console.log('init memory')
+//               console.log('init memory')
                 
                if (!$.isEmptyObject(memoryStatus)){
                    mBool = memoryStatus.mBool
@@ -402,7 +421,62 @@ EOT;
                  })
             },1000)
         }
+EOT;
+    }
 
+    public function hddScript()
+    {
+        return <<<EOT
+                function initHdd()
+                {
+                    var hddChart = echarts.init(document.getElementById('hddstatus'));
+                    var hddTotal = nowCpuStatus.hddTotal
+                    var hddPercent = nowCpuStatus.hddPercent
+                    var hddUsed = nowCpuStatus.hddUsed
+                    var hddFree = nowCpuStatus.hddFree
+                    var option = {
+                        title : {
+                            text: '总空间 ' + hddTotal + '， 使用率 ' + hddPercent + '%',
+                            right: '10%'
+                        },
+                        tooltip : {
+                            trigger: 'item',
+                            formatter: function(data){
+                                var seriesName = data.seriesName;
+                                var name = data.name;
+                                var value = size_format(data.value, 5);
+                                var percent = data.percent;
+                                return seriesName + '<br />' + name + ': ' + value + ' (' + percent + ' %)';
+                            }
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'right',
+                            data: ['已用','空闲']
+                        },
+                        series : [
+                            {
+                                name: '硬盘使用状况',
+                                type: 'pie',
+                                radius : '80%',
+                                center: ['30%', '50%'],
+                                data:[
+                                    {value: hddUsed, name:'已用'},
+                                    {value: hddFree, name:'空闲'}
+                                ],
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                }
+                            }
+                        ]
+                    };
+
+                    hddChart.setOption(option, true);
+                }
 EOT;
 
     }

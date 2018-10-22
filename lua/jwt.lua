@@ -50,7 +50,8 @@ local app_key_type = 0
 --    return
 --else
     local r_app_secret = red:get(app_key)
-    if r_app_secret == nil and r_app_secret ~= ngx.null then
+--    ngx.print(r_app_secret)
+    if r_app_secret == nil or r_app_secret == ngx.null then
         tool.respClient(4009, 'appkey不存在')
         return
     else

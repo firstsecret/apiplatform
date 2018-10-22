@@ -44,4 +44,9 @@ class DashboardController
     {
         return view('admin.dashboard.netstatus');
     }
+
+    public static function hddstatus()
+    {
+        return view('admin.dashboard.hddstatus');
+    }
 }

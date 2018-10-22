@@ -70,6 +70,10 @@ class HomeController extends Controller
 
             Admin::script($netScrpit);
 
+            $hddScript = $this->hddScript();
+
+            Admin::script($hddScript);
+
             $content->row(function (Row $row) use ($health_check) {
 //                echo '<pre>';
                 foreach ($health_check['upstream'] as $nodeName => $upstream) {
@@ -89,8 +93,12 @@ class HomeController extends Controller
                 });
 
                 // memory status
-                $row->column(12, function (Column $column) {
+                $row->column(8, function (Column $column) {
                     $column->append(DashboardController::memorystatus());
+                });
+
+                $row->column(4, function(Column $column){
+                   $column->append(DashboardController::hddstatus());
                 });
 
 //                env;
