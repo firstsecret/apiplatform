@@ -14,6 +14,7 @@ use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
 use App\Exceptions\BevanJwtAuthException;
 use App\Http\Api\BaseController;
+use App\Jobs\CheckAppKeySecretJob;
 use App\Models\AppUser;
 use App\Models\PlatformProduct;
 use App\Models\PlatformProductCategory;
@@ -355,14 +356,16 @@ class ShowController extends BaseController
 //            }
 //        });
 
-        $valid_time = Redis::get('app_key_last_valid_time');
+//        $valid_time = Redis::get('app_key_last_valid_time');
+//
+//        $diff = time() - (int)$valid_time;
+//
+//        if (empty(Redis::keys('app_key:*')) || $diff >= 24 * 3600) {
+//            // update
+//            (new AppKeySecretService())->mapAppkeysecret();
+//        }
 
-        $diff = time() - (int)$valid_time;
-
-        if (empty(Redis::keys('app_key:*')) || $diff >= 24 * 3600) {
-            // update
-            (new AppKeySecretService())->mapAppkeysecret();
-        }
+        CheckAppKeySecretJob::dispatch();
 
         // cursor handle
 //        foreach (AppUser::where('model', 'App\User')->cursor() as $user) {

@@ -35,7 +35,10 @@ class Kernel extends ConsoleKernel
             // check user app key and secret
             CheckAppKeySecretJob::dispatch();
 //            \App\Jobs\CountApiJob::dispatch(ltrim(request()->getPathInfo(), '/'), 'fail');
-        })->everyThirtyMinutes();
+        })->description('定期检查修复appkey与secret在redis中的状态')->runInBackground()->everyThirtyMinutes()->onOneServer();
+
+        // horizon
+        $schedule->command('horizon:snapshot')->everyFiveMinutes();
     }
 
     /**

@@ -28,6 +28,6 @@ class AppKeySecretService
 //            Redis::set($user['app_key'], $user['app_secret'] . $user['type']);
 //        }
 
-        return $this->responseClient(200, '成功', []);
+//        return $this->responseClient(200, '成功', []);
     }
 }
