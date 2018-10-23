@@ -16,6 +16,9 @@ Route::group([
     $router->resource('platformProduct', PlatformProductController::class);
     $router->resource('platformProductCategory', PlatformProductCategoryController::class);
 
+    $router->get('/horizon', 'HorizonController@index');
+    $router->get('/supervisor', 'SupervisorController@index');
+
     //custom admin api
     $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('unbindServicePlatformProduct/{service_id}/{product_id}', NodeServicesController::class . '@unbindServicePlatformProduct');
