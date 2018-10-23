@@ -20,4 +20,17 @@ class PluginController
     {
         return view('admin.plugin.supervisor');
     }
+
+    public static function codeeditor($content)
+    {
+
+        return view('admin.plugin.codeeditor', compact('content'));
+    }
+
+    public static function custombtn($config = [])
+    {
+        $config['btn_id'] = 'btn-' . rand();
+
+        return view('admin.plugin.custombtn', compact('config'));
+    }
 }

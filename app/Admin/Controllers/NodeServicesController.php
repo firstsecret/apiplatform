@@ -239,8 +239,7 @@ class NodeServicesController extends Controller
         $('.unbindServicePlatformProduct').on('click', function(){
      
             var url = $(this).data('href')
-      
-      
+     
             swal({
                 title: "$delete_confirm",
                 type: "warning",

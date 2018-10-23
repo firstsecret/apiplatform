@@ -19,6 +19,13 @@ Route::group([
     $router->get('/horizon', 'HorizonController@index');
     $router->get('/supervisor', 'SupervisorController@index');
 
+
+    // server conf
+    $router->group(['prefix'=>'server'], function(Router $router){
+        $router->get('/conf/{setting_conf}', 'ServerConfigController@settingConf');
+    });
+
+
     //custom admin api
     $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('unbindServicePlatformProduct/{service_id}/{product_id}', NodeServicesController::class . '@unbindServicePlatformProduct');
