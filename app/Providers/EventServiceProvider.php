@@ -31,6 +31,10 @@ class EventServiceProvider extends ServiceProvider
         // 更新 appkey 映射
         'App\Events\UpdateAppkeyMapEvent' => [
             'App\Listeners\UpdateAppkeyMapListener'
+        ],
+        // 重启 定制的server 服务
+        'App\Events\ReloadServerEvent' => [
+            'App\Listeners\ReloadServerListener'
         ]
     ];
 
