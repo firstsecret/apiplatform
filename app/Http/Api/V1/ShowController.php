@@ -20,6 +20,7 @@ use App\Models\PlatformProduct;
 use App\Models\PlatformProductCategory;
 use App\Models\ProductServices;
 use App\Services\Admin\AppKeySecretService;
+use App\Tool\ProbeTool;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -31,6 +32,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ShowController extends BaseController
 {
+    use ProbeTool;
     /**
      *  测试
      */
@@ -390,5 +392,10 @@ class ShowController extends BaseController
         $count = Redis::get('api_request_condition');
 
         dd($count);
+    }
+
+    public function testCommand()
+    {
+        dd($this->getCommand("machdep.cpu.core_count"));
     }
 }

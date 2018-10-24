@@ -97,6 +97,7 @@ $api->version('v1', ['middleware' => ['api.rewriteResp']], function ($api) {
     $api->get('getNetJWT', 'App\Http\Api\V1\ShowController@getNetJWT');
     $api->get('appMapRedis', 'App\Http\Api\V1\ShowController@appMapRedis');
     $api->get('testAdminConfig', 'App\Http\Api\V1\ShowController@testAdminConfig');
+    $api->get('testCommand', 'App\Http\Api\V1\ShowController@testCommand');
 });
 
 $api->version('v1', ['middleware' => 'api.throttle', 'namespace' => '\App\Http\Api\V1'], function ($api) {

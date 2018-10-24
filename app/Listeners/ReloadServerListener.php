@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ReloadServerEvent;
+use App\Jobs\ReloadJob;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -27,5 +28,6 @@ class ReloadServerListener
     public function handle(ReloadServerEvent $event)
     {
         // relaod server
+        ReloadJob::dispatch();
     }
 }

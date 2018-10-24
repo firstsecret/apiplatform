@@ -18,3 +18,8 @@
 --end
 
 --ngx.log(ngx.ERR, "test log:")
+
+-- slow log 
+if tonumber(ngx.var.upstream_response_time) >= 1 then
+    ngx.log(ngx.WARN, "[SLOW] Ngx upstream response time: " .. ngx.var.upstream_response_time .. "s from " .. ngx.var.upstream_addr);
+end

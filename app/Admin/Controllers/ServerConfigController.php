@@ -9,6 +9,7 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Controllers\view\PluginController;
+use App\Events\ReloadServerEvent;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Layout\Row;
 use Encore\Admin\Layout\Column;
@@ -86,6 +87,8 @@ class ServerConfigController
         $this->put_contents = $contents;
 
         $this->putConfContent();
+
+        event(new ReloadServerEvent());
 
         return response()->json([
             'status' => true,

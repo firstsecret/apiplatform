@@ -118,8 +118,8 @@ trait DarwinTool
             {
                 $dev_name = trim($buf[0]);
                 $_net[$dev_name]['name'] = $dev_name;
-                $_net[$dev_name]['rxbytes'] = netSize($buf[5]);
-                $_net[$dev_name]['txbytes'] = netSize($buf[8]);
+                $_net[$dev_name]['rxbytes'] = $this->netSize($buf[5]);
+                $_net[$dev_name]['txbytes'] = $this->netSize($buf[8]);
                 $_net[$dev_name]['rxspeed'] = $buf[5];
                 $_net[$dev_name]['txspeed'] = $buf[8];
                 $_net[$dev_name]['errors'] = $buf[4] + $buf[7];

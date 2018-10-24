@@ -19,7 +19,6 @@ Route::group([
     $router->get('/horizon', 'HorizonController@index');
     $router->get('/supervisor', 'SupervisorController@index');
 
-
     // server conf
     $router->group(['prefix'=>'server'], function(Router $router){
         $router->get('/conf/{setting_conf}', 'ServerConfigController@settingConf');

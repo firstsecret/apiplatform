@@ -30,6 +30,7 @@ class ReloadJob implements ShouldQueue
     public function handle()
     {
         // reload server
-        
+        $base_project_path = config('base_project_path');
+        shell_exec("/usr/local/openresty/nginx/sbin -c $base_project_path/storage/app/server/nginx/nginx.conf -s reload");
     }
 }

@@ -59,7 +59,6 @@ trait ServerTool
         return false;
     }
 
-
     public function getCommand($args = '', $commandName = 'sysctl', $option = '-n')
     {
         if (false === ($commandPath = $this->findCommand($commandName))) return false;
