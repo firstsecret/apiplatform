@@ -62,7 +62,7 @@ class Probe extends Command
             'buffer_output_size' => 4 * 1024 * 1024,  // 4M
 //            'backlog' => 128,   //listen backlog
 //            'max_request' => 50,
-//            'daemonize' => 1,
+            'daemonize' => 1,
         ));
 
         //register event
