@@ -13,20 +13,26 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Layout\Row;
 use Encore\Admin\Layout\Column;
 use Encore\Admin\Layout\Content;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 
 class ServerConfigController
 {
-    protected $setting_conf;
+    protected $setting_conf; // base conf file path
 
-    protected $file_contents;
+    protected $file_contents; // get file's content
 
-    public function settingConf($setting_conf)
+    protected $now_request_url; // current request url
+
+    protected $put_contents; // waiting to put contents
+
+    public function settingConf(Request $request, $setting_conf)
     {
         $this->setting_conf = $setting_conf;
         $this->file_contents = $this->getConfContent();
 
+        $this->now_request_url = $request->url();
         return Admin::content(function (Content $content) {
 
             $content->header('nginx配置管理');
@@ -39,67 +45,51 @@ class ServerConfigController
 
                 // custom btn
                 $row->column(12, function (Column $column) {
-                    $config['callback'] = $this->settingClickEvent();
+                    $config = [
+                        'btn_url' => $this->now_request_url
+                    ];
                     $column->append(PluginController::custombtn($config));
                 });
             });
         });
     }
 
-    protected function settingClickEvent()
-    {
-        $url = '/';
-        return <<<EOT
-var url = $url;
-
-swal({
-                title: "确认修改吗",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "确认",
-                showLoaderOnConfirm: true,
-                closeOnConfirm: false,
-                cancelButtonText: "取消",
-                preConfirm: function() {
-                    return new Promise(function(resolve) {
-    
-                        $.ajax({
-                            method: 'update',
-                            url: url,
-                            data: {
-           
-                                _token:LA.token
-                            },
-                            success: function (data) {
-                                $.pjax.reload('#pjax-container');
-    
-                                resolve(data);
-                            }
-                        });
-    
-                    });
-                }
-            }).then(function(result){
-                var data = result.value;
-                if (typeof data === 'object') {
-                    if (data.status) {
-                        swal(data.message, '', 'success');
-                    } else {
-                        swal(data.message, '', 'error');
-                    }
-                }
-            });
-            
-            return false
-EOT;
-
-    }
 
     protected function getConfContent()
     {
         $file_path = '/' . str_replace('_', '/', $this->setting_conf);
 
         return Storage::disk('server')->get($file_path);
+    }
+
+    protected function putConfContent()
+    {
+        $file_path = '/' . str_replace('_', '/', $this->setting_conf);
+
+        Storage::disk('server')->put($file_path, $this->put_contents);
+    }
+
+    public function updateConf(Request $request, $setting_conf)
+    {
+        // get file data
+        $contents = $request->input('file_data');
+
+        if (!$contents) {
+            return response()->json([
+                'status' => false,
+                'message' => '文本内容为空，更新失败',
+            ]);
+        }
+
+        // file path
+        $this->setting_conf = $setting_conf;
+        $this->put_contents = $contents;
+
+        $this->putConfContent();
+
+        return response()->json([
+            'status' => true,
+            'message' => '更新成功'
+        ]);
     }
 }

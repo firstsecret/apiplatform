@@ -23,7 +23,6 @@ class PluginController
 
     public static function codeeditor($content)
     {
-
         return view('admin.plugin.codeeditor', compact('content'));
     }
 

@@ -23,6 +23,8 @@ Route::group([
     // server conf
     $router->group(['prefix'=>'server'], function(Router $router){
         $router->get('/conf/{setting_conf}', 'ServerConfigController@settingConf');
+        // update
+        $router->put('/conf/{setting_conf}', 'ServerConfigController@updateConf');
     });
 
 
