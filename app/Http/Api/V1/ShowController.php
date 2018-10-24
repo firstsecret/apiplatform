@@ -389,9 +389,13 @@ class ShowController extends BaseController
 
     public function testApiCount()
     {
-        $count = Redis::get('api_request_condition');
+//        $count = Redis::get('api_request_condition');
 
-        dd($count);
+//        dd($count);
+
+        $d = Redis::get('api_count_*');
+
+        dd($d);
     }
 
     public function testCommand()

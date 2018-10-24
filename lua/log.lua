@@ -46,3 +46,6 @@ if ip_request_count ~= ngx.null then
 else
     redis:hset('ip_api_count_' .. remote_addr, request_uri, 1)
 end
+
+
+redis:set('test_log','ok')
