@@ -20,6 +20,7 @@ use App\Models\PlatformProduct;
 use App\Models\PlatformProductCategory;
 use App\Models\ProductServices;
 use App\Services\Admin\AppKeySecretService;
+use App\Services\ApiCountService;
 use App\Tool\ProbeTool;
 use App\User;
 use Illuminate\Http\Request;
@@ -391,8 +392,22 @@ class ShowController extends BaseController
     public function testApiCount()
     {
 //        $count = Redis::get('api_request_condition');
-
+//
 //        dd($count);
+        $d = Redis::keys('ip_api_count_*');
+        dd(count($d));
+        dd(strlen(json_encode($d)));
+//        foreach ($d as $prefix_ip){
+//            $v = Redis::HGETALL($prefix_ip);
+//
+//            dd($v);
+//        }
+
+        $apiCountService = new ApiCountService();
+
+        foreach ($apiCountService as $k => $v){
+//            var_dump($apiCountService->getIp());
+        }
     }
 
     public function testCommand()

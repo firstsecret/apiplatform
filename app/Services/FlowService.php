@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Redis;
 
 class FlowService
 {
+
     public function getRealTimeFlowCount()
     {
         return $this->realApiCount();
@@ -67,7 +68,7 @@ class FlowService
         unset($request_numbers);
         unset($ip);
         unset($tmp_request_arr);
-        
+
         return $ip_status;
     }
 }
