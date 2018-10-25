@@ -14,6 +14,7 @@ use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
 use App\Exceptions\BevanJwtAuthException;
 use App\Http\Api\BaseController;
+use App\Jobs\ApiLuaCountJob;
 use App\Jobs\CheckAppKeySecretJob;
 use App\Models\AppUser;
 use App\Models\PlatformProduct;
@@ -25,6 +26,7 @@ use App\Tool\ProbeTool;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -394,20 +396,52 @@ class ShowController extends BaseController
 //        $count = Redis::get('api_request_condition');
 //
 //        dd($count);
-        $d = Redis::keys('ip_api_count_*');
-        dd(count($d));
-        dd(strlen(json_encode($d)));
+//        $d = Redis::keys('ip_api_count_*');
+
+//        dd(strlen(json_encode($d)));
 //        foreach ($d as $prefix_ip){
 //            $v = Redis::HGETALL($prefix_ip);
 //
 //            dd($v);
 //        }
 
-        $apiCountService = new ApiCountService();
+//        $apiCountService = new ApiCountService();
+//
+//        foreach ($apiCountService as $k => $v){
+////            var_dump($apiCountService->getIp());
+//            dd($v);
+//        }
 
-        foreach ($apiCountService as $k => $v){
-//            var_dump($apiCountService->getIp());
-        }
+//        $apiCountIterator = new ApiCountService();
+//        $now = date('Y-m-d H:i:s', time());
+//        DB::beginTransaction();
+//        try {
+//            foreach ($apiCountIterator as $k => $v) {
+//                $ip = $apiCountIterator->getIp();
+//                $insert_data = [];
+//
+//                foreach ($v as $request_uri => $number) {
+//                    $insert_data[] = [
+//                        'ip' => $ip,
+//                        'request_uri' => substr($request_uri,0,254),
+//                        'today_total_number' => $number,
+//                        'created_at' => $now,
+//                        'updated_at' => $now
+//                    ];
+//                }
+//                DB::table('ip_request_flows')->insert($insert_data);
+//            }
+//        } catch (\Exception $e) {
+//            dd($apiCountIterator);
+////            dd($e->getMessage());
+////            DB::rollBack();
+////            throw $e;
+//        }
+//        DB::commit();
+
+        ApiLuaCountJob::dispatch();
+
+        $this->responseClient(200,'ok',[]);
     }
 
     public function testCommand()

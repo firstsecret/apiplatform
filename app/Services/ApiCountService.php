@@ -11,6 +11,12 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Redis;
 
+/**
+ * ip 流量 迭代器 , 目前标准为 : 100W用户(ip) 请求 只需 20M 左右内存
+ * Class ApiCountService
+ * @author Bevan
+ * @package App\Services
+ */
 class ApiCountService implements \Iterator
 {
     protected $key;
@@ -52,6 +58,8 @@ class ApiCountService implements \Iterator
     public function current()
     {
         // get fields and values
+        $this->updateIp();
+        $this->value = $this->getValue();
         return $this->value;
         // TODO: Implement current() method.
     }
@@ -59,8 +67,6 @@ class ApiCountService implements \Iterator
     public function next()
     {
         $this->key += 1;
-        $this->updateIp();
-        $this->value = $this->getValue();
         // TODO: Implement next() method.
     }
 

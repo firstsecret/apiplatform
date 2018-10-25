@@ -12,6 +12,7 @@ namespace App\Services;
 use App\Models\Flow;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Mockery\Exception;
 
 class FlowService
 {
@@ -21,28 +22,59 @@ class FlowService
         return $this->realApiCount();
     }
 
+    /**
+     *  api 请求 统计
+     */
     public function saveFlowCount()
     {
-        $ip_status = $this->realApiCount();
+        $apiCountIterator = new ApiCountService();
+        $now = date('Y-m-d', time());
         DB::beginTransaction();
-        //
         try {
-            Flow::whereBetween(['created_at', [date('Y-m-d', time()), date('Y-m-d', strtotime("+1 day"))]])->delete();
+            foreach ($apiCountIterator as $k => $v) {
+                $ip = $apiCountIterator->getIp();
+                $insert_data = [];
 
-            $flowModel = new Flow;
-            $flowModel->ip_status = json_encode($ip_status, JSON_UNESCAPED_UNICODE);
-
-            $flowModel->save();
+                foreach ($v as $request_uri => $number) {
+                    $insert_data[] = [
+                        'ip' => $ip,
+                        'request_uri' => substr($request_uri,0,254),
+                        'today_total_number' => $number,
+                        'created_at' => $now,
+                        'updated_at' => $now
+                    ];
+                }
+                DB::table('ip_request_flows')->insert($insert_data);
+            }
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }
         DB::commit();
-        return true;
     }
 
+//    public function saveFlowCountBak()
+//    {
+//        $ip_status = $this->realApiCount();
+//        DB::beginTransaction();
+//        //
+//        try {
+//            Flow::whereBetween(['created_at', [date('Y-m-d', time()), date('Y-m-d', strtotime("+1 day"))]])->delete();
+//
+//            $flowModel = new Flow;
+//            $flowModel->ip_status = json_encode($ip_status, JSON_UNESCAPED_UNICODE);
+//
+//            $flowModel->save();
+//        } catch (\Exception $e) {
+//            DB::rollBack();
+//            throw $e;
+//        }
+//        DB::commit();
+//        return true;
+//    }
+
     /**
-     * 模拟 计算 ， 大约 10W ip  , 全部 取出 需要 20M 左右的 内存
+     * 模拟 计算 ， 大约 10W ip  , 全部 取出 需要 20M 左右的 内存 (弃用, 请使用 ApiCountService)
      * 获取 今日的 实时api 请求统计
      * @return Array
      */

@@ -33,10 +33,7 @@ class ApiLuaCountJob implements ShouldQueue
         //
         $flowService = new FlowService();
 
-        $ip_status = $flowService->getRealTimeFlowCount();
+        $flowService->saveFlowCount();
 
-        foreach ($ip_status as $ip => $request_uri){
-
-        }
     }
 }
