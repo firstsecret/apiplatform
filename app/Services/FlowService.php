@@ -41,6 +41,7 @@ class FlowService
     }
 
     /**
+     * 模拟 计算 ， 大约 10W ip  , 全部 取出 需要 20M 左右的 内存
      * 获取 今日的 实时api 请求统计
      * @return Array
      */
@@ -58,8 +59,15 @@ class FlowService
                 $tmp_request_arr[$reuqest_url] = $request_numbers[$k];
             }
             $ip_status[$ip] = $tmp_request_arr;
-//            dd($ip_keys);
         }
+        // reflex
+        unset($d);
+        unset($prefix_ip);
+        unset($reuqest_urls);
+        unset($request_numbers);
+        unset($ip);
+        unset($tmp_request_arr);
+        
         return $ip_status;
     }
 }

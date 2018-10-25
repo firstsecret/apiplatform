@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Services\FlowService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -30,6 +31,12 @@ class ApiLuaCountJob implements ShouldQueue
     public function handle()
     {
         //
+        $flowService = new FlowService();
 
+        $ip_status = $flowService->getRealTimeFlowCount();
+
+        foreach ($ip_status as $ip => $request_uri){
+
+        }
     }
 }
