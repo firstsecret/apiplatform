@@ -33,6 +33,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class ShowController extends BaseController
 {
     use ProbeTool;
+
     /**
      *  测试
      */
@@ -392,10 +393,6 @@ class ShowController extends BaseController
 //        $count = Redis::get('api_request_condition');
 
 //        dd($count);
-
-        $d = Redis::get('api_count_*');
-
-        dd($d);
     }
 
     public function testCommand()
