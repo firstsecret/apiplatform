@@ -122,7 +122,7 @@ if dev_module == 'true' then
         end
     end
 else
-    return tool.respClient(5555, '正式环境未开放')
+    return tool.respClient(5555, '正式环境未开发完成')
 end
 
 -- response hander handle
@@ -168,5 +168,4 @@ tool.respClient(200, 'success', response_list)
 --
 --ngx.say(json.encode(data));
 
--- api count
---tool.apicount()
+

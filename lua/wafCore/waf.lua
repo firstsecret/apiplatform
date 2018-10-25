@@ -86,3 +86,7 @@ elseif PostCheck then
 else
     return
 end
+
+-- api count
+local tool = require "resty.tool"
+tool.apicount()

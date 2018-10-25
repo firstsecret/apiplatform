@@ -80,6 +80,7 @@ $api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', '
 
 // tmp test api
 $api->version('v1', ['middleware' => ['api.rewriteResp']], function ($api) {
+    $api->post('countApi','\App\Http\Api\V1\ShowController@testApiCount');
     $api->get('testLua', '\App\Http\Api\V1\ShowController@testLua');
     $api->get('testTmp', '\App\Http\Api\V1\ShowController@index');
     $api->get('testSign', 'App\Http\Api\V1\ShowController@testSign');
