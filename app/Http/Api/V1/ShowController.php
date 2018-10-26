@@ -22,6 +22,7 @@ use App\Models\PlatformProductCategory;
 use App\Models\ProductServices;
 use App\Services\Admin\AppKeySecretService;
 use App\Services\ApiCountService;
+use App\Services\FlowService;
 use App\Services\RedisScanService;
 use App\Tool\ProbeTool;
 use App\User;
@@ -402,18 +403,40 @@ class ShowController extends BaseController
 //            dd($d);
 //        }
 
-        $r = new RedisScanService(['count'=>50]);
-        $ss = '';
+        $f = new FlowService();
 
-        $new_api_count = [];
-        foreach ($r as $k => $v){
-            $api_number = Redis::MGET($v);
-            foreach ($v as $vk => $uri){
-                $new_api_count[$uri] = $api_number[$vk];
-            }
-        }
+        $f->updateTotalCount();
 
-        dd($new_api_count);
+        dd('ok');
+//        $api_count = new RedisScanService(['count' => 5]);
+//        $now = date('Y-m-d', time());
+//
+//        try {
+//            foreach ($api_count as $k => $v) {
+//                $api_number = Redis::MGET($v);
+//                $new_api_count = [];
+//                $insert_sql = '';
+//                foreach ($v as $vk => $uri) {
+//                    $request_uri = substr($uri, 0, 254);
+//                    $new_api_count[] = [
+//                        'request_uri' => $request_uri,
+//                        'request_number' => $api_number[$vk],
+//                        'created_at' => $now,
+//                        'updated_at' => $now
+//                    ];
+//                    $insert_sql .= " ('$request_uri', $api_number[$vk], '$now', '$now'),";
+//                }
+//                // ru ku
+//                $insert_sql = rtrim($insert_sql, ',');
+//                $sql = "REPLACE INTO flows (request_uri,request_number,created_at,updated_at) VALUES $insert_sql";
+//
+//                DB::statement($sql);
+//            }
+//        } catch (\Exception $e) {
+//            dd($e->getMessage());
+//        }
+//
+//        return $this->responseClient();
 
 //        $d= Redis::scan(1,['match' =>'api_count_*']);
 //        dd($d);

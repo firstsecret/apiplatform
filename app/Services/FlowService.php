@@ -31,27 +31,41 @@ class FlowService
         try {
             foreach ($api_count as $k => $v) {
                 $api_number = Redis::MGET($v);
-                $new_api_count = [];
+//                $new_api_count = [];
+                $insert_sql = '';
                 foreach ($v as $vk => $uri) {
-                    $new_api_count[] = [
-                        'request_uri' => substr($uri, 0, 500),
-                        'request_number' => $api_number[$vk],
-                        'created_at' => $now,
-                        'updated_at' => $now
-                    ];
+                    $request_uri = substr($uri, 0, 254);
+//                    $new_api_count[] = [
+//                        'request_uri' => $request_uri,
+//                        'request_number' => $api_number[$vk],
+//                        'created_at' => $now,
+//                        'updated_at' => $now
+//                    ];
+                    $insert_sql .= " ('$request_uri', $api_number[$vk], '$now', '$now'),";
                 }
                 // ru ku
-                DB::table('flows')->insert($new_api_count);
+                $insert_sql = rtrim($insert_sql, ',');
+                $sql = "REPLACE INTO flows (request_uri,request_number,created_at,updated_at) VALUES $insert_sql";
+
+                DB::statement($sql);
             }
         } catch (Exception $e) {
             DB::rollBack();
+            dd($e->getMessage());
         }
         DB::commit();
+
+        return true;
     }
 
+    /**
+     *  清除每日的统计
+     */
     public function clearDailyApiRequest()
     {
+        $all = Redis::keys('ip_api_count_*');
 
+        Redis::del($all);
     }
 
     /**

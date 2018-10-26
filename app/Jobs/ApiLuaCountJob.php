@@ -33,11 +33,13 @@ class ApiLuaCountJob implements ShouldQueue
         //
         $flowService = App::make('App\Services\FlowService');
         // 每日请求 情况
-        $flowService->saveFlowCount();
-        // 更新 总的 请求情况
-        $flowService->updateTotalCount();
-        // 清除
-        $flowService->clearDailyApiRequest();
+        $status = $flowService->saveFlowCount();
 
+        if ($status) {
+            // 更新 总的 请求情况
+            $flowService->updateTotalCount();
+            // 清除
+            $flowService->clearDailyApiRequest();
+        }
     }
 }
