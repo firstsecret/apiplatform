@@ -2,12 +2,12 @@
 
 namespace App\Jobs;
 
-use App\Services\FlowService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\App;
 
 class ApiLuaCountJob implements ShouldQueue
 {
@@ -31,9 +31,13 @@ class ApiLuaCountJob implements ShouldQueue
     public function handle()
     {
         //
-        $flowService = new FlowService();
-
+        $flowService = App::make('App\Services\FlowService');
+        // 每日请求 情况
         $flowService->saveFlowCount();
+        // 更新 总的 请求情况
+        $flowService->updateTotalCount();
+        // 清除
+        $flowService->clearDailyApiRequest();
 
     }
 }

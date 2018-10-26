@@ -22,9 +22,11 @@ use App\Models\PlatformProductCategory;
 use App\Models\ProductServices;
 use App\Services\Admin\AppKeySecretService;
 use App\Services\ApiCountService;
+use App\Services\RedisScanService;
 use App\Tool\ProbeTool;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -393,6 +395,29 @@ class ShowController extends BaseController
 
     public function testApiCount()
     {
+//        dd(Redis::hgetall('ip_api_count_220.250.63.189'));
+//        $a = new ApiCountService();
+//
+//        foreach ($a as $d){
+//            dd($d);
+//        }
+
+        $r = new RedisScanService(['count'=>50]);
+        $ss = '';
+
+        $new_api_count = [];
+        foreach ($r as $k => $v){
+            $api_number = Redis::MGET($v);
+            foreach ($v as $vk => $uri){
+                $new_api_count[$uri] = $api_number[$vk];
+            }
+        }
+
+        dd($new_api_count);
+
+//        $d= Redis::scan(1,['match' =>'api_count_*']);
+//        dd($d);
+
 //        $count = Redis::get('api_request_condition');
 //
 //        dd($count);
@@ -438,10 +463,9 @@ class ShowController extends BaseController
 ////            throw $e;
 //        }
 //        DB::commit();
-
-        ApiLuaCountJob::dispatch();
-
-        $this->responseClient(200,'ok',[]);
+//        ApiLuaCountJob::dispatch();
+//
+//        $this->responseClient(200,'ok',[]);
     }
 
     public function testCommand()

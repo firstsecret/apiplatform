@@ -35,8 +35,8 @@ class ApiCountService implements \Iterator
         $this->key = 0;
         $this->all_request_ip_today = Redis::keys('ip_api_count_*');
         $this->len = count($this->all_request_ip_today);
-        $this->updateIp();
-        $this->value = $this->getValue();
+//        $this->updateIp();
+//        $this->value = $this->getValue();
         // TODO: Implement rewind() method.
     }
 

@@ -9,10 +9,13 @@
 ngx.header['Server'] = 'xiaoyumi'
 ngx.header['Charset'] = 'UTF-8'
 --ngx.header['Content-Encoding'] = 'default'
+local cjson = require "cjson"
+local request_uri = ngx.var.uri
+local r, e = ngx.re.match(request_uri, '/api/(?<name>.*)', 'jo')
 
-local request_uri = ngx.var.request_uri
+local rn, re = ngx.re.match(r['name'],'^test','jo')
 
-if ngx.re.match(request_uri, '/api/(.*?)', 'jo') then
+if r and r ~= ngx.null and (rn == nil or rn == ngx.null) then
     ngx.header['Content-Type'] = 'Application/json'
 end
 --

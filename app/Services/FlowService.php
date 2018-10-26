@@ -9,7 +9,7 @@
 namespace App\Services;
 
 
-use App\Models\Flow;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Mockery\Exception;
@@ -19,7 +19,39 @@ class FlowService
 
     public function getRealTimeFlowCount()
     {
-        return $this->realApiCount();
+//        return App::
+    }
+
+    public function updateTotalCount()
+    {
+        // redis scan
+        $api_count = App::make('App\Services\RedisScanService');
+        $now = date('Y-m-d', time());
+        DB::beginTransaction();
+        try {
+            foreach ($api_count as $k => $v) {
+                $api_number = Redis::MGET($v);
+                $new_api_count = [];
+                foreach ($v as $vk => $uri) {
+                    $new_api_count[] = [
+                        'request_uri' => substr($uri, 0, 500),
+                        'request_number' => $api_number[$vk],
+                        'created_at' => $now,
+                        'updated_at' => $now
+                    ];
+                }
+                // ru ku
+                DB::table('flows')->insert($new_api_count);
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+        }
+        DB::commit();
+    }
+
+    public function clearDailyApiRequest()
+    {
+
     }
 
     /**
@@ -27,7 +59,7 @@ class FlowService
      */
     public function saveFlowCount()
     {
-        $apiCountIterator = new ApiCountService();
+        $apiCountIterator = App::make('App\Services\ApiCountService'); // new ApiCountService();
         $now = date('Y-m-d', time());
         DB::beginTransaction();
         try {
@@ -38,7 +70,7 @@ class FlowService
                 foreach ($v as $request_uri => $number) {
                     $insert_data[] = [
                         'ip' => $ip,
-                        'request_uri' => substr($request_uri,0,254),
+                        'request_uri' => substr($request_uri, 0, 254),
                         'today_total_number' => $number,
                         'created_at' => $now,
                         'updated_at' => $now
@@ -51,30 +83,13 @@ class FlowService
             throw $e;
         }
         DB::commit();
+
+        return true;
     }
 
-//    public function saveFlowCountBak()
-//    {
-//        $ip_status = $this->realApiCount();
-//        DB::beginTransaction();
-//        //
-//        try {
-//            Flow::whereBetween(['created_at', [date('Y-m-d', time()), date('Y-m-d', strtotime("+1 day"))]])->delete();
-//
-//            $flowModel = new Flow;
-//            $flowModel->ip_status = json_encode($ip_status, JSON_UNESCAPED_UNICODE);
-//
-//            $flowModel->save();
-//        } catch (\Exception $e) {
-//            DB::rollBack();
-//            throw $e;
-//        }
-//        DB::commit();
-//        return true;
-//    }
 
     /**
-     * 模拟 计算 ， 大约 10W ip  , 全部 取出 需要 20M 左右的 内存 (弃用, 请使用 ApiCountService)
+     * 模拟 计算 ， 大约 10W ip  , 全部 取出 需要 20M 左右的 内存 (弃用 ! 请使用 ApiCountService)
      * 获取 今日的 实时api 请求统计
      * @return Array
      */

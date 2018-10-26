@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\ApiLuaCountJob;
 use App\Jobs\CheckAppKeySecretJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -39,6 +40,11 @@ class Kernel extends ConsoleKernel
 
         // horizon
         $schedule->command('horizon:snapshot')->everyFiveMinutes();
+
+        // 每日流量统计
+        $schedule->call(function () {
+            ApiLuaCountJob::dispatch();
+        })->description('每日流量统计')->dailyAt('23:58')->runInBackground()->onOneServer();
     }
 
     /**
