@@ -16,6 +16,7 @@ use App\Exceptions\BevanJwtAuthException;
 use App\Http\Api\BaseController;
 use App\Jobs\ApiLuaCountJob;
 use App\Jobs\CheckAppKeySecretJob;
+use App\Jobs\LogJob;
 use App\Jobs\ReloadJob;
 use App\Models\AppUser;
 use App\Models\PlatformProduct;
@@ -496,7 +497,8 @@ class ShowController extends BaseController
     {
 //        $exitCode = Artisan::call('webserver', ['cmd' => 'restart']);
 //        dd($this->getCommand("machdep.cpu.core_count"));
-        ReloadJob::dispatch();
+//        ReloadJob::dispatch();
+        LogJob::dispatch('testesfds','info');
         dd('ok');
 //        dd($exitCode);
     }

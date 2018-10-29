@@ -34,7 +34,7 @@ class ReloadJob implements ShouldQueue
 //        $base_project_path = config('base_project_path');
 //        shell_exec("/usr/local/openresty/nginx/sbin -c $base_project_path/storage/app/server/nginx/nginx.conf -s reload");
         // command
-
-        $exitCode = Artisan::call('webserver', ['cmd' => 'restart']);
+        $exitCode = Artisan::call('WebServer', ['cmd' => 'restart']);
+//        Artisan::call('TestCommand', []);
     }
 }

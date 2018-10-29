@@ -11,7 +11,7 @@ class WebServer extends Command
      *
      * @var string
      */
-    protected $signature = 'webserver {cmd}';
+    protected $signature = 'WebServer {cmd}';
 
     /**
      * The console command description.
