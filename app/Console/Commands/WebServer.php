@@ -42,8 +42,15 @@ class WebServer extends Command
             $childProcess->exec('/usr/local/openresty/nginx/sbin/nginx', ['-c', '/data/wwwroot/bevan.top/storage/app/server/nginx/nginx.conf', '-s', 'reload']);
         });
 
-        $process->start();
+        $pid = $process->start();
 
-        echo "from exec: ". $process->read(). "\n";
+        \swoole_process::signal(SIGCHLD, function($sig)  {
+            //必须为false，非阻塞模式
+            while($ret =  \swoole_process::wait(false)) {
+//                echo "PID={$ret['pid']}\n";
+                $this->info('is restart ok ！');
+            }
+        });
+//        echo "from exec: ". $process->read(). "\n";
     }
 }
