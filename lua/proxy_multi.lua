@@ -51,7 +51,6 @@ for k, v in pairs(request_msg) do
     end
 end
 
-
 local response_list = {}
 
 if dev_module == 'true' then

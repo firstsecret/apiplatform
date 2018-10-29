@@ -139,7 +139,6 @@ class ShowController extends BaseController
 //        var_dump($lua->call(array("table", "concat"), array(array(1 => 1, 2 => 2, 3 => 3), "-")));
 
         $client = new httpClient();
-
         $promise = [
             '0' => [
                 'method' => 'post',
