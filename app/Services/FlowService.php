@@ -9,6 +9,7 @@
 namespace App\Services;
 
 
+use App\Jobs\LogJob;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -93,6 +94,7 @@ class FlowService
                 DB::table('ip_request_flows')->insert($insert_data);
             }
         } catch (\Exception $e) {
+            LogJob::dispatch($e->getMessage(), 'error');
             DB::rollBack();
             throw $e;
         }

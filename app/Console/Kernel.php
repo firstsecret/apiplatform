@@ -32,11 +32,11 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
 
-        $schedule->call(function () {
-            // check user app key and secret
-            CheckAppKeySecretJob::dispatch();
-//            \App\Jobs\CountApiJob::dispatch(ltrim(request()->getPathInfo(), '/'), 'fail');
-        })->description('定期检查修复appkey与secret在redis中的状态')->runInBackground()->everyThirtyMinutes()->onOneServer();
+        $schedule->job(new CheckAppKeySecretJob)
+            ->description('定期检查修复appkey与secret在redis中的状态')
+            ->runInBackground()
+            ->everyMinute()
+            ->onOneServer();
 
         // horizon
         $schedule->command('horizon:snapshot')->everyFiveMinutes();
