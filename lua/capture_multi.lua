@@ -64,17 +64,7 @@ end;
 local response = { ngx.location.capture_multi(list) };
 --
 tool.respClient(200, 'success', response)
---local data = {};
---for num, resp in pairs(response) do
---
---end;
 
---ngx.print(json.encode(response))
---if response.status == ngx.HTTP_OK then
---    ngx.say(response.body);
---else
---    tool.respClient(response.status, 'Err Request')
---end
 
 
 
