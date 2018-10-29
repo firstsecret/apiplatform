@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Tool\ProbeTool;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Redis;
 
 class Probe extends Command
 {
@@ -22,6 +23,12 @@ class Probe extends Command
      */
     protected $description = '启动服务器监控';
 
+    protected $ws; // ws
+
+    protected static $ADMIN_PROBE_FDS = 'admin_probe_fds';
+
+    protected static $ADMIN_SWOOLE_PROBE_TIMER = 'admin_swoole_probe_timer';
+
     /**
      * Create a new command instance.
      *
@@ -30,7 +37,6 @@ class Probe extends Command
     public function __construct()
     {
         parent::__construct();
-
     }
 
     /**
@@ -54,10 +60,10 @@ class Probe extends Command
 
     protected function startServer()
     {
-        $ws = new \swoole_websocket_server("0.0.0.0", 8555);
+        $this->ws = new \swoole_websocket_server("0.0.0.0", 8555);
 
         //监听WebSocket连接打开事件
-        $ws->set(array(
+        $this->ws->set(array(
             'worker_num' => 2,    //worker process num
             'buffer_output_size' => 4 * 1024 * 1024,  // 4M
 //            'backlog' => 128,   //listen backlog
@@ -66,20 +72,39 @@ class Probe extends Command
         ));
 
         //register event
-        $ws->on('open', [$this, 'onOpen']);
-        $ws->on('message', [$this, 'onMessage']);
-        $ws->on('close', [$this, 'onClose']);
+        $this->ws->on('open', [$this, 'onOpen']);
+        $this->ws->on('message', [$this, 'onMessage']);
+        $this->ws->on('close', [$this, 'onClose']);
 
-        $ws->start();
+        $this->ws->start();
+
+        // start clear fd
+        $this->startClearFd();
 
         $this->info('prop server is started！');
+    }
+
+    protected function startClearFd()
+    {
+        $ws = $this->ws;
+        $timer_id = \swoole_timer_tick(1500, function () use ($ws) {
+            $fds = Redis::ZRANGE(self::$ADMIN_PROBE_FDS, 0, -1);
+
+            foreach ($fds as $fd) {
+                if (!$ws->exist($fd)) {
+                    $ws->disconnect($fd);
+                    Redis::ZREM(self::$ADMIN_PROBE_FDS, $fd);
+                }
+            }
+        });
+        Redis::set(self::$ADMIN_SWOOLE_PROBE_TIMER, $timer_id);
     }
 
     public function onMessage($ws, $frame)
     {
         // get cpu status
 //        $data = json_decode($frame->data, true);
-
+        Redis::ZADD(self::$ADMIN_PROBE_FDS, $frame->id);
         $sInfoBase = $this->getServerInfo();
         $sInfo = $this->initServStatus($sInfoBase);
         $svrInfo = $sInfoBase['svrInfo'];
@@ -91,9 +116,10 @@ class Probe extends Command
 
         $jsonRes = json_encode(['act' => 'default', 'data' => ['svrInfo' => $svrInfo]], JSON_UNESCAPED_UNICODE);
 
-        if ($ws->exist($frame->fd)) $ws->push($frame->fd, $jsonRes);
-        // force clear
-        else $ws->close($frame->fd, true);
+        $ws->push($frame->fd, $jsonRes);
+//        if ($ws->exist($frame->fd))
+//        // force clear
+//        else $ws->close($frame->fd, true);
     }
 
     public function getServerInfo()
@@ -103,8 +129,15 @@ class Probe extends Command
 
     public function onClose($ws, $fd)
     {
+        Redis::ZREM(self::$ADMIN_PROBE_FDS, $fd);
 //        echo "client-{$fd} is closed\n";
-
+        $fds = Redis::ZRANGE(self::$ADMIN_PROBE_FDS, 0, -1);
+        if ($fds) {
+            if ($timer_id = Redis::get(self::$ADMIN_SWOOLE_PROBE_TIMER)) {
+                swoole_timer_clear($timer_id);
+                Redis::set(self::$ADMIN_SWOOLE_PROBE_TIMER, '');
+            }
+        }
     }
 
     public function onOpen($ws, $request)

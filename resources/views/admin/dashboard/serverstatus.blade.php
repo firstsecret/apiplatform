@@ -35,3 +35,4 @@
     </div>
     <!-- /.box-body -->
 </div>
+<script src="{{asset('/js/dashboard/cpu.js')}}"></script>

@@ -26,3 +26,4 @@
         </span>
     </div>
 </div>
+<script src="{{asset('/js/dashboard/memory.js')}}"></script>

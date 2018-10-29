@@ -25,3 +25,4 @@
     </div>
     <!-- /.box-body -->
 </div>
+<script src="{{asset('/js/dashboard/net.js')}}"></script>

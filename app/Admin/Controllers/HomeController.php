@@ -86,11 +86,6 @@ class HomeController extends Controller
                     $column->append(Dashboard::environment());
                 });
                 //
-                // cpu status
-//                $row->column(4, function (Column $column) {
-//                    $column->append(DashboardController::cpustatus());
-//                });
-
 
 //                $row->column(4, function (Column $column) {
 //                    $column->append(Dashboard::dependencies());
@@ -101,28 +96,28 @@ class HomeController extends Controller
 
     protected function loadExtScript()
     {
-        $script = $this->getCpuScript();
+//        $script = $this->getCpuScript();
+//
+//        Admin::script($script);
 
-        Admin::script($script);
+//        $mscript = $this->getMemoryScript();
+//
+//        Admin::script($mscript);
+//
+//        $monceScript = $this->initMemoryScript();
+//
+//        Admin::script($monceScript);
+//
+//        $serverScript = $this->serverScript();
+//
+//        Admin::script($serverScript);
 
-        $mscript = $this->getMemoryScript();
+//        $netScrpit = $this->netScript();
+//
+//        Admin::script($netScrpit);
 
-        Admin::script($mscript);
-
-        $monceScript = $this->initMemoryScript();
-
-        Admin::script($monceScript);
-
-        $serverScript = $this->serverScript();
-
-        Admin::script($serverScript);
-
-        $netScrpit = $this->netScript();
-
-        Admin::script($netScrpit);
-
-        $hddScript = $this->hddScript();
-
-        Admin::script($hddScript);
+//        $hddScript = $this->hddScript();
+//
+//        Admin::script($hddScript);
     }
 }
