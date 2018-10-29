@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
+        Commands\WebServer::class
     ];
 
 //    protected $description = '定时检查更新redis中appkey与appsecret';
@@ -35,7 +36,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(new CheckAppKeySecretJob)
             ->description('定期检查修复appkey与secret在redis中的状态')
             ->runInBackground()
-            ->everyMinute()
+            ->everyThirtyMinutes()
             ->onOneServer();
 
         // horizon

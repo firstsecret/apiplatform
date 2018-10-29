@@ -39,7 +39,7 @@ class WebServer extends Command
     {
         //
         $process = new \Swoole\Process(function (\Swoole\Process $childProcess) {
-            $childProcess->exec('/usr/local/openresty/nginx/sbin/nginx', ['-c', '/data/wwwroot/bevan.top/storage/app/server/nginx/nginx.conf', '-s', 'reload']);
+            $childProcess->exec('/usr/local/openresty/nginx/sbin/nginx', ['-c', '/data/wwwroot/bevan.top/storage/app/server/nginx/nginx.conf','-s','reload']);
         });
 
         $pid = $process->start();

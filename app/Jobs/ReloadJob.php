@@ -7,6 +7,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Artisan;
 
 class ReloadJob implements ShouldQueue
 {
@@ -30,7 +31,10 @@ class ReloadJob implements ShouldQueue
     public function handle()
     {
         // reload server
-        $base_project_path = config('base_project_path');
-        shell_exec("/usr/local/openresty/nginx/sbin -c $base_project_path/storage/app/server/nginx/nginx.conf -s reload");
+//        $base_project_path = config('base_project_path');
+//        shell_exec("/usr/local/openresty/nginx/sbin -c $base_project_path/storage/app/server/nginx/nginx.conf -s reload");
+        // command
+
+        $exitCode = Artisan::call('webserver restart', []);
     }
 }
