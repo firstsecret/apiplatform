@@ -12,7 +12,7 @@ ngx.header['Charset'] = 'UTF-8'
 --local cjson = require "cjson"
 local request_uri = ngx.var.uri
 
-if ngx.re.match(request_uri, '/api/(?<bane>.*)','jo') then
+if ngx.re.match(request_uri, '/api/(?<name>.*)','jo') then
     ngx.header['Content-Type'] = 'Application/json'
 end
 

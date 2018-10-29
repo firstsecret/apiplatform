@@ -16,6 +16,7 @@ use App\Exceptions\BevanJwtAuthException;
 use App\Http\Api\BaseController;
 use App\Jobs\ApiLuaCountJob;
 use App\Jobs\CheckAppKeySecretJob;
+use App\Jobs\ReloadJob;
 use App\Models\AppUser;
 use App\Models\PlatformProduct;
 use App\Models\PlatformProductCategory;
@@ -28,6 +29,7 @@ use App\Tool\ProbeTool;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -492,6 +494,10 @@ class ShowController extends BaseController
 
     public function testCommand()
     {
-        dd($this->getCommand("machdep.cpu.core_count"));
+//        $exitCode = Artisan::call('webserver', ['cmd' => 'restart']);
+//        dd($this->getCommand("machdep.cpu.core_count"));
+        ReloadJob::dispatch();
+        dd('ok');
+//        dd($exitCode);
     }
 }
