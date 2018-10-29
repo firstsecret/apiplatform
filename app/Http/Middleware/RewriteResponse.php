@@ -19,6 +19,7 @@ class RewriteResponse
 
 //        response()->headers->set('RequestUri', $request->getPathInfo());
 
-        return $next($request)->header('RequestUri',  $request->getPathInfo());
+//        return $next($request)->header('RequestUri',  $request->getPathInfo());
+        return $next($request);
     }
 }
