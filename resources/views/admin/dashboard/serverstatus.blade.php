@@ -35,4 +35,5 @@
     </div>
     <!-- /.box-body -->
 </div>
+<script src="{{asset('/js/echarts.min.js')}}"></script>
 <script src="{{asset('/js/dashboard/cpu.js')}}"></script>

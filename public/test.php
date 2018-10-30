@@ -5,9 +5,12 @@
  * Date: 2018/9/6
  * Time: 14:08
  */
-set_time_limit(0);
+//set_time_limit(0);
+//
+//echo date('Y-m-d H:i:s', time());die;
 
-echo date('Y-m-d H:i:s', time());die;
+
+//array_combine
 
 /**
  *  app 应用方

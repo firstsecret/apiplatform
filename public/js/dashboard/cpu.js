@@ -1,4 +1,4 @@
-var wsServer = 'ws://47.52.45.228:8555';
+var wsServer = 'ws://47.52.45.228:8553';
 var websocket = new WebSocket(wsServer);
 var nowCpuStatus = {}
 var memoryStatus = {}
@@ -120,7 +120,7 @@ function getCpuStatus()
                 data: data
             }]
         });
-    }, 2000);
+    }, 1700);
     cpuChart.setOption(option);
 }
 

@@ -52,7 +52,7 @@ class HomeController extends Controller
 
 //            $content->row(Dashboard::title());
 
-            $this->loadExtScript();
+//            $this->loadExtScript();
 
             $content->row(function (Row $row) use ($health_check) {
 //                echo '<pre>';

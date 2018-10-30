@@ -60,15 +60,16 @@ class Probe extends Command
 
     protected function startServer()
     {
-        $this->ws = new \swoole_websocket_server("0.0.0.0", 8555);
+        $this->ws = new \swoole_websocket_server("0.0.0.0", 8553);
 
         //监听WebSocket连接打开事件
         $this->ws->set(array(
-            'worker_num' => 2,    //worker process num
+            'worker_num' => 1,    //worker process num
             'buffer_output_size' => 4 * 1024 * 1024,  // 4M
 //            'backlog' => 128,   //listen backlog
 //            'max_request' => 50,
-            'daemonize' => 1,
+        // 不要打开 守护进程模式 ， superviisor 监视不到
+//            'daemonize' => 1,
         ));
 
         //register event
@@ -88,12 +89,12 @@ class Probe extends Command
     {
         $ws = $this->ws;
         $timer_id = \swoole_timer_tick(1500, function () use ($ws) {
-            $fds = Redis::ZRANGE(self::$ADMIN_PROBE_FDS, 0, -1);
+            $fds = Redis::LRANGE(self::$ADMIN_PROBE_FDS, 0, -1);
 
             foreach ($fds as $fd) {
                 if (!$ws->exist($fd)) {
                     $ws->disconnect($fd);
-                    Redis::ZREM(self::$ADMIN_PROBE_FDS, $fd);
+                    Redis::LREM(self::$ADMIN_PROBE_FDS, 0, $fd);
                 }
             }
         });
@@ -104,7 +105,6 @@ class Probe extends Command
     {
         // get cpu status
 //        $data = json_decode($frame->data, true);
-        Redis::ZADD(self::$ADMIN_PROBE_FDS, $frame->id);
         $sInfoBase = $this->getServerInfo();
         $sInfo = $this->initServStatus($sInfoBase);
         $svrInfo = $sInfoBase['svrInfo'];
@@ -129,19 +129,24 @@ class Probe extends Command
 
     public function onClose($ws, $fd)
     {
-        Redis::ZREM(self::$ADMIN_PROBE_FDS, $fd);
-//        echo "client-{$fd} is closed\n";
-        $fds = Redis::ZRANGE(self::$ADMIN_PROBE_FDS, 0, -1);
-        if ($fds) {
-            if ($timer_id = Redis::get(self::$ADMIN_SWOOLE_PROBE_TIMER)) {
-                swoole_timer_clear($timer_id);
-                Redis::set(self::$ADMIN_SWOOLE_PROBE_TIMER, '');
-            }
-        }
+        Redis::LREM(self::$ADMIN_PROBE_FDS, 0, $fd);
     }
 
     public function onOpen($ws, $request)
     {
+        Redis::LPUSH(self::$ADMIN_PROBE_FDS, $request->fd);
+
+        $sInfoBase = $this->getServerInfo();
+        $sInfo = $this->initServStatus($sInfoBase);
+        $svrInfo = $sInfoBase['svrInfo'];
+        $svrInfo = array_merge($svrInfo, $sInfo);
+        // hdd status
+        // hdd
+        $svrInfo = $this->hddstatus($svrInfo);
+
+        $jsonRes = json_encode(['act' => 'default', 'data' => ['svrInfo' => $svrInfo]], JSON_UNESCAPED_UNICODE);
+
+        $ws->push($request->fd, $jsonRes);
 //        $sInfo = $this->getServerInfo();
 //        $jsonRes = $this->initServStatus($sInfo);
 //
