@@ -20,12 +20,14 @@ Route::group([
     $router->get('/supervisor', 'SupervisorController@index');
 
     // server conf
-    $router->group(['prefix'=>'server'], function(Router $router){
+    $router->group(['prefix' => 'server'], function (Router $router) {
         $router->get('/conf/{setting_conf}', 'ServerConfigController@settingConf');
         // update
         $router->put('/conf/{setting_conf}', 'ServerConfigController@updateConf');
     });
 
+    // custom nginx service viewer
+    $router->get('/nginxLog/{file?}', 'NginxLogController@index')->name('custom-nginx-log');
 
     //custom admin api
     $router->group(['prefix' => 'api'], function (Router $router) {

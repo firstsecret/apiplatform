@@ -28,6 +28,7 @@ use App\Services\FlowService;
 use App\Services\RedisScanService;
 use App\Tool\ProbeTool;
 use App\User;
+use Encore\Admin\LogViewer\NginxLogViewer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
@@ -498,8 +499,18 @@ class ShowController extends BaseController
 //        $exitCode = Artisan::call('webserver', ['cmd' => 'restart']);
 //        dd($this->getCommand("machdep.cpu.core_count"));
 //        ReloadJob::dispatch();
-        LogJob::dispatch('testesfds','info');
-        dd('ok');
+//        $file = (new \App\Admin\Extensions\Tools\NginxLogViewer())->getLastModifiedLog();
+        $viewer = new \App\Admin\Extensions\Tools\NginxLogViewer('bevan.top_nginx.log-20181026.gz');
+//        $viewer = new NginxLogViewer('bevan.top_nginx.log-20181026.gz');
+//        $viewer = new \App\Admin\Extensions\Tools\NginxLogViewer('bevan.top_nginx.log');
+
+        $c = $viewer->fetch();
+//        $c2 = $viewer2->fetch();
+//        var_dump('c2:'. $c2);
+//
+        dd($c);
+//        var_dump('c:'. $c);
+//        exit;
 //        dd($exitCode);
     }
 }
