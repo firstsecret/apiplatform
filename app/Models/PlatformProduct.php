@@ -28,6 +28,11 @@ class PlatformProduct extends Model
 
     public function services()
     {
-        return $this->belongsToMany('App\Models\Service','product_services','product_id','service_id');
+        return $this->belongsToMany('App\Models\Service', 'product_services', 'product_id', 'service_id');
+    }
+
+    public function appuser()
+    {
+        return $this->belongsToMany('App\Models\AppUser', 'app_key_products', 'product_id', 'app_key_id');
     }
 }

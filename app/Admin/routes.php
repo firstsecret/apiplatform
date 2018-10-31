@@ -21,6 +21,9 @@ Route::group([
     $router->get('/horizon', 'HorizonController@index');
     $router->get('/supervisor', 'SupervisorController@index');
 
+    // auth frontUser
+    $router->resource('auth/frontUsersAuth', AppUserController::class);
+
     // server conf
     $router->group(['prefix' => 'server'], function (Router $router) {
         $router->get('/conf/{setting_conf}', 'ServerConfigController@settingConf');
@@ -34,5 +37,6 @@ Route::group([
     //custom admin api
     $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('unbindServicePlatformProduct/{service_id}/{product_id}', NodeServicesController::class . '@unbindServicePlatformProduct');
+        $router->delete('unbindAppKeyPlatformProduct/{app_key_id}/{product_id}', AppUserController::class . '@unbindAppKeyPlatformProduct');
     });
 });

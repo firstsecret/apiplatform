@@ -20,4 +20,9 @@ class AppUser extends Model
     {
         return $this->belongsTo('App\Models\Admin', 'user_id');
     }
+
+    public function products()
+    {
+        return $this->belongsToMany('App\Models\PlatformProduct', 'app_key_products', 'app_key_id', 'product_id');
+    }
 }

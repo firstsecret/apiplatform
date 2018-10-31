@@ -163,6 +163,9 @@ class UserController extends Controller
                     $actions->disableDelete();
                     $actions->disableEdit();
                 }
+                $app_key_id = $actions->getKey('appuser.id');
+
+                $actions->append('<a href="' . url('/admin/auth/frontUsersAuth/' . $app_key_id) . '/edit" title="查看编辑权限"><i class="fa fa-superpowers"></i></a>');
 //                    $actions->disableDelete();
 
 //                $actions->disableEdit();
