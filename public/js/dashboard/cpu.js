@@ -15,12 +15,13 @@ websocket.onopen = function (evt) {
             initNetStatus();
             initHdd();
             clearInterval(startInterval);
+            $('#server-info').waitMe('hide');
         }
     },1000)
 };
 
 websocket.onclose = function (evt) {
-    alert('服务器获取连接失败')
+    $('#myModalError').modal('toggle')
     console.log("Disconnected");
 };
 
