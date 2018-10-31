@@ -76,7 +76,7 @@
         <div class="box box-primary">
             <div class="box-header with-border">
                 <button type="button" class="btn btn-primary btn-sm log-refresh"><i class="fa fa-refresh"></i> {{ trans('admin.refresh') }}</button>
-                <button type="button" class="btn btn-default btn-sm log-live"><i class="fa fa-play"></i> </button>
+                {{--<button type="button" class="btn btn-default btn-sm log-live"><i class="fa fa-play"></i> </button>--}}
                 <div class="pull-right">
                     <div class="btn-group">
                         @if ($prevUrl)

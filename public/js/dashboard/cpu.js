@@ -9,7 +9,6 @@ websocket.onopen = function (evt) {
 //                    websocket.send(JSON.stringify({"act":"mm"}))
     startInterval = setInterval(function(){
         if (!$.isEmptyObject(nowCpuStatus)) {
-
             getCpuStatus();
             getNetStatus();
             getMemory();
@@ -21,6 +20,7 @@ websocket.onopen = function (evt) {
 };
 
 websocket.onclose = function (evt) {
+    alert('服务器获取连接失败')
     console.log("Disconnected");
 };
 
