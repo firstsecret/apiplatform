@@ -105,10 +105,10 @@ class NodeServicesController extends Controller
         });
 
         $grid->id('Id');
-        $grid->service_host('Service host');
-        $grid->service_host_port('Service host port');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
+        $grid->service_host('服务IP');
+        $grid->service_host_port('服务端口');
+        $grid->created_at('创建时间');
+        $grid->updated_at('更新时间');
 
         return $grid;
     }

@@ -71,6 +71,8 @@ local res, err_ = httpc:request_uri(request_base_uri, {
     method = request_method,
     body = body,
     headers = capture_headers,
+    keepalive_timeout = 60,
+    keepalive_pool = 100
 })
 -- error handle
 if not res then
