@@ -71,7 +71,6 @@
 
 </script>
 <div class="row">
-
     <!-- /.col -->
     <div class="col-md-10">
         <div class="box box-primary">

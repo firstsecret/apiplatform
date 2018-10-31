@@ -54,12 +54,12 @@ end
 -- 暂时 只 支持 md5
 --local secret_method = request_args['method'] or 'md5'
 
---
-local redis = tool.getRedis()
+local redis_client = require "resty.redis_client"
+local redis = redis_client:new()
 
-local r_app_secret = redis:get(request_args['app_key'])
+local r_app_secret = redis:exec(function(red) return red:get('app_key:' .. request_args['app_key']) end)
 
-if r_app_secret == nil or type(r_app_secret) == 'userdata' then
+if r_app_secret == nil or r_app_secret == ngx.null then
     tool.respClient(4009, 'appkey不存在')
 else
     -- get appsecret
@@ -68,25 +68,20 @@ else
     local req_timestamp = os.time()
 
     --  check is valid
-    local old_req_record = redis:get(remote_addr .. request_uri)
+    local old_req_record = redis:exec(function(red) return red:get(remote_addr .. request_uri) end)
 
     -- is requested
     if old_req_record and old_req_record ~= ngx.null then
---        local differ = tonumber(req_timestamp) - tonumber(old_req_record)
+        --        local differ = tonumber(req_timestamp) - tonumber(old_req_record)
         -- in 5 minutes
         return tool.respClient(4065, '请乎频繁的重复提交')
---        if differ < 300 then
---            -- update
---            redis:set(remote_addr .. request_uri, req_timestamp)
---            -- expire
---            redis:expire(remote_addr .. request_uri, 300)
---
---            return
---        end
     else
         -- do record
-        redis:set(remote_addr .. request_uri, req_timestamp)
-        redis:expire(remote_addr .. request_uri, 300)
+        redis:exec(function(red)
+            red:set(remote_addr .. request_uri, req_timestamp)
+            red:expire(remote_addr .. request_uri, 300)
+            return
+        end)
     end
 
     -- check data valid
@@ -107,7 +102,6 @@ else
     else
         return tool.respClient(4066, 'sign不正确')
     end
-    --
 end
 
 

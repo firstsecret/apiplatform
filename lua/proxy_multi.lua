@@ -4,12 +4,12 @@
 -- Date: 2018/9/18
 -- Time: 16:22
 -- To change this template use File | Settings | File Templates.
---
 
 --加载 json 库
 local json = require "cjson";
 local tool = require "resty.tool"
-local zhttp = require("resty.http")
+local zhttp = require "resty.http"
+
 --获取请求方式
 local request_method = ngx.var.request_method;
 
@@ -29,16 +29,14 @@ end;
 ngx.req.read_body();
 local api_p = ngx.req.get_post_args();
 
-
 -- init redis
--- redis
-local redis = tool.getRedis()
+local redis_client = require('resty.redis_client')
+local redis = redis_client:new()
 local httpc = zhttp.new()
 --拼接子请求
 
--- is dev env
-local dev_module = redis:get('apiplatform_service_dev')
-local request_base_uri = redis:get('apiplatform_service_base_uri')
+
+local request_base_uri = redis:exec(function(red) return red:get('apiplatform_service_base_uri') end)
 local request_port = 80
 --ngx.print(request_base_uri)
 local request_msg = tool.split(request_base_uri, ':')
@@ -53,119 +51,73 @@ end
 
 local response_list = {}
 
-if dev_module == 'true' then
-    local list = {}
+local list = {}
 
-    for api, p in pairs(api_p) do
-        local tmp = {}
+for api, p in pairs(api_p) do
+    local tmp = {}
 
-        local p_table = json.decode(p)
+    local p_table = json.decode(p)
 
-        if type(p_table) ~= 'table' then
-            tool.respClient(4053, '参数不正确')
-        end
+    if type(p_table) ~= 'table' then
+        tool.respClient(4053, '参数不正确')
+    end
 
-        if p_table then
-            local headers_t = {}
-            if p_table["headers"] then
-                headers_t = json.decode(p_table["headers"])
-            else
-                headers_t = {}
-            end
-
-            headers_t['X-Forwarded-For'] = ngx.var.remote_addr
-            headers_t['Accept-Encoding'] = 'default'
-
-            tmp = {
-                path = api,
-                method = p_table['method'] or "GET",
-                headers = headers_t,
-                body = p_table['body'] or "",
-                query = p_table['args'] or ""
-            }
+    if p_table then
+        local headers_t = {}
+        if p_table["headers"] then
+            headers_t = json.decode(p_table["headers"])
         else
-            local headers_t = {}
-            headers_t['X-Forwarded-For'] = ngx.var.remote_addr
-            headers_t['Accept-Encoding'] = 'default'
-            tmp = {
-                path = api,
-                headers = headers_t,
-                method = "GET",
-                body = "",
-                query = ""
-            }
+            headers_t = {}
         end
-        table.insert(list, tmp);
-    end
-    httpc:connect(request_base_uri, request_port)
-    local timeout = timeout or 5000
-    httpc:set_timeout(timeout)
-    --        ngx.say(json.encode(list))
-    local responses, err_ = httpc:request_pipeline(list)
-    --    ngx.print(json.encode(responses))
-    --    ngx.print(json.encode(err_))
-    if not responses or next(responses) == nil then
-        --        ngx.print(type(err_))
-        --        ngx.print(json.encode(err_))
-        ngx.log(ngx.CRIT, 'http request multi service error:' .. err_)
-        tool.respClient(5103, '服务异常')
+
+        headers_t['X-Forwarded-For'] = ngx.var.remote_addr
+        headers_t['Accept-Encoding'] = 'default'
+
+        tmp = {
+            path = api,
+            method = p_table['method'] or "GET",
+            headers = headers_t,
+            body = p_table['body'] or "",
+            query = p_table['args'] or ""
+        }
     else
-        for i, r in ipairs(responses) do
+        local headers_t = {}
+        headers_t['X-Forwarded-For'] = ngx.var.remote_addr
+        headers_t['Accept-Encoding'] = 'default'
+        tmp = {
+            path = api,
+            headers = headers_t,
+            method = "GET",
+            body = "",
+            query = ""
+        }
+    end
+    table.insert(list, tmp);
+end
+httpc:connect(request_base_uri, request_port)
+local timeout = timeout or 5000
+httpc:set_timeout(timeout)
+--        ngx.say(json.encode(list))
+local responses, err_ = httpc:request_pipeline(list)
+--    ngx.print(json.encode(responses))
+--    ngx.print(json.encode(err_))
+if not responses or next(responses) == nil then
+    --        ngx.print(type(err_))
+    --        ngx.print(json.encode(err_))
+    ngx.log(ngx.CRIT, 'http request multi service error:' .. err_)
+    tool.respClient(5103, '服务异常')
+else
+    for i, r in ipairs(responses) do
 --                        ngx.print(json.encode(r))
-            if r.status then
-                table.insert(response_list, json.decode(r:read_body()))
-                --                ngx.print(i)
-                --                ngx.say(r.status)
-                --                ngx.print(r:read_body())
-            end
+        if r.status then
+            table.insert(response_list, json.decode(r:read_body()))
+            --                ngx.print(i)
+            --                ngx.say(r.status)
+            --                ngx.print(r:read_body())
         end
     end
-else
-    return tool.respClient(5555, '正式环境未开放')
 end
-
 -- response hander handle
-
 
 -- response
 tool.respClient(200, 'success', response_list)
-
--- send requests
-
-
-
---local list = {};
---for api, p in pairs(api_p) do
---    local tmp = {}
---
---    local p_table = json.decode(p)
---
---    if type(p_table) ~= 'table' then
---        tool.respClient(4053, '参数不正确')
---    end
---
---    local ngx_http_flag = ngx.HTTP_GET
---    if p_table['method'] then
---        ngx_http_flag = tool.getCpatureMethod(p_table['method'])
---    end
---
---    if p_table then
---        tmp = { '/internal' .. api, { args = p_table['args'], method = ngx_http_flag, body = p_table['body'] or "" } };
---    else
---        tmp = { '/internal' .. api };
---    end
---    table.insert(list, tmp);
---end;
---
---local response = { ngx.location.capture_multi(list) };
---
---local data = {};
---for num, resp in pairs(response) do
---    local header = resp['header']
---    data[header['RequestUri']] = resp['body'];
---end;
---
---ngx.say(json.encode(data));
-
--- api count
---tool.apicount()

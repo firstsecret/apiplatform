@@ -39,7 +39,7 @@ ngx.req.set_header('X-Forwarded-For', ngx.var.remote_addr)
 -- capture method
 local capture_method = ngx['HTTP_' .. request_method]
 
-local res = ngx.location.capture('/internal/' .. request_uri, {method = capture_method, args = re_args})
+local res = ngx.location.capture('/internal' .. request_uri, {method = capture_method, args = re_args})
 
 for k, v in pairs(res.header) do
     if k ~= "Transfer-Encoding" and k ~= "Connection" then

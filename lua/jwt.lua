@@ -38,9 +38,11 @@ end
 --red:set_timeout(redis_connection_timeout)
 
 --local ok, err = red:connect(redis_host, redis_port)
-local red = tool.getRedis()
 local real_app_secret
 local app_key_type = 0
+
+local redis = require "resty.redis_client"
+local red = redis.new()
 
 --if not ok then
 --    ngx.log(ngx.CRIT, "Redis Connect error while retrieving ip_blacklist: " .. err)
@@ -49,8 +51,13 @@ local app_key_type = 0
 --    tool.respClient(resp_table['status_code'], resp_table['message'])
 --    return
 --else
-    local r_app_secret = red:get('app_key:' .. app_key)
---    ngx.print(r_app_secret)
+    local r_app_secret, err = red:exec(
+        function(red)
+            return red:get('app_key:' .. app_key)
+        end
+    )
+--    local r_app_secret = red:get('app_key:' .. app_key)
+--    ngx.print(red:get('app_key:439d8c975f26e5005dcdbf41b0d84161'))
     if r_app_secret == nil or r_app_secret == ngx.null then
         tool.respClient(4009, 'appkey不存在')
         return

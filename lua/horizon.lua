@@ -7,14 +7,12 @@
 --
 
 -- ip check
-local tool = require "resty.tool"
-
-local redis = tool.getRedis()
-local allow_horizon_ip = redis.get('allow_horizon_ip')
+local redis_client = require "resty.redis_client"
+local redis = redis_client:new()
+local allow_horizon_ip = redis:exec(function(red) return red.get('allow_horizon_ip') end)
 local remote_addr = ngx.var.remote_addr
 
 if remote_addr == allow_horizon_ip then
 
 else
-
 end

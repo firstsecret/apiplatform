@@ -1,6 +1,9 @@
 -- require tool
 local tool = require('resty.tool')
 local zhttp = require("resty.http")
+local redis_client = require('resty.redis_client')
+local redis = redis_client:new()
+
 --local json = require "cjson";
 --local string = require('resty.string')
 
@@ -35,12 +38,9 @@ local request_method = ngx.var.request_method
 
 -- add real ip
 capture_headers['X-Forwarded-For'] = ngx.var.remote_addr
-
 -- http module
 local httpc = zhttp.new()
 
--- redis
-local redis = tool.getRedis()
 
 -- 获取 服务 请求 列表
 -- 根据服务端的 心跳包 确定 服务是否 已挂
@@ -54,42 +54,28 @@ end
 
 post_str = string.sub(post_str, 1, string.len(post_str) - 1)
 
--- dev env
-local dev_module = redis:get('apiplatform_service_dev')
-if dev_module == ngx.null then
-    dev_module = 'true'
-end
+local apiplatform_service_base_uri = redis:exec(function(red) return red:get('apiplatform_service_base_uri') end)
 
-local apiplatform_service_base_uri = redis:get('apiplatform_service_base_uri')
-
-if apiplatform_service_base_uri == ngx.null then
+if apiplatform_service_base_uri == ngx.null or apiplatform_service_base_uri == nil or err then
     tool.respClient(5123,'服务提供已关闭')
 end
 
 local request_base_uri = 'http://' .. apiplatform_service_base_uri
 
-if dev_module == 'true' then
-    local timeout = timeout or 5000
-    httpc:set_timeout(timeout)
-    local body = ngx.req.read_body();
-    local res, err_ = httpc:request_uri(request_base_uri, {
-        path = request_uri,
-        method = request_method,
-        body = body,
-        headers = capture_headers,
-    })
-    -- error handle
-    if not res then
-        ngx.log(ngx.CRIT, 'http request service error:' .. err_)
-        tool.respClient(5103, '服务异常' .. err_)
-    else
-        ngx.print(res.body)
-    end
+
+local timeout = timeout or 5000
+httpc:set_timeout(timeout)
+local body = ngx.req.read_body();
+local res, err_ = httpc:request_uri(request_base_uri, {
+    path = request_uri,
+    method = request_method,
+    body = body,
+    headers = capture_headers,
+})
+-- error handle
+if not res then
+    ngx.log(ngx.CRIT, 'http request service error:' .. err_)
+    tool.respClient(5103, '服务异常' .. err_)
 else
-    return tool.respClient(5555, '正式环境未开放')
+    ngx.print(res.body)
 end
-
--- api count
---tool.apicount()
-
---tool.apicount()

@@ -28,10 +28,6 @@ end;
 ngx.req.read_body();
 local api_p = ngx.req.get_post_args();
 
-
--- init redis
--- redis
-local redis = tool.getRedis()
 --拼接子请求
 
 -- response hander handle

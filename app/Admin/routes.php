@@ -15,6 +15,7 @@ Route::group([
     $router->resource('services', NodeServicesController::class);
     $router->resource('platformProduct', PlatformProductController::class);
     $router->resource('platformProductCategory', PlatformProductCategoryController::class);
+    $router->resource('flow', FlowController::class);
 
     $router->get('/horizon', 'HorizonController@index');
     $router->get('/supervisor', 'SupervisorController@index');

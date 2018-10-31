@@ -494,23 +494,27 @@ class ShowController extends BaseController
 //        $this->responseClient(200,'ok',[]);
     }
 
-    public function testCommand()
+    public function testCommand(Request $request)
     {
 //        $exitCode = Artisan::call('webserver', ['cmd' => 'restart']);
 //        dd($this->getCommand("machdep.cpu.core_count"));
 //        ReloadJob::dispatch();
 //        $file = (new \App\Admin\Extensions\Tools\NginxLogViewer())->getLastModifiedLog();
-        $viewer = new \App\Admin\Extensions\Tools\NginxLogViewer('bevan.top_nginx.log-20181026.gz');
+//        $viewer = new \App\Admin\Extensions\Tools\NginxLogViewer('bevan.top_nginx.log-20181026.gz');
 //        $viewer = new NginxLogViewer('bevan.top_nginx.log-20181026.gz');
 //        $viewer = new \App\Admin\Extensions\Tools\NginxLogViewer('bevan.top_nginx.log');
 
-        $c = $viewer->fetch();
+//        $c = $viewer->fetch();
 //        $c2 = $viewer2->fetch();
 //        var_dump('c2:'. $c2);
 //
-        dd($c);
+//        dd($c);
 //        var_dump('c:'. $c);
 //        exit;
 //        dd($exitCode);
+
+        $app_secret = Redis::get('apiplatform_service_base_uri');
+
+        dd($request->server);
     }
 }
