@@ -16,7 +16,11 @@ use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\ModelForm;
 use Encore\Admin\Show;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Redis;
 
 class UserController extends Controller
 {
@@ -30,6 +34,8 @@ class UserController extends Controller
         'on' => ['value' => 1, 'text' => '已激活', 'color' => 'success'],
         'off' => ['value' => 0, 'text' => '未激活', 'color' => 'default'],
     ];
+
+    private $isedit = false;
 
     /**
      * Index interface.
@@ -71,7 +77,7 @@ class UserController extends Controller
 
             $content->header($this->title);
             $content->description('用户编辑');
-
+            $this->isedit = true;
             $content->body($this->form()->edit($id));
         });
     }
@@ -83,6 +89,7 @@ class UserController extends Controller
      */
     public function create()
     {
+        $this->isedit = false;
         return Admin::content(function (Content $content) {
 
             $content->header($this->title);
@@ -201,7 +208,7 @@ class UserController extends Controller
                 $tools->disableView();
 
                 // 添加一个按钮, 参数可以是字符串, 或者实现了Renderable或Htmlable接口的对象实例
-                $tools->add('<a href="'.url('/admin/auth/frontUsers').'" class="btn btn-sm btn-info"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;返回</a>');
+                $tools->add('<a href="' . url('/admin/auth/frontUsers') . '" class="btn btn-sm btn-info"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;返回</a>');
             });
 
             $form->text('app_key', 'App key')->attribute(['disabled' => true]);
@@ -234,6 +241,37 @@ class UserController extends Controller
 //        $user->()->sync([1, 2, 3]);
     }
 
+    public function store(Request $request)
+    {
+        $data = $request->input();
+        $data['type'] = $data['type'] == 'on' ? 1 : 0;
+        if ($validationMessages = $this->form()->validationMessages($data)) {
+            return back()->withInput()->withErrors($validationMessages);
+        }
+        $data['password'] = Hash::make($data['password']);
+ 
+        DB::transaction(function () use ($data) {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'telephone' => $data['telephone'],
+                'type' => $data['type'],
+            ]);
+
+            $user->appuser()->create([
+                'app_key' => $data['appuser']['app_key'],
+                'app_secret' => $data['appuser']['app_secret'],
+                'user_id' => $user->id,
+                'model' => 'App\User',
+                'type' => 0
+            ]);
+        });
+
+        admin_toastr('新增成功', 'success');
+        return redirect('/admin/auth/frontUsers');
+    }
+
     /**
      * Make a form builder.
      *
@@ -259,8 +297,13 @@ class UserController extends Controller
                 $form->password('password', '账户密码')->rules('confirmed', ['confirmed' => '两次密码不一致']);
                 $form->password('password_confirmation', '确认密码');
             })->tab('AccessToken', function (Form $form) {
-                $form->text('appuser.app_key')->value($this->factoryUserAppkey());
-                $form->text('appuser.app_secret')->value($this->factoryUserAppkey());
+                if ($this->isedit) {
+                    $form->text('appuser.app_key')->value($this->factoryUserAppkey())->attribute(['disabled' => true]);
+                    $form->text('appuser.app_secret')->value($this->factoryUserAppkey())->attribute(['disabled' => true]);
+                } else {
+                    $form->text('appuser.app_key')->value($this->factoryUserAppkey());
+                    $form->text('appuser.app_secret')->value($this->factoryUserAppkey());
+                }
                 $form->text('appuser.model')->value('App\User');
                 $form->radio('appuser.type', 'key类型')->options([0 => '非永久(过期型)', 1 => '永久授权'])->default(0);
             })->tab('个人信息', function (Form $form) {

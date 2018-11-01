@@ -17,4 +17,19 @@ class AppUserObserver
     {
         dd($appUser);
     }
+
+    public function deleted(AppUser $appUser)
+    {
+        dd($appUser);
+    }
+
+    public function created(AppUser $appUser)
+    {
+        dd($appUser);
+    }
+
+    public function updated(AppUser $appUser)
+    {
+        dd($appUser);
+    }
 }

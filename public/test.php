@@ -31,7 +31,6 @@
 //$generator->send("bar");
 
 
-
 //$multi = function multiOp($x, $y){
 //   try{
 //       yield $x * $y;
@@ -58,6 +57,110 @@
 
 //$res = opfunc('multiOp',5,6);
 //echo $res;
+
+
+class Task
+{
+
+    protected $generator;
+    protected $run = false;
+
+    public function __construct(Generator $generator)
+    {
+
+        $this->generator = $generator;
+
+    }
+
+
+    public function run()
+    {
+        if ($this->run) {
+            $this->generator->next();
+
+        } else {
+            $this->generator->current();
+            $this->run = true;
+        }
+    }
+
+
+    public function finished()
+    {
+        return !$this->generator->valid();
+    }
+}
+
+class Scheduler
+{
+    protected $queue;
+
+    public function __construct()
+    {
+        $this->queue = new SplQueue();
+    }
+
+
+    public function enqueue(Task $task)
+    {
+        $this->queue->enqueue($task);
+
+    }
+
+    public function run()
+    {
+        while (!$this->queue->isEmpty()) {
+
+            $task = $this->queue->dequeue();
+
+            $task->run();
+
+            if (!$task->finished()) {
+                $this->queue->enqueue($task);
+            }
+        }
+    }
+}
+
+
+$scheduler = new Scheduler();
+
+$time = time();
+//$task = new Task(call_user_func(function () {
+//    $sl = rand(2,3);
+//    sleep(rand(2, 3));
+//    var_dump($sl);
+//    yield;
+//}));
+//
+//$task2 = new Task(call_user_func(function () {
+//    $sl = rand(2,3);
+//    sleep(rand(2, 3));
+//    var_dump($sl);
+//    yield;
+//}));
+//
+//for ($i = 0; $i < 100; $i++) {
+//    $scheduler->enqueue($task);
+//    $scheduler->enqueue($task2);
+//}
+
+//$scheduler->run();
+
+function testSend()
+{
+
+    yield;
+    $sleep = rand(2, 3);
+    sleep($sleep);
+    print('is finish');
+}
+
+for ($i = 0; $i < 2; $i++) {
+    testSend();
+}
+
+echo '<br>耗时:' . (time() - $time) . '秒';
 
 
 exit;
@@ -88,7 +191,7 @@ exit;
 //$str = uniqid(1, true);
 //var_dump(strlen($str));die;
 $uuid_arr = [];
-for($i; $i< 500000; $i++){
+for ($i; $i < 500000; $i++) {
     $str = uniqid($i, true);
     $uuid = substr($str, 0, 8);
 //    $uuid .= substr($str, 8, 4) . '-';
