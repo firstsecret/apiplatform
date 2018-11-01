@@ -13,7 +13,7 @@ local tool = require "resty.tool"
 
 -- get request method
 local request_method = ngx.var.request_method;
-local request_uri = ngx.var.request_uri
+local request_uri = ngx.var.uri
 local remote_addr = ngx.var.remote_addr
 
 -- gzip handle
@@ -57,13 +57,23 @@ end
 local redis_client = require "resty.redis_client"
 local redis = redis_client:new()
 
-local r_app_secret = redis:exec(function(red) return red:get('app_key:' .. request_args['app_key']) end)
+local r_app_secret = redis:exec(function(red)
+    local info = red:hgetall('api_app_key:'.. request_args['app_key'])
+    local rt = {}
 
-if r_app_secret == nil or r_app_secret == ngx.null then
+    for i = 1, #info, 2 do
+        rt[info[i]] = info[i + 1]
+    end
+    --            ngx.print(cjson.encode(rt))
+    return rt
+end)
+
+if next(r_app_secret) == nil or r_app_secret == nil or r_app_secret == ngx.null then
     tool.respClient(4009, 'appkey不存在')
 else
     -- get appsecret
-    local app_secret = string.sub(r_app_secret, 1, 32)
+--    local app_secret = string.sub(r_app_secret, 1, 32)
+    local app_secret = r_app_secret['app_secret']
     -- get timestamp
     local req_timestamp = os.time()
 

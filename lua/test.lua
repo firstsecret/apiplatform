@@ -24,12 +24,17 @@ local redis = require "resty.redis_client"
 --
 --
 --ngx.print(cjson.encode(res))
-local app_key = 'app_key:439d8c975f26e5005dcdbf41b0d84161'
+local app_key = 'api_app_key:439d8c975f26e5005dcdbf41b0d84161'
 local red = redis.new()
-local res, err = red:exec(
-    function(red)
-        return red:get('apiplatform_service_base_uri')
-    end
-)
+local res, err = red:exec(function(red)
+    local info = red:hgetall(app_key)
+    local rt = {}
 
-ngx.print(res)
+    for i = 1, #info, 2 do
+        rt[info[i]] = info[i + 1]
+    end
+    --            ngx.print(cjson.encode(rt))
+    return rt
+end)
+
+ngx.print(cjson.encode(res))

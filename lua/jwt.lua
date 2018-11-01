@@ -20,7 +20,7 @@ local express_in = 0
 
 if app_key == nil or app_secret == nil then
     local resp_table = { status_code = 4011, message = "appkey或appsecret缺失" }
-    tool.setNgxVar('resp_body', tool.serialize(resp_table))
+--    tool.setNgxVar('resp_body', tool.serialize(resp_table))
     tool.respClient(resp_table['status_code'], resp_table['message'])
     return
 end
@@ -53,18 +53,26 @@ local red = redis.new()
 --else
     local r_app_secret, err = red:exec(
         function(red)
-            return red:get('app_key:' .. app_key)
+            local info = red:hgetall('api_app_key:' .. app_key)
+            local rt = {}
+
+            for i = 1, #info, 2 do
+                rt[info[i]] = info[i + 1]
+            end
+            --            ngx.print(cjson.encode(rt))
+            return rt
         end
     )
 --    local r_app_secret = red:get('app_key:' .. app_key)
 --    ngx.print(red:get('app_key:439d8c975f26e5005dcdbf41b0d84161'))
-    if r_app_secret == nil or r_app_secret == ngx.null then
+    if next(r_app_secret) == nil or r_app_secret == nil or r_app_secret == ngx.null then
         tool.respClient(4009, 'appkey不存在')
         return
     else
-        real_app_secret = string.sub(r_app_secret, 1, 32)
-        local tmp_key_type = string.sub(r_app_secret, 33, 33)
-        app_key_type = tonumber(tmp_key_type)
+--        real_app_secret = string.sub(r_app_secret, 1, 32)
+        real_app_secret = r_app_secret['app_secret']
+--        local tmp_key_type = r_app_secret['app_key_type']
+        app_key_type = tonumber(r_app_secret['app_key_type'] or 0)
 
         --        app_key_type = string.sub(r_app_secret, 33, 33)
         if (real_app_secret ~= app_secret) then
@@ -82,14 +90,15 @@ local request_uri = ngx.var.request_uri
 local jwt_token
 --local app_key_type_number = tonumber(app_key_type)
 
-if app_key_type == 1 then
-    -- forever
-    jwt_token = jwt:sign(key,
-        {
-            header = { typ = "JWT", alg = "HS256" },
-            payload = {}
-        })
-elseif app_key_type == 0 then
+-- 关闭永久授权模式
+--if app_key_type == 1 then
+--    -- forever
+--    jwt_token = jwt:sign(key,
+--        {
+--            header = { typ = "JWT", alg = "HS256" },
+--            payload = {}
+--        })
+--elseif app_key_type == 0 then
     local host_port = ngx.var.server_port
     local host = ngx.var.host
 
@@ -108,7 +117,7 @@ elseif app_key_type == 0 then
             header = { typ = "JWT", alg = "HS256" },
             payload = { iss = http_addr, iat = iat, exp = exp, nbf = nbf, jti = jti }
         })
-end
+--end
 
 -- local jwt_token = jwt:sign(key,
 -- {

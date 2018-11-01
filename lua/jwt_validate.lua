@@ -49,6 +49,8 @@ if jwt_obj['verified'] then
 else
     response_table['status_code'] = 4005
     response_table['message'] = jwt_obj['reason']
+    tool.respClient(response_table['status_code'], response_table['message'])
 end
-tool.respClient(response_table['status_code'], response_table['message'])
+
+-- pass
 
