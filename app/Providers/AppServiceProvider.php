@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\AppUser;
+use App\Observers\AppUserObserver;
 use Illuminate\Support\Facades\DB;
 use Encore\Admin\Config\Config;
 use Illuminate\Support\Facades\Schema;
@@ -19,9 +21,11 @@ class AppServiceProvider extends ServiceProvider
         //
         Schema::defaultStringLength(191);
 
-
         // config
         Config::load();
+
+        // model listener
+        AppUser::observe(AppUserObserver::class);
         // sql listen
 //        DB::listen(function ($query) {
 //            // $query->sql

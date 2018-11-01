@@ -20,9 +20,11 @@ Route::group([
 
     $router->get('/horizon', 'HorizonController@index');
     $router->get('/supervisor', 'SupervisorController@index');
+    $router->get('/auth/appkeyAuth/{app_key_id}/edit', UserController::class . '@editappkeyAuth');
+    $router->put('/auth/updateAppkeyAuth', UserController::class . '@updateAppkeyAuth');
 
     // auth frontUser
-    $router->resource('auth/frontUsersAuth', AppUserController::class);
+    $router->resource('auth/appkey', AppUserController::class);
 
     // server conf
     $router->group(['prefix' => 'server'], function (Router $router) {
@@ -38,5 +40,6 @@ Route::group([
     $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('unbindServicePlatformProduct/{service_id}/{product_id}', NodeServicesController::class . '@unbindServicePlatformProduct');
         $router->delete('unbindAppKeyPlatformProduct/{app_key_id}/{product_id}', AppUserController::class . '@unbindAppKeyPlatformProduct');
+        $router->get('searchAppKeyUser/{kw}', UserController::class . '@searhAppKeyUser');
     });
 });

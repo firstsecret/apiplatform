@@ -2,6 +2,9 @@
 
 namespace App\Admin\Controllers;
 
+use App\Http\Requests\V1\AdminAppkeyUserRule;
+use App\Models\AppUser;
+use App\Models\PlatformProduct;
 use App\Tool\AppTool;
 use App\User;
 
@@ -35,7 +38,6 @@ class UserController extends Controller
      */
     public function index()
     {
-
         return Admin::content(function (Content $content) {
 
             $content->header($this->title);
@@ -99,7 +101,6 @@ class UserController extends Controller
     {
         return Admin::grid(User::class, function (Grid $grid) {
             // 过滤
-
             $grid->filter(function ($filter) {
                 // 去掉默认的id过滤器
                 $filter->disableIdFilter();
@@ -165,7 +166,7 @@ class UserController extends Controller
                 }
                 $app_key_id = $actions->getKey('appuser.id');
 
-                $actions->append('<a href="' . url('/admin/auth/frontUsersAuth/' . $app_key_id) . '/edit" title="查看编辑权限"><i class="fa fa-superpowers"></i></a>');
+                $actions->append('<a href="' . url('/admin/auth/appkeyAuth/' . $app_key_id) . '/edit" title="查看编辑权限"><i class="fa fa-superpowers"></i></a>');
 //                    $actions->disableDelete();
 
 //                $actions->disableEdit();
@@ -174,6 +175,63 @@ class UserController extends Controller
 
             $grid->paginate(20);
         });
+    }
+
+    public function editappkeyAuth($app_key_id, Content $content)
+    {
+        return $content
+            ->header('appkey授权编辑')
+            ->description('appkey授权编辑详情')
+            ->body($this->appkeyform()->edit($app_key_id));
+    }
+
+    protected function appkeyform()
+    {
+        return Admin::form(AppUser::class, function (Form $form) {
+
+            $form->tools(function (Form\Tools $tools) {
+
+                // 去掉`列表`按钮
+                $tools->disableList();
+
+                // 去掉`删除`按钮
+                $tools->disableDelete();
+
+                // 去掉`查看`按钮
+                $tools->disableView();
+
+                // 添加一个按钮, 参数可以是字符串, 或者实现了Renderable或Htmlable接口的对象实例
+                $tools->add('<a href="'.url('/admin/auth/frontUsers').'" class="btn btn-sm btn-info"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;返回</a>');
+            });
+
+            $form->text('app_key', 'App key')->attribute(['disabled' => true]);
+            $form->text('app_secret', 'App secret')->attribute(['disabled' => true]);
+//            $form->hidden('user_id');
+            $form->hidden('id');
+//        $form->number('user_id', 'User id');
+            $form->text('user.name', '用户')->attribute(['disabled' => true]);
+            $form->multipleSelect('products', '授权服务产品')->options(PlatformProduct::all(['name', 'id'])->pluck('name', 'id'));
+
+            $form->footer(function ($footer) {
+                $footer->disableReset();
+                $footer->disableViewCheck();
+                $footer->disableEditingCheck();
+            });
+
+            $form->setAction('/admin/auth/updateAppkeyAuth');
+        });
+    }
+
+    public function updateAppkeyAuth(AdminAppkeyUserRule $request)
+    {
+        //
+        $appkey = AppUser::find($request->input('id'));
+
+        $appkey->products()->sync(array_filter($request->input('products')));
+
+        admin_toastr('授权编辑成功', 'success');
+        return redirect('/admin/auth/frontUsers');
+//        $user->()->sync([1, 2, 3]);
     }
 
     /**
@@ -247,14 +305,14 @@ class UserController extends Controller
                 $show->updated_at('更新时间');
                 $show->deleted_at('删除时间');
 
-                $show->appuser('授权信息', function ($appuser) use($show) {
+                $show->appuser('授权信息', function ($appuser) use ($show) {
                     $appuser->panel()
                         ->style('info')
-                        ->tools(function ($tools) use ($show){
-                             if($show->deleted_at()){
-                                 $tools->disableDelete();
-                                 $tools->disableEdit();
-                             }
+                        ->tools(function ($tools) use ($show) {
+                            if ($show->deleted_at()) {
+                                $tools->disableDelete();
+                                $tools->disableEdit();
+                            }
                         });
 
                     $appuser->app_key();
@@ -267,5 +325,15 @@ class UserController extends Controller
 //                $show->release_at();
             }));
         });
+    }
+
+    public function searchAppKeyUser($kw, $appkey = null)
+    {
+        $users = User::where('name', 'like', '%' . $kw . '%')->get(['id', 'name'])->map(function ($u, $k) {
+            $u['text'] = $u['name'];
+            return $u;
+        });
+
+        return $users;
     }
 }

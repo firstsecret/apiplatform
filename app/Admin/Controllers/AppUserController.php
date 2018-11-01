@@ -16,6 +16,8 @@ class AppUserController extends Controller
 {
     use HasResourceActions;
 
+    protected $formAtrr = false;
+
     /**
      * Index interface.
      *
@@ -54,6 +56,7 @@ class AppUserController extends Controller
      */
     public function edit($id, Content $content)
     {
+        $this->formAtrr = true;
         return $content
             ->header('appkey编辑')
             ->description('appkey编辑详情')
@@ -186,16 +189,17 @@ class AppUserController extends Controller
     {
         $form = new Form(new AppUser);
 
-        $form->text('app_key', 'App key')->attribute(['disabled' => true]);
-        $form->text('app_secret', 'App secret')->attribute(['disabled' => true]);
+        $form->text('app_key', 'App key')->attribute(['disabled' => $this->formAtrr]);
+        $form->text('app_secret', 'App secret')->attribute(['disabled' => $this->formAtrr]);
 //        $form->number('user_id', 'User id');
-        $form->text('user.name', '用户')->attribute(['disabled' => true]);
-
+        $form->text('user.name', '用户')->attribute(['disabled' => $this->formAtrr]);
+//        $form->select('user.name', '用户')->options('/admin/api/searchAppKeyUser');
 //        $form->text('model', 'Model');
 //        $form->switch('type', 'Type');
         $form->multipleSelect('products', '授权服务产品')->options(PlatformProduct::all(['name', 'id'])->pluck('name', 'id'));
         return $form;
     }
+
 
     protected function getUnbindScript()
     {

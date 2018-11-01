@@ -25,4 +25,5 @@ class AppUser extends Model
     {
         return $this->belongsToMany('App\Models\PlatformProduct', 'app_key_products', 'app_key_id', 'product_id');
     }
+
 }
