@@ -11,6 +11,20 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
+    const IS_ACTIVE_STATUS = 1;  // active status flag
+
+    const LOGIC_MODEL = 'App\User';
+
+    const APP_KEY_FLAG = 'api_app_key:';
+
+    const APP_SECRET_FLAG = 'app_secret';
+
+    const APP_USER_TYPE_FLAG = 'user_type';
+
+    const APP_KEY_TYPE = 'app_key_type';
+
+    const APP_USER_ID = 'user_id';
+
     use Notifiable;
     use SoftDeletes;
     /**
@@ -50,7 +64,7 @@ class User extends Authenticatable implements JWTSubject
 
     function appuser()
     {
-        return $this->hasOne('App\Models\AppUser','user_id')->where('model',self::class);
+        return $this->hasOne('App\Models\AppUser', 'user_id')->where('model', self::class);
     }
 
     function getUserApp($pk)

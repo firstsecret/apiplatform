@@ -3,7 +3,8 @@
 namespace App\Console;
 
 use App\Jobs\ApiLuaCountJob;
-use App\Jobs\CheckAppKeySecretJob;
+//use App\Jobs\CheckAppKeySecretJob;
+use App\Jobs\UpdateAppKeyMap;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -33,10 +34,10 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
 
-        $schedule->job(new CheckAppKeySecretJob)
-            ->description('定期检查修复appkey与secret在redis中的状态')
+        $schedule->job(new UpdateAppKeyMap)
+            ->description('更新appkey与secret在redis中的状态')
             ->runInBackground()
-            ->everyThirtyMinutes()
+            ->dailyAt('00:01')
             ->onOneServer();
 
         // horizon

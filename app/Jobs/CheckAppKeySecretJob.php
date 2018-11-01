@@ -51,7 +51,7 @@ class CheckAppKeySecretJob implements ShouldQueue
 
         $diff = time() - (int)$valid_time;
 
-        if (empty(Redis::keys('app_key:*')) || $diff >= 24 * 3600) {
+        if ($diff >= 24 * 3600) {
             // update
            (new AppKeySecretService())->mapAppkeysecret();
            Redis::set('app_key_last_valid_time', time());

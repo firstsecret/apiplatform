@@ -513,8 +513,36 @@ class ShowController extends BaseController
 //        exit;
 //        dd($exitCode);
 
-        $app_secret = Redis::get('apiplatform_service_base_uri');
+        $d = Redis::keys(User::APP_KEY_FLAG . '*');
+        $arr = [];
+        foreach ($d as $item){
+            $arr[] = Redis::hgetall($item);
+        }
+        dd($arr);
 
-        dd($request->server);
+        AppUser::with(['user' => function ($query) {
+            $query->where('type', User::IS_ACTIVE_STATUS);
+        }])->where('model', User::LOGIC_MODEL)->chunk(200, function ($users) {
+            //filter
+            $users = $users->filter(function ($u, $key) {
+                return $u['user'];
+            })->toArray();
+
+            // handle
+            foreach ($users as $user) {
+                Redis::hset(User::APP_KEY_FLAG . $user['app_key'], 'app_secret', $user['app_secret']);
+                Redis::hset(User::APP_KEY_FLAG . $user['app_key'], 'user_type', $user['user']['type']);
+                Redis::hset(User::APP_KEY_FLAG . $user['app_key'], 'app_key_type', $user['type']);
+                Redis::hset(User::APP_KEY_FLAG . $user['app_key'], 'user_id', $user['user_id']);
+            }
+//            dd($users->toArray());
+//            foreach ($users as $u) {
+//                var_dump($u->type . ':' . $u->app_key . ',user_id:' . $u->id);
+//                Redis::set($u['app_key'], $u['app_secret'] . $u['type']);
+//            }
+        });
+//        $app_secret = Redis::get('apiplatform_service_base_uri');
+//
+//        dd($request->server);
     }
 }
