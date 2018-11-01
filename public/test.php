@@ -11,7 +11,56 @@
 
 
 //array_combine
+//
+//$generator = call_user_func(function() {
+//
+//    $input = (yield "foo");
+//
+//
+//
+//    print "inside: " . $input . "\n";
+//
+//});
+//
+//
+//
+//print $generator->current() . "\n";
+//
+//
+//
+//$generator->send("bar");
 
+
+
+//$multi = function multiOp($x, $y){
+//   try{
+//       yield $x * $y;
+//       throw new Exception('dfsfds');
+//   }catch (\Exception $e){
+//       print 'ERROR!';
+//   }
+//}
+//
+//function opfunc($multiDriv, $x ,$y) use ($multi)
+//{
+//    if($multiDriv == 'multiOp'){
+//        $generator = $multi($x, $y);
+//
+//        return $generator->current();
+//    }
+//
+//    if(!is_numeric($x) || !is_numeric($y)){
+//        throw  new \Exception('不是number');
+//    }
+//
+//
+//}
+
+//$res = opfunc('multiOp',5,6);
+//echo $res;
+
+
+exit;
 /**
  *  app 应用方
  */

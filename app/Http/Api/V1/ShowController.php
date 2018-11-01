@@ -517,14 +517,24 @@ class ShowController extends BaseController
 //            var_dump($a);
 //        }
 //        exit;
-        var_dump(Redis::keys(User::APP_KEY_FLAG . '*'));
+//        var_dump(Redis::keys(User::APP_KEY_FLAG . '*'));
 //        dd(Redis::EXISTS('api_app_key:4a5a48028c6b973820e2d719be41e384'));
-        $data = new RedisScanService(['match'=>'api_app_key*']);
+        $data = new RedisScanService(['match' => 'api_app_key*']);
 
-        foreach ($data as $k => $d){
-           foreach ($d as $app_key){
-               var_dump($app_key);
-           }
+        foreach ($data as $k => $d) {
+            foreach ($d as $app_key_redis) {
+                $app_key = explode(':', $app_key_redis)[1];
+
+                //db check del condition
+                $appuser = AppUser::with(['user' => function ($query) {
+                    $query->where('type', User::IS_ACTIVE_STATUS);
+                }])->where(['model' => User::LOGIC_MODEL, 'app_key' => $app_key])->get(['id']);
+
+                if (!$appuser) {
+                    // del
+                    Redis::del($app_key_redis);
+                }
+            }
         }
 
         exit;

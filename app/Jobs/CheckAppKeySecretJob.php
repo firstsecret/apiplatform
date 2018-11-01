@@ -49,18 +49,36 @@ class CheckAppKeySecretJob implements ShouldQueue
     {
         // check
         // last valid time
-        $valid_time = Redis::get('app_key_last_valid_time');
+//        $valid_time = Redis::get('app_key_last_valid_time');
+//
+//        $diff = time() - (int)$valid_time;
+//
+//        if ($diff >= 24 * 3600) {
+//            // update
+//           (new AppKeySecretService())->mapAppkeysecret();
+//           Redis::set('app_key_last_valid_time', time());
+//        }
+        // scanning
+        $data = new RedisScanService(['match' => User::APP_KEY_FLAG . '*']);
 
-        $diff = time() - (int)$valid_time;
+        foreach ($data as $k => $d) {
+            foreach ($d as $app_key_redis) {
+                $app_key = explode(':', $app_key_redis)[1];
 
-        if ($diff >= 24 * 3600) {
-            // update
-           (new AppKeySecretService())->mapAppkeysecret();
-           Redis::set('app_key_last_valid_time', time());
+                //db check del condition
+                $appuser = AppUser::with(['user' => function ($query) {
+                    $query->where('type', User::IS_ACTIVE_STATUS);
+                }])->where([
+                    'model' => User::LOGIC_MODEL,
+                    'app_key' => $app_key,
+                ])->get(['id']);
+
+                if (!$appuser) {
+                    // del
+                    Redis::del($app_key_redis);
+                }
+            }
         }
 
-
-        // scanning
-        $data = new RedisScanService(['match'=>User::APP_KEY_FLAG . '*']);
     }
 }

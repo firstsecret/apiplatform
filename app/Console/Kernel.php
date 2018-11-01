@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Jobs\ApiLuaCountJob;
 //use App\Jobs\CheckAppKeySecretJob;
+use App\Jobs\CheckAppKeySecretJob;
 use App\Jobs\UpdateAppKeyMap;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -33,6 +34,12 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        // check 无效的 appkey  缓存
+        $schedule->job(new CheckAppKeySecretJob)
+            ->description('检查appkey与appsecret缓存是否有效,去除无效缓存')
+            ->runInBackground()
+            ->dailyAt('02:00')
+            ->onOneServer();
 
         $schedule->job(new UpdateAppKeyMap)
             ->description('更新appkey与secret在redis中的状态')
