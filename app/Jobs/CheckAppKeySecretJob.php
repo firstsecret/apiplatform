@@ -3,6 +3,8 @@
 namespace App\Jobs;
 
 use App\Services\Admin\AppKeySecretService;
+use App\Services\RedisScanService;
+use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -56,5 +58,9 @@ class CheckAppKeySecretJob implements ShouldQueue
            (new AppKeySecretService())->mapAppkeysecret();
            Redis::set('app_key_last_valid_time', time());
         }
+
+
+        // scanning
+        $data = new RedisScanService(['match'=>User::APP_KEY_FLAG . '*']);
     }
 }

@@ -20,10 +20,14 @@ class RedisScanService implements \Iterator
     protected $redis_scan;
     protected $first_flag = true;
 
+    protected $command = 'scan';
+    protected $isfirst = true;
+
     public function __construct($option = [])
     {
         $this->count = $option['count'] ?? 50;
         $this->match = $option['match'] ?? 'api_count_*';
+        $this->command = $option['command'] ?? 'scan';
     }
 
     public function key()
@@ -34,7 +38,8 @@ class RedisScanService implements \Iterator
     public function rewind()
     {
         // init
-        $this->key = 1;
+        $this->key = 0;
+        $this->isfirst = true;
         $this->value = [];
         // TODO: Implement rewind() method.
     }
@@ -47,13 +52,20 @@ class RedisScanService implements \Iterator
 
     public function valid()
     {
+        if ($this->isfirst) {
+            $this->isfirst = false;
+            return true;
+        }
         return $this->key > 0;
         // TODO: Implement valid() method.
     }
 
     public function current()
     {
-        $this->redis_scan = Redis::scan($this->key, ['match' => $this->match, 'count' => $this->count]);
+        $command = $this->command;
+
+        $this->redis_scan = Redis::$command($this->key, ['match' => $this->match, 'count' => $this->count]);
+
         return $this->value = $this->redis_scan[1];
         // TODO: Implement current() method.
     }

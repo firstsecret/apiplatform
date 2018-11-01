@@ -512,13 +512,29 @@ class ShowController extends BaseController
 //        var_dump('c:'. $c);
 //        exit;
 //        dd($exitCode);
+//        $ddd = Redis::scan(0,['match'=>'*' . User::APP_KEY_FLAG . '*','count'=>100]);
+//        foreach ($ddd as $a){
+//            var_dump($a);
+//        }
+//        exit;
+        var_dump(Redis::keys(User::APP_KEY_FLAG . '*'));
+//        dd(Redis::EXISTS('api_app_key:4a5a48028c6b973820e2d719be41e384'));
+        $data = new RedisScanService(['match'=>'api_app_key*']);
 
-        $d = Redis::keys(User::APP_KEY_FLAG . '*');
-        $arr = [];
-        foreach ($d as $item){
-            $arr[] = Redis::hgetall($item);
+        foreach ($data as $k => $d){
+           foreach ($d as $app_key){
+               var_dump($app_key);
+           }
         }
-        dd($arr);
+
+        exit;
+
+//        $d = Redis::keys(User::APP_KEY_FLAG . '*');
+//        $arr = [];
+//        foreach ($d as $item){
+//            $arr[] = Redis::hgetall($item);
+//        }
+//        dd($arr);
 
         AppUser::with(['user' => function ($query) {
             $query->where('type', User::IS_ACTIVE_STATUS);
