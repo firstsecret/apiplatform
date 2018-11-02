@@ -12,8 +12,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class GzReadException extends HttpException
 {
-    public function __construct($statusCode = 400, $message = null, $code = 4070, \Exception $previous = null)
+    public function __construct($code = 4070, $message = null, $status_code = 200, \Exception $previous = null)
     {
-        parent::__construct($statusCode, $message ?: '未知异常错误', $previous, [], $code);
+        parent::__construct($status_code, $message ?: '未知异常错误', $previous, [], $code);
     }
 }

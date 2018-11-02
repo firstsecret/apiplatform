@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Admin\Controllers\view\DashboardController;
 use App\Admin\Extensions\Tools\InfoBoxGender;
+use App\Exceptions\AppUserException;
 use App\Http\Controllers\Controller;
 use App\Tool\ProbeTool;
 use Encore\Admin\Controllers\Dashboard;
@@ -28,6 +29,7 @@ class HomeController extends Controller
 
     public function index()
     {
+
         return Admin::content(function (Content $content) {
 
             $content->header('首页控制台');
@@ -68,8 +70,8 @@ class HomeController extends Controller
                 });
 
                 // net status
-                $row->column(12, function(Column $column){
-                   $column->append(DashboardController::netstatus());
+                $row->column(12, function (Column $column) {
+                    $column->append(DashboardController::netstatus());
                 });
 
                 // memory status
@@ -77,8 +79,8 @@ class HomeController extends Controller
                     $column->append(DashboardController::memorystatus());
                 });
 
-                $row->column(4, function(Column $column){
-                   $column->append(DashboardController::hddstatus());
+                $row->column(4, function (Column $column) {
+                    $column->append(DashboardController::hddstatus());
                 });
 
 //                env;

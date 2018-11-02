@@ -53,6 +53,7 @@ class Handler extends ExceptionHandler
     {
         $path_info = $request->getPathInfo();
 
+        // admin api error handle
         if (strstr($path_info, '/admin/api/') && $request->ajax()) {
             // admin api handle
             return response()->json([

@@ -32,19 +32,17 @@ app('api.exception')->register(function (Exception $exception) {
 //    } else
 
     if (get_class($exception) == 'Illuminate\Validation\ValidationException') {
-        $status_code = 422;
+        $status_code = 200;
         $err_message = $exception->validator->errors();
-        $code = 200;
+        $code = 422;
 //        return Response()->json(['status_code' => 422, 'message' => $exception->validator->errors(), 'respData' => ''], 422);
     } else {
 //        dd($exception->());
         // is has method getStatusCode
         // status_code
-        $status_code = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : $exception->getCode();
-        $status_code = $status_code == 0 ? 400 : $status_code;
+        $status_code = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 200;
         // code
-        $code = $exception->getCode();
-        $code = $code == 0 ? 200 : $code;
+        $code = $exception->getCode() ?? 4000;
 //        $err_message = $exception->getMessage() == '' ? '路由不存在:' . request()->getRequestUri() . ',method:' . request()->getMethod() : $exception->getMessage();
         // error_message
         $err_message = $exception->getMessage();
@@ -60,7 +58,8 @@ app('api.exception')->register(function (Exception $exception) {
     \App\Jobs\CountApiJob::dispatch(ltrim(request()->getPathInfo(), '/'), 'fail');
     // 记录 错误 日志
     \Illuminate\Support\Facades\Event::fire(new \App\Events\AsyncLogEvent($err_message, 'error'));
-    return Response()->json(['status_code' => $status_code, 'message' => $err_message, 'respData' => []], $code)->header('RequestUri', request()->getPathInfo());
+//    return Response()->json(['status_code' => $code, 'message' => $err_message, 'respData' => []], $status_code)->header('RequestUri', request()->getPathInfo());
+    return Response()->json(['status_code' => $code, 'message' => $err_message, 'respData' => []], $status_code);
 });
 
 $api = app('Dingo\Api\Routing\Router');
@@ -80,7 +79,7 @@ $api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', '
 
 // tmp test api
 $api->version('v1', ['middleware' => ['api.rewriteResp']], function ($api) {
-    $api->post('countApi','\App\Http\Api\V1\ShowController@testApiCount');
+    $api->post('countApi', '\App\Http\Api\V1\ShowController@testApiCount');
     $api->get('testLua', '\App\Http\Api\V1\ShowController@testLua');
     $api->get('testTmp', '\App\Http\Api\V1\ShowController@index');
     $api->get('testSign', 'App\Http\Api\V1\ShowController@testSign');

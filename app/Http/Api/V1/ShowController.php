@@ -12,6 +12,7 @@ namespace App\Http\Api\V1;
 use App\Client\httpClient;
 use App\Events\AsyncLogEvent;
 use App\Events\UserRegisterEvent;
+use App\Exceptions\AppUserException;
 use App\Exceptions\BevanJwtAuthException;
 use App\Http\Api\BaseController;
 use App\Jobs\ApiLuaCountJob;
@@ -496,6 +497,10 @@ class ShowController extends BaseController
 
     public function testCommand(Request $request)
     {
+
+        throw new AppUserException(5031,'dfddf',401);
+
+
 //        $exitCode = Artisan::call('webserver', ['cmd' => 'restart']);
 //        dd($this->getCommand("machdep.cpu.core_count"));
 //        ReloadJob::dispatch();
