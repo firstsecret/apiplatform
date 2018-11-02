@@ -503,8 +503,9 @@ class ShowController extends BaseController
 //        throw new AppUserException(5031,'dfddf',401);
 //        UpdateAppKeyMap::dispatch();
 
-        (new NodeService())->updateNodeByDb();
+//        (new NodeService())->updateNodeByDb();
 
+        dd(App::storagePath());
         dd('ok');
 //        dd(Redis::exists(User::APP_KEY_FLAG . 'd7fbc1f0f38c3ee95fb7cdc17f7f9401'));
 

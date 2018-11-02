@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\AppUser;
+use App\Models\Service;
 use App\Observers\AppUserObserver;
+use App\Observers\ServiceObserver;
 use App\Observers\UserObserver;
 use App\User;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         // model listener
         AppUser::observe(AppUserObserver::class);
         User::observe(UserObserver::class);
+        Service::observe(ServiceObserver::class);
 
         // sql listen
 //        DB::listen(function ($query) {

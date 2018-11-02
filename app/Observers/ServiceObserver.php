@@ -16,20 +16,20 @@ class ServiceObserver
 {
     public function updated(Service $service)
     {
-        dd($service);
+        $this->updateHealthCheck();
     }
 
     public function created(Service $service)
     {
-        dd($service);
+        $this->updateHealthCheck();
     }
 
     public function deleted(Service $service)
     {
-        dd($service);
+        $this->updateHealthCheck();
     }
 
-    private function updateHealthCheck($service)
+    private function updateHealthCheck()
     {
         (new NodeService())->updateNodeByDb();
     }

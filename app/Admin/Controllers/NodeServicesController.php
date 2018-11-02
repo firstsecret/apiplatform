@@ -19,6 +19,7 @@ class NodeServicesController extends Controller
     use HasResourceActions;
 
     public $title = '节点管理';
+
     /**
      * Index interface.
      *
@@ -133,10 +134,10 @@ class NodeServicesController extends Controller
             });
 
         $show->id('Id');
-        $show->service_host('Service host');
-        $show->service_host_port('Service host port');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+        $show->service_host('节点ip');
+        $show->service_host_port('节点端口');
+        $show->created_at('创建时间');
+        $show->updated_at('更新时间');
 
 //        $show->tools(function ($tools) {
 ////            $tools->batch(function ($batch) {
@@ -158,7 +159,7 @@ class NodeServicesController extends Controller
             });
 
             // fitler
-            $products->filter(function ($filter){
+            $products->filter(function ($filter) {
                 $filter->disableIdFilter();
                 $filter->like('name', '名称');
 //                $filter->scope('deleted_at', '已删除服务')->onlyTrashed();
@@ -201,10 +202,10 @@ class NodeServicesController extends Controller
     {
         $form = new Form(new Service);
 
-        $form->text('service_host', 'Service host')->default('127.0.0.1');
-        $form->text('service_host_port', 'Service host port')->default('80');
+        $form->text('service_host', 'Service host')->default('127.0.0.1')->rules('required|ip', ['required|' => '节点ip必填', 'ip' => '节点必须为有效的ip']);
+        $form->text('service_host_port', 'Service host port')->default('80')->rules('required|integer', ['required' => '节点端口必填', 'integer' => '端口必须为整数']);
 
-        $form->multipleSelect('products', 'API产品服务')->options(PlatformProduct::all(['name', 'id'])->pluck('name', 'id'));
+        $form->multipleSelect('products', 'API产品服务(可选)')->options(PlatformProduct::all(['name', 'id'])->pluck('name', 'id'));
 
         return $form;
     }

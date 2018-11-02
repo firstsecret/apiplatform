@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Tool\ProbeTool;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Redis;
 
 class Probe extends Command
@@ -61,14 +62,15 @@ class Probe extends Command
     protected function startServer()
     {
         $this->ws = new \swoole_websocket_server("0.0.0.0", 8553);
-
+        $storagePath = App::storagePath();
         //监听WebSocket连接打开事件
         $this->ws->set(array(
+            'log_file' => $storagePath . '/extralogs/swoole.log',
             'worker_num' => 1,    //worker process num
             'buffer_output_size' => 4 * 1024 * 1024,  // 4M
 //            'backlog' => 128,   //listen backlog
 //            'max_request' => 50,
-        // 不要打开 守护进程模式 ， superviisor 监视不到
+            // 不要打开 守护进程模式 ， superviisor 监视不到
 //            'daemonize' => 1,
         ));
 
