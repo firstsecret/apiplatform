@@ -10,6 +10,7 @@ namespace App\Observers;
 
 
 use App\Models\Service;
+use App\Services\NodeService;
 
 class ServiceObserver
 {
@@ -30,6 +31,6 @@ class ServiceObserver
 
     private function updateHealthCheck($service)
     {
-
+        (new NodeService())->updateNodeByDb();
     }
 }

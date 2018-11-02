@@ -27,6 +27,7 @@ use App\Models\ProductServices;
 use App\Services\Admin\AppKeySecretService;
 use App\Services\ApiCountService;
 use App\Services\FlowService;
+use App\Services\NodeService;
 use App\Services\RedisScanService;
 use App\Tool\ProbeTool;
 use App\User;
@@ -501,7 +502,11 @@ class ShowController extends BaseController
 
 //        throw new AppUserException(5031,'dfddf',401);
 //        UpdateAppKeyMap::dispatch();
-        dd(Redis::exists(User::APP_KEY_FLAG . 'd7fbc1f0f38c3ee95fb7cdc17f7f9401'));
+
+        (new NodeService())->updateNodeByDb();
+
+        dd('ok');
+//        dd(Redis::exists(User::APP_KEY_FLAG . 'd7fbc1f0f38c3ee95fb7cdc17f7f9401'));
 
 //        $exitCode = Artisan::call('webserver', ['cmd' => 'restart']);
 //        dd($this->getCommand("machdep.cpu.core_count"));
