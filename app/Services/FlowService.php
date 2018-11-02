@@ -74,24 +74,32 @@ class FlowService
      */
     public function saveFlowCount()
     {
-        $apiCountIterator = App::make('App\Services\ApiCountService'); // new ApiCountService();
+        App::singleton('apiCountIterator', function () {
+            return new ApiCountService();
+        });
         $now = date('Y-m-d', time());
+        $redisScan = new RedisScanService(['match' => 'ip_api_count_*', 'count' => 500]);
         DB::beginTransaction();
         try {
-            foreach ($apiCountIterator as $k => $v) {
-                $ip = $apiCountIterator->getIp();
-                $insert_data = [];
+            foreach ($redisScan as $key => $ip_api) {
+                if (empty($ip_api)) continue;
+                $apiCountIterator = App::make('apiCountIterator');
+                $apiCountIterator->init(['all_request_ip_today' => $ip_api]);
+                foreach ($apiCountIterator as $k => $v) {
+                    $ip = $apiCountIterator->getIp();
+                    $insert_data = [];
 
-                foreach ($v as $request_uri => $number) {
-                    $insert_data[] = [
-                        'ip' => $ip,
-                        'request_uri' => substr($request_uri, 0, 254),
-                        'today_total_number' => $number,
-                        'created_at' => $now,
-                        'updated_at' => $now
-                    ];
+                    foreach ($v as $request_uri => $number) {
+                        $insert_data[] = [
+                            'ip' => $ip,
+                            'request_uri' => substr($request_uri, 0, 254),
+                            'today_total_number' => $number,
+                            'created_at' => $now,
+                            'updated_at' => $now
+                        ];
+                    }
+                    DB::table('ip_request_flows_copy')->insert($insert_data);
                 }
-                DB::table('ip_request_flows')->insert($insert_data);
             }
         } catch (\Exception $e) {
             LogJob::dispatch($e->getMessage(), 'error');

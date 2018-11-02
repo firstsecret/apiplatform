@@ -30,10 +30,15 @@ class ApiCountService implements \Iterator
         return $this->key;
     }
 
+    public function init($options)
+    {
+        $this->all_request_ip_today = $options['all_request_ip_today'];
+    }
+
     public function rewind()
     {
         $this->key = 0;
-        $this->all_request_ip_today = Redis::keys('ip_api_count_*');
+//        $this->all_request_ip_today = Redis::keys('ip_api_count_*');
         $this->len = count($this->all_request_ip_today);
 //        $this->updateIp();
 //        $this->value = $this->getValue();

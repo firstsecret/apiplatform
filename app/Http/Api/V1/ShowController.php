@@ -47,6 +47,11 @@ class ShowController extends BaseController
 {
     use ProbeTool;
 
+    public function __construct()
+    {
+//        echo 'is comming';
+    }
+
     /**
      *  测试
      */
@@ -504,8 +509,22 @@ class ShowController extends BaseController
 //        UpdateAppKeyMap::dispatch();
 
 //        (new NodeService())->updateNodeByDb();
-
-        dd(App::storagePath());
+//        App::singleton('testApp',function(){
+//            return new ShowController();
+//        });
+//
+//        $a = App::make('testApp');
+//        $b = App::make('testApp');
+//        $c = App::make('testApp');
+//
+//        dd($a,$b,$c);
+//        $ips = Redis::keys('ip_api_count_*');
+        $nn = new ApiCountService();
+        $count = 0 ;
+        foreach ($nn as $k => $v){
+            $count += count($v);
+        }
+        dd($count);
         dd('ok');
 //        dd(Redis::exists(User::APP_KEY_FLAG . 'd7fbc1f0f38c3ee95fb7cdc17f7f9401'));
 
