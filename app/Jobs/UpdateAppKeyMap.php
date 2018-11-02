@@ -53,10 +53,17 @@ class UpdateAppKeyMap implements ShouldQueue
 
     protected function updateSingle()
     {
-        Redis::hset(User::APP_KEY_FLAG . $this->appMsg['app_key'], User::APP_SECRET_FLAG, $this->appMsg['app_secret']);
-        Redis::hset(User::APP_KEY_FLAG . $this->appMsg['app_key'], User::APP_USER_TYPE_FLAG, $this->appMsg['user_type']);
-        Redis::hset(User::APP_KEY_FLAG . $this->appMsg['app_key'], User::APP_KEY_TYPE, $this->appMsg['type']);
-        Redis::hset(User::APP_KEY_FLAG . $this->appMsg['app_key'], User::APP_USER_ID, $this->appMsg['user_id']);
+        $user = User::find($this->appMsg['user_id']);
+
+        if ($user && $user->type == User::IS_ACTIVE_STATUS) {
+            Redis::hset(User::APP_KEY_FLAG . $this->appMsg['app_key'], User::APP_SECRET_FLAG, $this->appMsg['app_secret']);
+            Redis::hset(User::APP_KEY_FLAG . $this->appMsg['app_key'], User::APP_USER_TYPE_FLAG, $user->type);
+            Redis::hset(User::APP_KEY_FLAG . $this->appMsg['app_key'], User::APP_KEY_TYPE, $this->appMsg['type']);
+            Redis::hset(User::APP_KEY_FLAG . $this->appMsg['app_key'], User::APP_USER_ID, $this->appMsg['user_id']);
+        } else {
+            // del
+            Redis::del(User::APP_KEY_FLAG . $this->appMsg['app_key']);
+        }
 //        Redis::set($this->appMsg['app_key'], $this->appMsg['app_secret'] . $this->appMsg['type']);
     }
 

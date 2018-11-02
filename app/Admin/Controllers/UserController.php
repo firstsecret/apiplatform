@@ -113,7 +113,7 @@ class UserController extends Controller
                 $filter->disableIdFilter();
                 // 在这里添加字段过滤器
                 $filter->like('name', '名称');
-                $filter->scope('deleted_at', '软删除用户')->onlyTrashed();
+                $filter->scope('deleted_at', '已删除用户')->onlyTrashed();
 //                $filter->equal('created_at')->datetime();
                 $filter->between('created_at', '创建时间')->datetime();
                 $filter->between('updated_at', '更新时间')->datetime();
@@ -170,10 +170,10 @@ class UserController extends Controller
                 if (isset($input_query['_scope_']) && $input_query['_scope_'] == 'deleted_at') {
                     $actions->disableDelete();
                     $actions->disableEdit();
+                } else {
+                    $app_key_id = $actions->getKey('appuser.id');
+                    $actions->append('<a href="' . url('/admin/auth/appkeyAuth/' . $app_key_id) . '/edit" title="查看编辑权限"><i class="fa fa-superpowers"></i></a>');
                 }
-                $app_key_id = $actions->getKey('appuser.id');
-
-                $actions->append('<a href="' . url('/admin/auth/appkeyAuth/' . $app_key_id) . '/edit" title="查看编辑权限"><i class="fa fa-superpowers"></i></a>');
 //                    $actions->disableDelete();
 
 //                $actions->disableEdit();
@@ -249,7 +249,7 @@ class UserController extends Controller
             return back()->withInput()->withErrors($validationMessages);
         }
         $data['password'] = Hash::make($data['password']);
- 
+
         DB::transaction(function () use ($data) {
             $user = User::create([
                 'name' => $data['name'],
@@ -280,7 +280,6 @@ class UserController extends Controller
     protected function form()
     {
         return Admin::form(User::class, function (Form $form) {
-
             $form->tab('账户', function (Form $form) {
                 $form->model()->makeVisible('password');
                 $form->display('id', 'ID');

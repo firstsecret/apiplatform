@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class AppUser extends Model
 {
+    const MODEL_CREATED_EVENT = 'created';
+    const MODEL_UPDATED_EVENT = 'updated';
+
     protected $fillable = [
         'app_key', 'app_secret', 'user_id', 'model'
     ];
