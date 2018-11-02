@@ -58,74 +58,120 @@
 //$res = opfunc('multiOp',5,6);
 //echo $res;
 
-
 class Task
 {
+    protected $taskId;
+    protected $coroutine;
+    protected $sendValue = null;
+    protected $beforeFirstYield = true;
 
-    protected $generator;
-    protected $run = false;
-
-    public function __construct(Generator $generator)
+    public function __construct($taskId, Generator $coroutine)
     {
-
-        $this->generator = $generator;
-
+        $this->taskId = $taskId;
+        $this->coroutine = $coroutine;
     }
 
+    public function getTaskId()
+    {
+        return $this->taskId;
+    }
+
+    public function setSendValue($sendValue)
+    {
+        $this->sendValue = $sendValue;
+    }
 
     public function run()
     {
-        if ($this->run) {
-            $this->generator->next();
-
+        if ($this->beforeFirstYield) {
+            $this->beforeFirstYield = false;
+            return $this->coroutine->current();
         } else {
-            $this->generator->current();
-            $this->run = true;
+            $retval = $this->coroutine->send($this->sendValue);
+            $this->sendValue = null;
+            return $retval;
         }
     }
 
-
-    public function finished()
+    public function isFinished()
     {
-        return !$this->generator->valid();
+        return !$this->coroutine->valid();
     }
 }
 
 class Scheduler
 {
-    protected $queue;
+    protected $maxTaskId = 0;
+    protected $taskMap = []; // taskId => task
+    protected $taskQueue;
 
     public function __construct()
     {
-        $this->queue = new SplQueue();
+        $this->taskQueue = new SplQueue();
     }
 
-
-    public function enqueue(Task $task)
+    public function newTask(Generator $coroutine)
     {
-        $this->queue->enqueue($task);
+        $tid = ++$this->maxTaskId;
+        $task = new Task($tid, $coroutine);
+        $this->taskMap[$tid] = $task;
+        $this->schedule($task);
+        return $tid;
+    }
 
+    public function schedule(Task $task)
+    {
+        $this->taskQueue->enqueue($task);
     }
 
     public function run()
     {
-        while (!$this->queue->isEmpty()) {
-
-            $task = $this->queue->dequeue();
-
+        while (!$this->taskQueue->isEmpty()) {
+            $task = $this->taskQueue->dequeue();
             $task->run();
 
-            if (!$task->finished()) {
-                $this->queue->enqueue($task);
+            if ($task->isFinished()) {
+                unset($this->taskMap[$task->getTaskId()]);
+            } else {
+                $this->schedule($task);
             }
         }
     }
 }
 
+function task1()
+{
+    for ($i = 1; $i <= 100000000; ++$i) {
+//        echo "This is task 1 iteration $i.\n";
+        yield;
+    }
+}
 
-$scheduler = new Scheduler();
+function task2()
+{
+    for ($i = 1; $i <= 5000000; ++$i) {
+//        echo "This is task 2 iteration $i.\n";
+        yield;
+    }
+}
+//
+$time = microtime(true);
+$scheduler = new Scheduler;
 
-$time = time();
+$scheduler->newTask(task1());
+$scheduler->newTask(task2());
+
+$scheduler->run();
+//for($i = 1; $i <= 100000000; ++$i){
+//
+//}
+//
+//for($i = 1; $i <= 5000000; ++$i){
+//
+//}
+
+$htime = microtime(true) - $time;
+echo '耗时:' . $htime . ';' . $time . ',' . microtime(true) . '秒';
 //$task = new Task(call_user_func(function () {
 //    $sl = rand(2,3);
 //    sleep(rand(2, 3));
@@ -147,20 +193,20 @@ $time = time();
 
 //$scheduler->run();
 
-function testSend()
-{
-
-    yield;
-    $sleep = rand(2, 3);
-    sleep($sleep);
-    print('is finish');
-}
-
-for ($i = 0; $i < 2; $i++) {
-    testSend();
-}
-
-echo '<br>耗时:' . (time() - $time) . '秒';
+//function testSend()
+//{
+//
+//    yield;
+//    $sleep = rand(2, 3);
+//    sleep($sleep);
+//    print('is finish');
+//}
+//
+//for ($i = 0; $i < 2; $i++) {
+//    testSend();
+//}
+//
+//echo '<br>耗时:' . (time() - $time) . '秒';
 
 
 exit;

@@ -14,7 +14,7 @@
         <div class="table-responsive">
             <table class="table table-striped" id="net-status">
                 <tr>
-                    <td class="text-center" width="15%">设备</td>
+                    <td class="text-center" width="15%">网络</td>
                     <td class="text-center" width="35%">接收</td>
                     <td class="text-center" width="35%">发送</td>
                     <td class="text-center" width="15%">错误/丢失</td>

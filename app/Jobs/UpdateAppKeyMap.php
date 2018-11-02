@@ -76,7 +76,6 @@ class UpdateAppKeyMap implements ShouldQueue
             $users = $users->filter(function ($u, $key) {
                 return $u['user'];
             })->toArray();
-
             // handle
             foreach ($users as $user) {
                 Redis::hset(User::APP_KEY_FLAG . $user['app_key'], User::APP_SECRET_FLAG, $user['app_secret']);
