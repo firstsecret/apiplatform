@@ -57,7 +57,7 @@ post_str = string.sub(post_str, 1, string.len(post_str) - 1)
 local apiplatform_service_base_uri = redis:exec(function(red) return red:get('apiplatform_service_base_uri') end)
 
 if apiplatform_service_base_uri == ngx.null or apiplatform_service_base_uri == nil or err then
-    tool.respClient(5123,'服务提供已关闭')
+    tool.respClient(5123, '服务提供已关闭')
 end
 
 local request_base_uri = 'http://' .. apiplatform_service_base_uri
@@ -74,10 +74,17 @@ local res, err_ = httpc:request_uri(request_base_uri, {
     keepalive_timeout = 60,
     keepalive_pool = 100
 })
+
+--local cjson = require "cjson";
+
 -- error handle
 if not res then
     ngx.log(ngx.CRIT, 'http request service error:' .. err_)
     tool.respClient(5103, '服务异常' .. err_)
 else
     ngx.print(res.body)
+    -- response header handle ?
+    --    ngx.print(cjson.encode(res.headers))
+    -- real http status handle ?
+--    ngx.print(res.status)
 end

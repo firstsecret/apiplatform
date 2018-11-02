@@ -22,7 +22,7 @@ class AppUserObserver
         // check is can't del
         $user = User::find($appUser->user_id);
 
-        if ($user && $user->type == User::IS_ACTIVE_STATUS) throw new AppUserException('4084', '关联用户未删除或未关闭授权,不允许删除');
+        if ($user && $user->type == User::IS_ACTIVE_STATUS) throw new AppUserException(4084, '关联用户未删除或未关闭授权,不允许删除');
     }
 
     public function deleted(AppUser $appUser)

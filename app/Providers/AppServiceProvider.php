@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\AppUser;
 use App\Observers\AppUserObserver;
+use App\Observers\UserObserver;
+use App\User;
 use Illuminate\Support\Facades\DB;
 use Encore\Admin\Config\Config;
 use Illuminate\Support\Facades\Schema;
@@ -26,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
 
         // model listener
         AppUser::observe(AppUserObserver::class);
+        User::observe(UserObserver::class);
+
         // sql listen
 //        DB::listen(function ($query) {
 //            // $query->sql

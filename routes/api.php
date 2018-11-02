@@ -40,6 +40,7 @@ app('api.exception')->register(function (Exception $exception) {
 //        dd($exception->());
         // is has method getStatusCode
         // status_code
+
         $status_code = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 200;
         // code
         $code = $exception->getCode() ?? 4000;
@@ -59,6 +60,7 @@ app('api.exception')->register(function (Exception $exception) {
     // 记录 错误 日志
     \Illuminate\Support\Facades\Event::fire(new \App\Events\AsyncLogEvent($err_message, 'error'));
 //    return Response()->json(['status_code' => $code, 'message' => $err_message, 'respData' => []], $status_code)->header('RequestUri', request()->getPathInfo());
+
     return Response()->json(['status_code' => $code, 'message' => $err_message, 'respData' => []], $status_code);
 });
 

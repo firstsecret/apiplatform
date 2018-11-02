@@ -19,6 +19,7 @@ use App\Jobs\ApiLuaCountJob;
 use App\Jobs\CheckAppKeySecretJob;
 use App\Jobs\LogJob;
 use App\Jobs\ReloadJob;
+use App\Jobs\UpdateAppKeyMap;
 use App\Models\AppUser;
 use App\Models\PlatformProduct;
 use App\Models\PlatformProductCategory;
@@ -498,8 +499,9 @@ class ShowController extends BaseController
     public function testCommand(Request $request)
     {
 
-        throw new AppUserException(5031,'dfddf',401);
-
+//        throw new AppUserException(5031,'dfddf',401);
+//        UpdateAppKeyMap::dispatch();
+        dd(Redis::exists(User::APP_KEY_FLAG . 'd7fbc1f0f38c3ee95fb7cdc17f7f9401'));
 
 //        $exitCode = Artisan::call('webserver', ['cmd' => 'restart']);
 //        dd($this->getCommand("machdep.cpu.core_count"));
