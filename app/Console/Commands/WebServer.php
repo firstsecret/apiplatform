@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 
 class WebServer extends Command
 {
@@ -18,7 +19,7 @@ class WebServer extends Command
      *
      * @var string
      */
-    protected $description = 'web server handle';
+    protected $description = 'web server(nginx) handle,cmd supported: relaod, stop, quit, reopen ,start';
 
     /**
      * Create a new command instance.
@@ -37,18 +38,34 @@ class WebServer extends Command
      */
     public function handle()
     {
-        //
-        $process = new \Swoole\Process(function (\Swoole\Process $childProcess) {
-            $childProcess->exec('/usr/local/openresty/nginx/sbin/nginx', ['-c', '/data/wwwroot/bevan.top/storage/app/server/nginx/nginx.conf','-s','reload']);
+        $cmd = $this->argument('cmd') ?? 'reload';
+
+        if (!in_array($cmd, ['reload', 'stop', 'quit', 'reopen', 'start'])) {
+            $this->error('not support this cmd, only relaod, stop, quit, reopen ,start !');
+            exit;
+        }
+
+        $process = new \Swoole\Process(function (\Swoole\Process $childProcess) use ($cmd) {
+            $storagePath = App::storagePath();
+            $shell_cmd = ['-c', $storagePath . '/app/server/nginx/nginx.conf'];
+            if ($cmd != 'start') {
+                $shell_cmd = array_merge($shell_cmd, ['-s', $cmd]);
+            }
+            $childProcess->exec('/usr/local/openresty/nginx/sbin/nginx', $shell_cmd);
         });
 
         $pid = $process->start();
 
-        \swoole_process::signal(SIGCHLD, function($sig)  {
+        \swoole_process::signal(SIGCHLD, function ($sig) {
             //必须为false，非阻塞模式
-            while($ret =  \swoole_process::wait(false)) {
+            while ($ret = \swoole_process::wait(false)) {
 //                echo "PID={$ret['pid']}\n";
+//                var_dump($ret);
+//                $res['pid'] =>
+//                var_dump($pid);
+//                \swoole_process::kill($pid, 0);
                 $this->info('is restart ok ！');
+                exit;
             }
         });
 //        echo "from exec: ". $process->read(). "\n";

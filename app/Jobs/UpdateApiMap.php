@@ -21,7 +21,6 @@ class UpdateApiMap implements ShouldQueue
      */
     public $tries = 2;
 
-
     /**
      * 执行任务的最长时间
      */
