@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\Admin\AppKeySecretService;
+use App\Models\AppUser;
 use App\Services\RedisScanService;
 use App\User;
 use Illuminate\Bus\Queueable;

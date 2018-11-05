@@ -64,9 +64,12 @@ class FlowService
      */
     public function clearDailyApiRequest()
     {
-        $all = Redis::keys('ip_api_count_*');
+//        $all = Redis::keys('ip_api_count_*');
+        $redisScan = new RedisScanService(['match' => 'ip_api_count_*', 'count' => 5000]);
 
-        Redis::del($all);
+        foreach ($redisScan as $k => $v) {
+            Redis::del($v);
+        }
     }
 
     /**
@@ -98,11 +101,11 @@ class FlowService
                             'updated_at' => $now
                         ];
                     }
-                    DB::table('ip_request_flows_copy')->insert($insert_data);
+                    DB::table('ip_request_flows')->insert($insert_data);
                 }
             }
         } catch (\Exception $e) {
-            LogJob::dispatch($e->getMessage(), 'error');
+            LogJob::dispatch('每日流量统计任务失败:' . $e->getMessage(), 'error');
             DB::rollBack();
             throw $e;
         }

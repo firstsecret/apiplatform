@@ -236,7 +236,7 @@ class ShowController extends BaseController
 //            return $this->responseClient($status_code, $errormsg, []);
         });
 
-        var_dump('dfddf');
+//        var_dump('dfddf');
         die;
     }
 
