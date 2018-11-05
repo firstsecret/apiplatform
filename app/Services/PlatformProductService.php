@@ -40,8 +40,8 @@ class PlatformProductService extends BaseLoginService
     {
         // has cache
 //        cache()
-        if (cache('categoriesWithProduct')) {
-            return cache('categoriesWithProduct');
+        if ($cacheCategory = cache('categoriesWithProduct')) {
+            return $cacheCategory;
         } else {
             $lists = $this->getCategoriesWithProductFromDb();
 

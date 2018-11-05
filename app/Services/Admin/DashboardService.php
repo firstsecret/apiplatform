@@ -13,7 +13,7 @@ use App\Client\httpClient;
 use App\User;
 
 /**
- * Class DashboardService  支持 curl 与 guzzlehttp(推荐,也是默认) 驱动 获取
+ * Class DashboardService  支持 curl 与 guzzlehttp(推荐,也是默认) 驱动 获取  (部分curl 功能未实现)
  * @author Bevan
  * @package App\Services\Admin
  */
@@ -105,7 +105,7 @@ class DashboardService
      * health check handle
      * @param $data
      */
-    protected function formatHealthStatusObject($data)
+    public function formatHealthStatusObject($data): Array
     {
 //        dd($data);
         $arr = array_filter(explode("\n", $data));

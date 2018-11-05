@@ -56,7 +56,7 @@ class WebServer extends Command
 
         $pid = $process->start();
 
-        \swoole_process::signal(SIGCHLD, function ($sig) {
+        \swoole_process::signal(SIGCHLD, function ($sig) use ($cmd) {
             //必须为false，非阻塞模式
             while ($ret = \swoole_process::wait(false)) {
 //                echo "PID={$ret['pid']}\n";
@@ -64,7 +64,23 @@ class WebServer extends Command
 //                $res['pid'] =>
 //                var_dump($pid);
 //                \swoole_process::kill($pid, 0);
-                $this->info('is restart ok ！');
+                switch ($cmd) {
+                    case 'start':
+                        $message = 'nginx is started successful ！';
+                        break;
+                    case 'reload':
+                        $message = 'nginx is restarted ok ！';
+                        break;
+                    case 'stop':
+                        $message = 'nginx is stoped ok ！';
+                        break;
+                    case 'quit':
+                        $message = 'nginx is quited ok ！';
+                        break;
+                    case 'reopen':
+                        $message = 'nginx is reopened ok ！';
+                }
+                $this->info($message);
                 exit;
             }
         });
