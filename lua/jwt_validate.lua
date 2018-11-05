@@ -15,11 +15,12 @@ local key = tool.getJWTSecret()
 --local jwt_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9" ..
 --        ".eyJmb28iOiJiYXIifQ" ..
 --        ".VAoRL1IU0nOguxURF2ZcKR0SGKE1gCbqwyh8u2MLAyY"
-local jwt_token = ngx.req.get_uri_args()['token']
+--local jwt_token = ngx.req.get_uri_args()['token']
+local jwt_token = ngx.req.get_headers()['Authorization']
 
 if jwt_token == nil then
     -- header
-    jwt_token = ngx.req.get_headers()['Authorization']
+    jwt_token = ngx.req.get_uri_args()['token']
 end
 
 if jwt_token == nil then
@@ -49,7 +50,7 @@ if jwt_obj['verified'] then
 else
     response_table['status_code'] = 4005
     response_table['message'] = jwt_obj['reason']
-    tool.respClient(response_table['status_code'], response_table['message'])
+    tool.respClient(response_table['status_code'], '授权验证失败')
 end
 
 -- pass

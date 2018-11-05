@@ -56,6 +56,8 @@ post_str = string.sub(post_str, 1, string.len(post_str) - 1)
 
 local apiplatform_service_base_uri = redis:exec(function(red) return red:get('apiplatform_service_base_uri') end)
 
+-- 获取 列表  做 负载
+
 if apiplatform_service_base_uri == ngx.null or apiplatform_service_base_uri == nil or err then
     tool.respClient(5123, '服务提供已关闭')
 end

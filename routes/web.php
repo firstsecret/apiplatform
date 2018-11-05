@@ -29,3 +29,5 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::get('/service/api/testCommand','\App\Http\Api\V1\ShowController@testCommand');
+

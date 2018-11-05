@@ -12,7 +12,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Redis;
 
 /**
- * ip 流量 迭代器 , 目前标准为 : 100W用户(ip) 请求 只需 20M 左右内存
+ * ip 流量 迭代器
  * Class ApiCountService
  * @author Bevan
  * @package App\Services
