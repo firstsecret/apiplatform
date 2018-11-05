@@ -14,6 +14,20 @@ class ReloadJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * 任务最大尝试次数
+     *
+     * @var int
+     */
+    public $tries = 3;
+
+
+    /**
+     * 执行任务的最长时间
+     */
+
+    public $timeout=15;
+
+    /**
      * Create a new job instance.
      *
      * @return void
@@ -34,7 +48,7 @@ class ReloadJob implements ShouldQueue
 //        $base_project_path = config('base_project_path');
 //        shell_exec("/usr/local/openresty/nginx/sbin -c $base_project_path/storage/app/server/nginx/nginx.conf -s reload");
         // command
-        $exitCode = Artisan::call('WebServer', ['cmd' => 'restart']);
+        $exitCode = Artisan::call('WebServer', ['cmd' => 'reload']);
 //        Artisan::call('TestCommand', []);
     }
 }
