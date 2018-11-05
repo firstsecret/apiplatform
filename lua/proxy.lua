@@ -54,40 +54,41 @@ end
 
 post_str = string.sub(post_str, 1, string.len(post_str) - 1)
 
-local apiplatform_service_base_uri = redis:exec(function(red) return red:get('apiplatform_service_base_uri') end)
-
 -- 获取 列表  做 负载
 local node_list = redis:exec(function(red) return red:SMEMBERS('node_load_balancing') end)
-ngx.print('table_len:' .. table.getn(node_list))
+--ngx.print('table_len:' .. table.getn(node_list))
+math.randomseed(tostring(os.time()):reverse():sub(1, 6))
+local index = math.random(1, table.getn(node_list))
+local apiplatform_service_base_uri = node_list[index]
+--local apiplatform_service_base_uri = redis:exec(function(red) return red:get('apiplatform_service_base_uri') end)
+if apiplatform_service_base_uri == ngx.null or apiplatform_service_base_uri == nil or err then
+    tool.respClient(5123, '服务提供已关闭')
+end
 
---if apiplatform_service_base_uri == ngx.null or apiplatform_service_base_uri == nil or err then
---    tool.respClient(5123, '服务提供已关闭')
---end
---
---local request_base_uri = 'http://' .. apiplatform_service_base_uri
---
---local timeout = timeout or 5000
---httpc:set_timeout(timeout)
---local body = ngx.req.read_body();
---local res, err_ = httpc:request_uri(request_base_uri, {
---    path = request_uri,
---    method = request_method,
---    body = body,
---    headers = capture_headers,
---    keepalive_timeout = 60,
---    keepalive_pool = 100
---})
---
-----local cjson = require "cjson";
---
----- error handle
---if not res then
---    ngx.log(ngx.CRIT, 'http request service error:' .. err_)
---    tool.respClient(5103, '服务异常' .. err_)
---else
---    ngx.print(res.body)
---    -- response header handle ?
---    --    ngx.print(cjson.encode(res.headers))
---    -- real http status handle ?
---    --    ngx.print(res.status)
---end
+local request_base_uri = 'http://' .. apiplatform_service_base_uri
+
+local timeout = timeout or 5000
+httpc:set_timeout(timeout)
+local body = ngx.req.read_body();
+local res, err_ = httpc:request_uri(request_base_uri, {
+    path = request_uri,
+    method = request_method,
+    body = body,
+    headers = capture_headers,
+    keepalive_timeout = 60,
+    keepalive_pool = 100
+})
+
+--local cjson = require "cjson";
+
+-- error handle
+ if not res then
+ ngx.log(ngx.CRIT, 'http request service error:' .. err_)
+ tool.respClient(5103, '服务异常' .. err_)
+ else
+ ngx.print(res.body)
+ -- response header handle ?
+ -- ngx.print(cjson.encode(res.headers))
+ -- real http status handle ?
+ -- ngx.print(res.status)
+ end

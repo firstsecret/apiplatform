@@ -38,8 +38,14 @@ local redis = redis_client:new()
 local httpc = zhttp.new()
 --拼接子请求
 
+-- 获取 列表  做 负载
+local node_list = redis:exec(function(red) return red:SMEMBERS('node_load_balancing') end)
 
-local request_base_uri = redis:exec(function(red) return red:get('apiplatform_service_base_uri') end)
+math.randomseed(tostring(os.time()):reverse():sub(1, 6))
+local index = math.random(1, table.getn(node_list))
+
+local request_base_uri = node_list[index]
+--local request_base_uri = redis:exec(function(red) return red:get('apiplatform_service_base_uri') end)
 local request_port = 80
 --ngx.print(request_base_uri)
 local request_msg = tool.split(request_base_uri, ':')
