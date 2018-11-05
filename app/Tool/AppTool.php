@@ -112,7 +112,7 @@ trait AppTool
             '3', '4', '5', '6', '7', '8', '9'
         ];
         $charsLen = count($chars) - 1;
-        shuffle($chars);    // 将数组打乱
+        shuffle($chars);    // mixed
         $output = '';
         for ($i = 0; $i < $len; $i++) {
             $output .= $chars[mt_rand(0, $charsLen)];

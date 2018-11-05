@@ -15,6 +15,7 @@ use App\Models\PlatformProductCategory;
 use App\Models\ProductUserDisableService;
 use App\Models\ProductUserService;
 use App\User;
+use Illuminate\Support\Facades\Redis;
 
 class PlatformProductService extends BaseLoginService
 {
@@ -231,5 +232,21 @@ class PlatformProductService extends BaseLoginService
         ]);
 
         return $res === false ? false : true;
+    }
+
+    /**
+     *  预估 产品 不多 , 直接 遍历  (超过 200 产品线 建议使用 laravel 的 chunk)
+     */
+    public function updateProudctServicesMap()
+    {
+        $apiSerivces = PlatformProduct::all(['api_path', 'internal_api_path', 'request_method', 'internal_request_method']);
+
+        foreach ($apiSerivces as $k => $item) {
+            if (!$item['api_path'] || !$item['internal_api_path']) continue;
+            // map
+            Redis::hset('services_map' . $item['api_path'], 'internal_api_path', $item['internal_api_path']);
+            Redis::hset('services_map' . $item['api_path'], 'request_method', $item['request_method']);
+            Redis::hset('services_map' . $item['api_path'], 'internal_request_method', $item['internal_request_method']);
+        }
     }
 }
