@@ -64,15 +64,21 @@ class UpdateApiMap implements ShouldQueue
     public function updateAllMap()
     {
         PlatformProduct::chunk(200, function ($products) {
-            foreach ($products as $p) {
+            foreach ($products as $item) {
 //                var_dump($u->type . ':' . $u->app_key . ',user_id:' . $u->id);
-                Redis::set($p['api_path'], $p['internal_api_path']);
+                if (!$item['api_path'] || !$item['internal_api_path']) continue;
+                // map
+                Redis::hset(config('redis_key.services_map') . $item['api_path'], 'internal_api_path', $item['internal_api_path']);
+                Redis::hset(config('redis_key.services_map') . $item['api_path'], 'request_method', $item['request_method'] ?? 'GET');
+                Redis::hset(config('redis_key.services_map') . $item['api_path'], 'internal_request_method', $item['internal_request_method'] ?? 'GET');
             }
         });
     }
 
     public function updateSingle()
     {
-        Redis::set($this->apiMap['api_path'], $this->apiMap['internal_api_path']);
+        Redis::hset(config('redis_key.services_map') . $this->apiMap['api_path'], 'internal_api_path', $this->apiMap['internal_api_path']);
+        Redis::hset(config('redis_key.services_map') . $this->apiMap['api_path'], 'request_method', $this->apiMap['request_method'] ?? 'GET');
+        Redis::hset(config('redis_key.services_map') . $this->apiMap['api_path'], 'internal_request_method', $this->apiMap['internal_request_method'] ?? 'GET');
     }
 }

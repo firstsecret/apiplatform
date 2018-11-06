@@ -244,9 +244,9 @@ class PlatformProductService extends BaseLoginService
         foreach ($apiSerivces as $k => $item) {
             if (!$item['api_path'] || !$item['internal_api_path']) continue;
             // map
-            Redis::hset('services_map' . $item['api_path'], 'internal_api_path', $item['internal_api_path']);
-            Redis::hset('services_map' . $item['api_path'], 'request_method', $item['request_method']);
-            Redis::hset('services_map' . $item['api_path'], 'internal_request_method', $item['internal_request_method']);
+            Redis::hset(config('redis_key.services_map') . $item['api_path'], 'internal_api_path', $item['internal_api_path']);
+            Redis::hset(config('redis_key.services_map') . $item['api_path'], 'request_method', $item['request_method']);
+            Redis::hset(config('redis_key.services_map') . $item['api_path'], 'internal_request_method', $item['internal_request_method']);
         }
     }
 }

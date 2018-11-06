@@ -16,5 +16,5 @@ return [
 
     /*****************************  lua **************************/
     'node_load_balancing' => env('NODE_LOAD_BALANCING', 'node_load_balancing'), //  用户 存储 目前 可用的 api服务节点 -- set
-    'services_map' => env('SERVICES_MAP', 'services_map'), // 服务内外请求映射   -- hash
+    'services_map' => env('SERVICES_MAP', 'services_map:'), // 服务内外请求映射   -- hash
 ];

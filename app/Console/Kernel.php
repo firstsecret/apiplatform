@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Jobs\ApiLuaCountJob;
 //use App\Jobs\CheckAppKeySecretJob;
 use App\Jobs\CheckAppKeySecretJob;
+use App\Jobs\UpdateApiMap;
 use App\Jobs\UpdateAppKeyMap;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -45,6 +46,13 @@ class Kernel extends ConsoleKernel
             ->description('更新appkey与secret在redis中的状态')
             ->runInBackground()
             ->dailyAt('00:01')
+            ->onOneServer();
+
+
+        $schedule->job(new UpdateApiMap)
+            ->description('更新服务产品内外路由的映射关系')
+            ->runInBackground()
+            ->dailyAt('00:05')
             ->onOneServer();
 
         // horizon
