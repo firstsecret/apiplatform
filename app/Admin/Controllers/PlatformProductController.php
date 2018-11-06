@@ -190,18 +190,31 @@ class PlatformProductController extends Controller
         unset($data['tmp_last_old_api_path']);
 
         // validate
-        $update_data = [
-            'name' => $data['name'],
-            'detail' => $data['detail'],
-            'category_id' => $data['category_id'],
-            'api_path' => $data['api_path'],
-            'internal_api_path' => $data['internal_api_path'],
-            'request_method' => $data['request_method'],
-            'internal_request_method' => $data['internal_request_method'],
-        ];
-        if (isset($data['last_old_api_path'])) $update_data['last_old_api_path'] = $data['last_old_api_path'];
-        PlatformProduct::where('id', $id)->update($update_data);
+//        $update_data = [
+//            'name' => $data['name'],
+//            'detail' => $data['detail'],
+//            'category_id' => $data['category_id'],
+//            'api_path' => $data['api_path'],
+//            'internal_api_path' => $data['internal_api_path'],
+//            'request_method' => $data['request_method'],
+//            'internal_request_method' => $data['internal_request_method'],
+//        ];
+//        if (isset($data['last_old_api_path'])) $update_data['last_old_api_path'] = $data['last_old_api_path'];
+//        PlatformProduct::where('id', $id)->update($update_data);
 
+        $platformProduct = PlatformProduct::find($id);
+
+        $platformProduct->name = $data['name'];
+        $platformProduct->detail = $data['detail'];
+        $platformProduct->category_id = $data['category_id'];
+        $platformProduct->api_path = $data['api_path'];
+        $platformProduct->internal_api_path = $data['internal_api_path'];
+        $platformProduct->request_method = $data['request_method'];
+        $platformProduct->internal_request_method = $data['internal_request_method'];
+
+        if (isset($data['last_old_api_path'])) $platformProduct->last_old_api_path = $data['last_old_api_path'];
+
+        $platformProduct->save();
         admin_toastr(trans('admin.update_succeeded'));
 
         return redirect('/admin/platformProduct');
@@ -220,6 +233,7 @@ class PlatformProductController extends Controller
             $pp = PlatformProduct::find($this->modelPkId);
             $form->hidden('tmp_last_old_api_path')->default($pp->tmp_last_old_api_path);
 //            var_dump($pp->tmp_last_old_api_path);
+            $form->hidden('id')->default($this->modelPkId);
         }
 
         $form->text('name', '产品服务名称')->rules('required', ['required' => '缺少服务产品名']);

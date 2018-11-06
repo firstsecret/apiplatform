@@ -69,8 +69,17 @@ end
 local request_base_uri = 'http://' .. apiplatform_service_base_uri
 
 -- get services mapping
-local route_map_table = redis:exec(function(red) red:HGETALL('services_map:' .. request_uri) end)
-ngx.print(type(route_map_table))
+local route_map_table = redis:exec(function(red)
+    local info = red:HGETALL('services_map:' .. request_uri)
+    local rt = {}
+
+    for i = 1, #info, 2 do
+        rt[info[i]] = info[i + 1]
+    end
+    --            ngx.print(cjson.encode(rt))
+    return rt
+end)
+ngx.print(route_map_table['request_method'])
 --local timeout = timeout or 5000
 --httpc:set_timeout(timeout)
 --local body = ngx.req.read_body();
@@ -84,7 +93,7 @@ ngx.print(type(route_map_table))
 --})
 --
 --local cjson = require "cjson";
----- error handle
+--- - error handle
 -- if not res then
 -- ngx.log(ngx.CRIT, 'http request service error:' .. err_)
 -- tool.respClient(5103, '服务异常' .. err_)
