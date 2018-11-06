@@ -110,6 +110,8 @@ class PlatformProductController extends Controller
 
             $filter->equal('category_id', '分类')->select($categorys);
 
+            $filter->scope('deleted_at', '已删除服务产品')->onlyTrashed();
+
             $filter->between('created_at', '创建时间')->datetime();
             $filter->between('updated_at', '更新时间')->datetime();
         });
@@ -128,6 +130,19 @@ class PlatformProductController extends Controller
         $grid->request_method('请求方式');
         $grid->internal_request_method('内部请求uri');
 
+        $input_query = Input::query();
+
+        $grid->actions(function ($actions) use ($input_query) {
+            if (isset($input_query['_scope_']) && $input_query['_scope_'] == 'deleted_at') {
+                $actions->disableDelete();
+//                $actions->disableEdit();
+            }
+//                    $actions->disableDelete();
+
+//                $actions->disableEdit();
+//                $actions->disableView();
+        });
+
         return $grid;
     }
 
@@ -139,7 +154,7 @@ class PlatformProductController extends Controller
      */
     protected function detail($id)
     {
-        $platformProduct = PlatformProduct::findOrFail($id);
+        $platformProduct = PlatformProduct::withTrashed()->findOrFail($id);
         $show = new Show($platformProduct);
 
         $show->panel()
@@ -230,7 +245,7 @@ class PlatformProductController extends Controller
         $form = new Form(new PlatformProduct);
 
         if ($this->modelPkId) {
-            $pp = PlatformProduct::find($this->modelPkId);
+            $pp = PlatformProduct::withTrashed()->find($this->modelPkId);
             $form->hidden('tmp_last_old_api_path')->default($pp->tmp_last_old_api_path);
 //            var_dump($pp->tmp_last_old_api_path);
             $form->hidden('id')->default($this->modelPkId);

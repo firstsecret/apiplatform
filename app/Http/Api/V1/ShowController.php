@@ -504,7 +504,6 @@ class ShowController extends BaseController
 
     public function testCommand(Request $request)
     {
-
 //        throw new AppUserException(5031,'dfddf',401);
 //        UpdateAppKeyMap::dispatch();
 
