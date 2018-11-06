@@ -11,7 +11,7 @@ class PlatformProduct extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['name', 'detail', 'category_id'];
+    protected $fillable = ['name', 'detail', 'category_id', 'api_path', 'internal_api_path', 'request_method', 'internal_request_method', 'last_old_api_path'];
 
     //
     public function getList($paginte = 15, $type = 'default'): Array
@@ -34,5 +34,10 @@ class PlatformProduct extends Model
     public function appuser()
     {
         return $this->belongsToMany('App\Models\AppUser', 'app_key_products', 'product_id', 'app_key_id');
+    }
+
+    public function getTmpLastOldApiPathAttribute()
+    {
+        return "{$this->api_path}";
     }
 }

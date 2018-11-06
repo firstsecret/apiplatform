@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Http\Requests\V1\AdminPlatformProductRule;
 use App\Models\PlatformProduct;
 use App\Http\Controllers\Controller;
 use App\Models\PlatformProductCategory;
@@ -10,12 +11,15 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\Input;
 
 class PlatformProductController extends Controller
 {
     use HasResourceActions;
 
     public $title = '服务产品管理';
+
+    private $modelPkId; // 当前模型的pk
 
     /**
      * support http methods
@@ -66,6 +70,7 @@ class PlatformProductController extends Controller
      */
     public function edit($id, Content $content)
     {
+        $this->modelPkId = $id;
         return $content
             ->header($this->title)
             ->description('编辑服务产品')
@@ -171,6 +176,41 @@ class PlatformProductController extends Controller
     }
 
     /**
+     * rewrite update
+     * @param $id
+     * @param AdminPlatformProductRule $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function update($id, AdminPlatformProductRule $request)
+    {
+        $data = $request->input();
+
+        // update ?
+        if ($data['tmp_last_old_api_path'] != $data['api_path']) {
+            $data['last_old_api_path'] = $data['tmp_last_old_api_path'];
+
+        }
+        unset($data['tmp_last_old_api_path']);
+
+        // validate
+        $update_data = [
+            'name' => $data['name'],
+            'detail' => $data['detail'],
+            'category_id' => $data['category_id'],
+            'api_path' => $data['api_path'],
+            'internal_api_path' => $data['internal_api_path'],
+            'request_method' => $data['request_method'],
+            'internal_request_method' => $data['internal_request_method'],
+        ];
+        if (isset($data['last_old_api_path'])) $update_data['last_old_api_path'] = $data['last_old_api_path'];
+        PlatformProduct::where('id', $id)->update($update_data);
+
+        admin_toastr(trans('admin.save_succeeded'));
+
+        return redirect('/admin/platformProduct');
+    }
+
+    /**
      * Make a form builder.
      *
      * @return Form
@@ -179,11 +219,18 @@ class PlatformProductController extends Controller
     {
         $form = new Form(new PlatformProduct);
 
+        if ($this->modelPkId) {
+            $pp = PlatformProduct::find($this->modelPkId);
+            $form->hidden('tmp_last_old_api_path')->default($pp->tmp_last_old_api_path);
+//            var_dump($pp->tmp_last_old_api_path);
+        }
+
         $form->text('name', '产品服务名称');
         $form->text('detail', '简要描述');
-        $form->select('category', '所属分类')->options(PlatformProductCategory::all(['id', 'title'])->pluck('title', 'id'))->rules('required', ['required' => '必须选择分类']);
+        $form->select('category_id', '所属分类')->options(PlatformProductCategory::all(['id', 'title'])->pluck('title', 'id'))->rules('required', ['required' => '必须选择分类']);
 //        $form->number('category_id', 'Category id');
         $form->text('api_path', 'api uri');
+
         $form->text('internal_api_path', '内部请求api uri')->help('例:/api/test');
 //        $form->text('request_method', '请求方式')->default('GET');
         $form->select('request_method', '请求方式')->options($this->support_http_methods)->default('GET');

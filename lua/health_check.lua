@@ -32,3 +32,5 @@ if ngx.var.flag then
     ngx.print(hc.status_page())
 end
 --ngx.log(ngx.ERR, "failed to spawn health checker: ", err)
+
+-- handle
