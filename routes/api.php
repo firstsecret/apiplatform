@@ -56,7 +56,7 @@ app('api.exception')->register(function (Exception $exception) {
 //    response()->headers->set('RequestUri','dsfdsa');
 //    Response()->headers->set('RequestUri', request()->getPathInfo());
     // 统计 api 失败 请求
-    \App\Jobs\CountApiJob::dispatch(ltrim(request()->getPathInfo(), '/'), 'fail');
+//    \App\Jobs\CountApiJob::dispatch(ltrim(request()->getPathInfo(), '/'), 'fail');
     // 记录 错误 日志
     \Illuminate\Support\Facades\Event::fire(new \App\Events\AsyncLogEvent($err_message, 'error'));
 //    return Response()->json(['status_code' => $code, 'message' => $err_message, 'respData' => []], $status_code)->header('RequestUri', request()->getPathInfo());
@@ -70,7 +70,8 @@ $api = app('Dingo\Api\Routing\Router');
 //});
 //
 // 项目 应用1
-$api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', 'self.jwt.auth', 'api.count:success'], 'namespace' => '\Show\Api\V1'], function ($api) {
+//$api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', 'self.jwt.auth', 'api.count:success'], 'namespace' => '\Show\Api\V1'], function ($api) {
+$api->version('v1', ['middleware' => ['api.throttle', 'self.jwt.refresh:user', 'self.jwt.auth'], 'namespace' => '\Show\Api\V1'], function ($api) {
     $api->group(['prefix' => 'app1'], function ($api) {
         $api->get('showtest', IndexController::class . '@index');
         $api->get('show2/{type?}', IndexController::class . '@index');
