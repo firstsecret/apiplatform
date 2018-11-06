@@ -519,7 +519,7 @@ class ShowController extends BaseController
 //
 //        dd($a,$b,$c);
 //        $ips = Redis::keys('ip_api_count_*');
-        dd(Redis::get('test_timer_num'));
+        dd(Redis::keys('services_map*'));
 //        dd(Redis::exists(User::APP_KEY_FLAG . 'd7fbc1f0f38c3ee95fb7cdc17f7f9401'));
 
 //        $exitCode = Artisan::call('webserver', ['cmd' => 'restart']);

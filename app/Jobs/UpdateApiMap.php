@@ -9,6 +9,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Redis;
 
 class UpdateApiMap implements ShouldQueue
 {
@@ -25,7 +26,7 @@ class UpdateApiMap implements ShouldQueue
      * 执行任务的最长时间
      */
 
-    public $timeout = 1200;
+    public $timeout = 120;
 
     protected $apiMap;
 
@@ -63,6 +64,9 @@ class UpdateApiMap implements ShouldQueue
 
     public function updateAllMap()
     {
+        // 清理
+        Redis::del(Redis::keys(config('redis_key.services_map') . '*'));
+
         PlatformProduct::chunk(200, function ($products) {
             foreach ($products as $item) {
 //                var_dump($u->type . ':' . $u->app_key . ',user_id:' . $u->id);
