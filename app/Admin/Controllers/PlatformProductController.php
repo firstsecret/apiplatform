@@ -186,10 +186,7 @@ class PlatformProductController extends Controller
         $data = $request->input();
 
         // update ?
-        if ($data['tmp_last_old_api_path'] != $data['api_path']) {
-            $data['last_old_api_path'] = $data['tmp_last_old_api_path'];
-
-        }
+        if ($data['tmp_last_old_api_path'] != $data['api_path']) $data['last_old_api_path'] = $data['tmp_last_old_api_path'];
         unset($data['tmp_last_old_api_path']);
 
         // validate
@@ -205,7 +202,7 @@ class PlatformProductController extends Controller
         if (isset($data['last_old_api_path'])) $update_data['last_old_api_path'] = $data['last_old_api_path'];
         PlatformProduct::where('id', $id)->update($update_data);
 
-        admin_toastr(trans('admin.save_succeeded'));
+        admin_toastr(trans('admin.update_succeeded'));
 
         return redirect('/admin/platformProduct');
     }
@@ -225,13 +222,13 @@ class PlatformProductController extends Controller
 //            var_dump($pp->tmp_last_old_api_path);
         }
 
-        $form->text('name', '产品服务名称');
-        $form->text('detail', '简要描述');
+        $form->text('name', '产品服务名称')->rules('required', ['required' => '缺少服务产品名']);
+        $form->text('detail', '简要描述')->rules('required', ['required' => '缺少服务产品描述']);
         $form->select('category_id', '所属分类')->options(PlatformProductCategory::all(['id', 'title'])->pluck('title', 'id'))->rules('required', ['required' => '必须选择分类']);
 //        $form->number('category_id', 'Category id');
-        $form->text('api_path', 'api uri');
+        $form->text('api_path', 'api uri')->rules('required', ['required' => '缺少请求uri']);
 
-        $form->text('internal_api_path', '内部请求api uri')->help('例:/api/test');
+        $form->text('internal_api_path', '内部请求api uri')->rules('required', ['required' => '缺少内部请求uri'])->help('例:/api/test');
 //        $form->text('request_method', '请求方式')->default('GET');
         $form->select('request_method', '请求方式')->options($this->support_http_methods)->default('GET');
 //        $form->text('internal_request_method', '内部请求方式')->default('GET');

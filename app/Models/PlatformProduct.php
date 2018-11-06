@@ -40,4 +40,24 @@ class PlatformProduct extends Model
     {
         return "{$this->api_path}";
     }
+
+    public function getRequestMethodAttribute($value)
+    {
+        return strtoupper($value);
+    }
+
+    public function getInternalRequestMethodAttribute($value)
+    {
+        return strtoupper($value);
+    }
+
+    public function setRequestMethodAttribute($value)
+    {
+        $this->attributes['request_method'] = strtoupper($value);
+    }
+
+    public function setInternalRequestMethodAttribute($value)
+    {
+        $this->attributes['internal_request_method'] = strtoupper($value);
+    }
 }

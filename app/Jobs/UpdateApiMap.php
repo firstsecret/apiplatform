@@ -28,9 +28,9 @@ class UpdateApiMap implements ShouldQueue
 
     public $timeout = 120;
 
-    protected $apiMap;
+    protected $apiMap = [];
 
-    protected $single = false;
+    private $redis_prefix;
 
     /**
      * Create a new job instance.
@@ -41,6 +41,8 @@ class UpdateApiMap implements ShouldQueue
     {
         // init
         $platformProduct ? $this->initMap($platformProduct) : '';
+
+        $this->redis_prefix = config('redis_key.services_map');
     }
 
     protected function initMap($platformProduct = [])
@@ -48,7 +50,6 @@ class UpdateApiMap implements ShouldQueue
         if (!isset($platformProduct['api_path']) || !isset($platformProduct['internal_api_path'])) throw new PlatformProductException(4027, '缺少更新的api映射关系', 403);
 
         $this->apiMap = $platformProduct;
-        $this->single = true;
     }
 
     /**
@@ -59,30 +60,37 @@ class UpdateApiMap implements ShouldQueue
     public function handle()
     {
         // update all mapping
-        $this->single ? $this->updateSingle() : $this->updateAllMap();
+        $this->apiMap ? $this->updateSingle() : $this->updateAllMap();
     }
 
     public function updateAllMap()
     {
-        // 清理
-        Redis::del(Redis::keys(config('redis_key.services_map') . '*'));
-
         PlatformProduct::chunk(200, function ($products) {
             foreach ($products as $item) {
 //                var_dump($u->type . ':' . $u->app_key . ',user_id:' . $u->id);
                 if (!$item['api_path'] || !$item['internal_api_path']) continue;
+                // clear old map
+                if ($item['last_old_api_path']) Redis::del($this->redis_prefix . $item['last_old_api_path']);
                 // map
-                Redis::hset(config('redis_key.services_map') . $item['api_path'], 'internal_api_path', $item['internal_api_path']);
-                Redis::hset(config('redis_key.services_map') . $item['api_path'], 'request_method', $item['request_method'] ?? 'GET');
-                Redis::hset(config('redis_key.services_map') . $item['api_path'], 'internal_request_method', $item['internal_request_method'] ?? 'GET');
+                Redis::hset($this->redis_prefix . $item['api_path'], 'internal_api_path', $item['internal_api_path']);
+                Redis::hset($this->redis_prefix . $item['api_path'], 'request_method', $item['request_method'] ?? 'GET');
+                Redis::hset($this->redis_prefix . $item['api_path'], 'internal_request_method', $item['internal_request_method'] ?? 'GET');
             }
         });
     }
 
     public function updateSingle()
     {
-        Redis::hset(config('redis_key.services_map') . $this->apiMap['api_path'], 'internal_api_path', $this->apiMap['internal_api_path']);
-        Redis::hset(config('redis_key.services_map') . $this->apiMap['api_path'], 'request_method', $this->apiMap['request_method'] ?? 'GET');
-        Redis::hset(config('redis_key.services_map') . $this->apiMap['api_path'], 'internal_request_method', $this->apiMap['internal_request_method'] ?? 'GET');
+        // del old map
+        if ($this->apiMap['last_old_api_path']) Redis::del($this->redis_prefix . $this->apiMap['last_old_api_path']);
+
+        // 是否 删除
+        if ($this->apiMap['deleted_at']) {
+            Redis::del($this->redis_prefix . $this->apiMap['api_path']);
+        } else {
+            Redis::hset($this->redis_prefix . $this->apiMap['api_path'], 'internal_api_path', $this->apiMap['internal_api_path']);
+            Redis::hset($this->redis_prefix . $this->apiMap['api_path'], 'request_method', $this->apiMap['request_method'] ?? 'GET');
+            Redis::hset($this->redis_prefix . $this->apiMap['api_path'], 'internal_request_method', $this->apiMap['internal_request_method'] ?? 'GET');
+        }
     }
 }
