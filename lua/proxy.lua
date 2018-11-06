@@ -33,17 +33,14 @@ end
 
 status = xpcall(httpHandler, httpErrorHandler)
 
-local request_uri = ngx.var.request_uri
+local request_uri = ngx.var.uri
 local request_method = ngx.var.request_method
+local request_args = ngx.req.get_uri_args() -- table
 
 -- add real ip
 capture_headers['X-Forwarded-For'] = ngx.var.remote_addr
 -- http module
 local httpc = zhttp.new()
-
-
--- 获取 服务 请求 列表
--- 根据服务端的 心跳包 确定 服务是否 已挂
 
 -- post args handle
 local post_args = ngx.req.get_post_args()
@@ -79,28 +76,38 @@ local route_map_table = redis:exec(function(red)
     --            ngx.print(cjson.encode(rt))
     return rt
 end)
-ngx.print(route_map_table['request_method'])
---local timeout = timeout or 5000
---httpc:set_timeout(timeout)
---local body = ngx.req.read_body();
---local res, err_ = httpc:request_uri(request_base_uri, {
---    path = request_uri,
---    method = request_method,
---    body = body,
---    headers = capture_headers,
---    keepalive_timeout = 60,
---    keepalive_pool = 100
---})
---
---local cjson = require "cjson";
---- - error handle
--- if not res then
--- ngx.log(ngx.CRIT, 'http request service error:' .. err_)
--- tool.respClient(5103, '服务异常' .. err_)
--- else
--- ngx.print(res.body)
--- -- response header handle ?
--- -- ngx.print(cjson.encode(res.headers))
--- -- real http status handle ?
--- -- ngx.print(res.status)
--- end
+
+if next(route_map_table) == nil or route_map_table['internal_api_path'] == nil then
+    return tool.respClient(4033, '未发现对应服务')
+end
+
+-- request method validate
+if (request_method ~= route_map_table['request_method']) then
+    return tool.respClient(4034, '请求方式不正确')
+end
+
+local timeout = timeout or 5000
+httpc:set_timeout(timeout)
+local body = ngx.req.read_body();
+local res, err_ = httpc:request_uri(request_base_uri, {
+    path = route_map_table['internal_api_path'],
+    method = route_map_table['internal_request_method'],
+    body = body,
+    query = request_args,
+    headers = capture_headers,
+    keepalive_timeout = 60,
+    keepalive_pool = 100
+})
+
+local cjson = require "cjson";
+-- error handle
+if not res then
+    ngx.log(ngx.CRIT, 'http request service error:' .. err_)
+    tool.respClient(5103, '服务异常' .. err_)
+else
+    ngx.print(res.body)
+    -- response header handle ?
+    -- ngx.print(cjson.encode(res.headers))
+    -- real http status handle ?
+    -- ngx.print(res.status)
+end
