@@ -74,6 +74,22 @@ for api, p in pairs(api_p) do
         tool.respClient(4053, '参数不正确')
     end
 
+    -- request map
+    local route_map_table = redis:exec(function(red)
+        local info = red:HGETALL('services_map:' .. api)
+        local rt = {}
+
+        for i = 1, #info, 2 do
+            rt[info[i]] = info[i + 1]
+        end
+        --            ngx.print(cjson.encode(rt))
+        return rt
+    end)
+
+    if next(route_map_table) == nil or route_map_table['internal_api_path'] == nil then
+        return tool.respClient(4033, '未发现对应服务')
+    end
+
     if p_table then
         local headers_t = {}
         if p_table["headers"] then
@@ -85,9 +101,14 @@ for api, p in pairs(api_p) do
         headers_t['X-Forwarded-For'] = ngx.var.remote_addr
         headers_t['Accept-Encoding'] = 'default'
 
+        -- request method validate
+        if (string.upper(p_table['method']) ~= route_map_table['request_method']) then
+            return tool.respClient(4034, '请求方式不正确')
+        end
+
         tmp = {
-            path = api,
-            method = p_table['method'] or "GET",
+            path = route_map_table['internal_api_path'],
+            method = route_map_table['internal_request_method'],
             headers = headers_t,
             body = p_table['body'] or "",
             query = p_table['args'] or "",
@@ -99,7 +120,7 @@ for api, p in pairs(api_p) do
         headers_t['X-Forwarded-For'] = ngx.var.remote_addr
         headers_t['Accept-Encoding'] = 'default'
         tmp = {
-            path = api,
+            path = route_map_table['internal_api_path'],
             headers = headers_t,
             method = "GET",
             body = "",

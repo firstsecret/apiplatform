@@ -99,7 +99,7 @@ local res, err_ = httpc:request_uri(request_base_uri, {
     keepalive_pool = 100
 })
 
-local cjson = require "cjson";
+--local cjson = require "cjson";
 -- error handle
 if not res then
     ngx.log(ngx.CRIT, 'http request service error:' .. err_)
