@@ -90,7 +90,7 @@ for api, p in pairs(api_p) do
         return tool.respClient(4033, '未发现对应服务')
     end
 
-    if p_table then
+    if next(p_table) then
         local headers_t = {}
         if p_table["headers"] then
             headers_t = json.decode(p_table["headers"])
@@ -132,6 +132,7 @@ for api, p in pairs(api_p) do
     table.insert(list, tmp);
 end
 
+local http_flag = true
 httpc:connect(request_base_uri, request_port)
 local timeout = timeout or 5000
 httpc:set_timeout(timeout)
@@ -146,9 +147,15 @@ if not responses or next(responses) == nil then
     tool.respClient(5103, '服务异常')
 else
     for i, r in ipairs(responses) do
-        --                        ngx.print(json.encode(r))
+        --                                ngx.print(json.encode(r))
         if r.status == ngx.HTTP_OK then
-            table.insert(response_list, json.decode(r:read_body()))
+            --            dealMultiResponse(r)
+            if pcall(function(r) table.insert(response_list, json.decode(r:read_body())) end, r) then
+            else
+                http_flag = false
+                tool.respClient(5001, '部分服务异常! 请稍后再试~')
+            end
+            --                        table.insert(response_list, json.decode(r:read_body()))
             --                ngx.print(i)
             --                ngx.say(r.status)
             --                ngx.print(r:read_body())
@@ -156,9 +163,19 @@ else
     end
 end
 -- response hander handle
-
+--function dealMultiResponse(response)
+--    table.insert(response_list, json.decode(response:read_body()))
+--end
+--
+--function multiErrorHandle()
+--    local trace = debug.traceback()
+--    local d = debug.debug()
+--    tool.respClient(5001, '部分服务异常! 请稍后再试~')
+--end
 -- response
-tool.respClient(200, 'success', response_list)
+if http_flag then
+    tool.respClient(200, 'success', response_list)
+end
 
 
 

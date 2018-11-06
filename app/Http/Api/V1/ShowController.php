@@ -519,6 +519,8 @@ class ShowController extends BaseController
 //
 //        dd($a,$b,$c);
 //        $ips = Redis::keys('ip_api_count_*');
+
+//        return ['as'=>'dfd'];
         dd(Redis::keys('services_map*'));
 //        dd(Redis::exists(User::APP_KEY_FLAG . 'd7fbc1f0f38c3ee95fb7cdc17f7f9401'));
 
