@@ -41,6 +41,10 @@ local httpc = zhttp.new()
 -- 获取 列表  做 负载
 local node_list = redis:exec(function(red) return red:SMEMBERS('node_load_balancing') end)
 
+if next(node_list) == nil then
+    return tool.respClient(5123, '服务提供已关闭，请稍后再试！')
+end
+
 math.randomseed(tostring(os.time()):reverse():sub(1, 6))
 local index = math.random(1, table.getn(node_list))
 

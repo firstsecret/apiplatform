@@ -43,16 +43,18 @@
 <script src="{{asset('/js/echarts.min.js')}}"></script>
 <script src="{{asset('/js/dashboard/cpu.js')}}"></script>
 <script>
-    function run_waitMe(){
-        $('#server-info').waitMe({
-            effect: 'roundBounce',
-            text: 'Please wait...',
-            bg: 'rgba(255,255,255,0.7)',
-            color:'#000',
-            sizeW:'',
-            sizeH:'',
-            source: 'img.svg'
-        });
-    }
-    run_waitMe()
+    $(function(){
+        function run_waitMe(){
+            $('#server-info').waitMe({
+                effect: 'roundBounce',
+                text: 'Please wait...',
+                bg: 'rgba(255,255,255,0.7)',
+                color:'#000',
+                sizeW:'',
+                sizeH:'',
+                source: 'img.svg'
+            });
+        }
+        run_waitMe()
+    })
 </script>

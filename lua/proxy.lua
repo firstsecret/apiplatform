@@ -54,13 +54,18 @@ post_str = string.sub(post_str, 1, string.len(post_str) - 1)
 -- 获取 列表  做 负载
 local node_list = redis:exec(function(red) return red:SMEMBERS('node_load_balancing') end)
 --ngx.print('table_len:' .. table.getn(node_list))
+
+if next(node_list) == nil then
+    return tool.respClient(5123, '服务提供已关闭，请稍后再试！')
+end
+
 math.randomseed(tostring(os.time()):reverse():sub(1, 6))
 local index = math.random(1, table.getn(node_list))
 local apiplatform_service_base_uri = node_list[index]
 --ngx.print(apiplatform_service_base_uri)
 --local apiplatform_service_base_uri = redis:exec(function(red) return red:get('apiplatform_service_base_uri') end)
 if apiplatform_service_base_uri == ngx.null or apiplatform_service_base_uri == nil or err then
-    tool.respClient(5123, '服务提供已关闭')
+    tool.respClient(5123, '服务提供已关闭，请稍后再试！')
 end
 
 local request_base_uri = 'http://' .. apiplatform_service_base_uri

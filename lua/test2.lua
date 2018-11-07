@@ -1,7 +1,8 @@
--- healthy check.
--- User: Bevan
--- Date: 2018/10/15
--- Time: 14:51
+--
+-- Created by IntelliJ IDEA.
+-- User: Admin
+-- Date: 2018/11/7
+-- Time: 11:21
 -- To change this template use File | Settings | File Templates.
 --
 
@@ -31,16 +32,15 @@ end
 local page_str = hc.status_page()
 -- status handle
 if ngx.var.flag and ngx.var.flag ~= ngx.null and ngx.var.flag ~= '' then
-    ngx.say("Nginx Worker PID: ", ngx.worker.pid())
-    ngx.print(page_str)
-end
---ngx.log(ngx.ERR, "failed to spawn health checker: ", err)
 
--- handle
+    --    ngx.say("Nginx Worker PID: ", ngx.worker.pid())
+    --        ngx.print(page_str)
+end
+
 local iterator, err = ngx.re.gmatch(page_str, "([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+:[0-9]+)\\s+(\\w+)+", "jo")
 
 if not iterator then
-    -- m[0] == "4001493201083"
+    -- m[0] == "4001493201083"\
     ngx.log(ngx.ERR, "[health_check] error: iterator match err, ", err)
     --    ngx.say("makcj::",m[0])
     --    ngx.say(cjson.encode(m))
@@ -68,3 +68,15 @@ while true do
         redis:exec(function(red) red:SREM('node_load_balancing', m[1]) end)
     end
 end
+
+--if from then
+--    ngx.say("from: ", from)
+--    ngx.say("to: ", to)
+--    ngx.say("matched: ", string.sub(page_str, from, to))
+--else
+--    if err then
+--        ngx.say("error: ", err)
+--    end
+--    ngx.say("not matched!")
+--end
+
