@@ -7,6 +7,7 @@ use App\Models\PlatformProduct;
 use App\Http\Controllers\Controller;
 use App\Models\PlatformProductCategory;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
@@ -31,6 +32,21 @@ class PlatformProductController extends Controller
         'POST' => 'POST',
         'DELETE' => 'DELETE'
     ];
+
+    protected $onlineStatus;
+
+    public function __construct()
+    {
+        $this->init();
+    }
+
+    protected function init()
+    {
+        $this->onlineStatus = [
+            'on' => ['value' => PlatformProduct::ONLINE_STATUS, 'text' => '上线', 'color' => 'success'],
+            'off' => ['value' => PlatformProduct::DOWNLINE_STATUS, 'text' => '下线', 'color' => 'danger'],
+        ];
+    }
 
     /**
      * Index interface.
@@ -120,22 +136,34 @@ class PlatformProductController extends Controller
         $grid->id('Id');
         $grid->name('产品名称');
         $grid->detail('产品描述')->limit(30);
-        $grid->created_at('创建时间');
-        $grid->updated_at('更新时间');
+
 //        $grid->category_id('Category id');
 //        $grid->deleted_at('Deleted at');
-        $grid->column('category.name', '所属分类');
+        $grid->column('category.title', '所属分类');
         $grid->api_path('请求uri');
         $grid->internal_api_path('内部请求uri');
         $grid->request_method('请求方式');
         $grid->internal_request_method('内部请求uri');
 
+        $grid->is_online('是否上线');
+
+        $grid->created_at('创建时间');
+        $grid->updated_at('更新时间');
+
         $input_query = Input::query();
+
+        $script = $this->getRecoverScript();
+        Admin::script($script);
 
         $grid->actions(function ($actions) use ($input_query) {
             if (isset($input_query['_scope_']) && $input_query['_scope_'] == 'deleted_at') {
                 $actions->disableDelete();
-//                $actions->disableEdit();
+                $actions->disableEdit();
+                // 添加 恢复按钮
+                $platform_product_id = $actions->getKey('id');
+                $actions->append('<a href="#"  class="recoverPlatformProduct" data-href="' . url('/admin/api/recoveryPlatformProduct/' . $platform_product_id) . '" title="恢复"><i class="fa fa-recycle"></i></a>');
+
+
             }
 //                    $actions->disableDelete();
 
@@ -144,6 +172,54 @@ class PlatformProductController extends Controller
         });
 
         return $grid;
+    }
+
+    protected function getRecoverScript()
+    {
+        return <<<'SCRIPT'
+$('.recoverPlatformProduct').on('click', function(){
+        var url = $(this).data('href')
+    
+        swal({
+            title: "是否恢复吗",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "恢复",
+            showLoaderOnConfirm: true,
+            closeOnConfirm: false,
+            cancelButtonText: "取消",
+            preConfirm: function() {
+                return new Promise(function(resolve) {
+                    $.ajax({
+                        method: 'get',
+                        url: url,
+                        data: {
+                            _token:LA.token
+                        },
+                        success: function (data) {
+                            $.pjax.reload('#pjax-container');
+    
+                            resolve(data);
+                        }
+                    });
+    
+                });
+            }
+        }).then(function(result){
+            var data = result.value;
+            if (typeof data === 'object') {
+                if (data.status) {
+                    swal(data.message, '', 'success');
+                } else {
+                    swal(data.message, '', 'error');
+                }
+            }
+        });
+        return false
+})
+SCRIPT;
+
     }
 
     /**
@@ -166,8 +242,7 @@ class PlatformProductController extends Controller
         $show->id('Id');
         $show->name('产品名称');
         $show->detail('简要描述');
-        $show->created_at('创建时间');
-        $show->updated_at('更新时间');
+
         $show->category('所属分类', function ($category) {
             $category->panel()
                 ->style('info')
@@ -186,6 +261,11 @@ class PlatformProductController extends Controller
         $show->internal_api_path('内部请求api uri');
         $show->request_method('请求方式');
         $show->internal_request_method('内部请求方式');
+
+        $show->is_online('是否上线');
+
+        $show->created_at('创建时间');
+        $show->updated_at('更新时间');
 
         return $show;
     }
@@ -226,6 +306,8 @@ class PlatformProductController extends Controller
         $platformProduct->internal_api_path = $data['internal_api_path'];
         $platformProduct->request_method = $data['request_method'];
         $platformProduct->internal_request_method = $data['internal_request_method'];
+        // handle online
+        $platformProduct->is_online = $this->onlineStatus[$data['is_online']]['value'] == PlatformProduct::ONLINE_STATUS ? 1 : 0;
 
         if (isset($data['last_old_api_path'])) $platformProduct->last_old_api_path = $data['last_old_api_path'];
 
@@ -262,7 +344,32 @@ class PlatformProductController extends Controller
         $form->select('request_method', '请求方式')->options($this->support_http_methods)->default('GET');
 //        $form->text('internal_request_method', '内部请求方式')->default('GET');
         $form->select('internal_request_method', '内部请求方式')->options($this->support_http_methods)->default('GET');
+//
+//        $states = [
+//            'on' => ['value' => PlatformProduct::ONLINE_STATUS, 'text' => '上线', 'color' => 'success'],
+//            'off' => ['value' => PlatformProduct::DOWNLINE_STATUS, 'text' => '下线', 'color' => 'danger'],
+//        ];
+
+        $form->switch('is_online', '是否上线')->default(PlatformProduct::ONLINE_STATUS)->states($this->onlineStatus);
 
         return $form;
+    }
+
+    /**
+     *  recovery platform product
+     */
+    public function recovery($id)
+    {
+        PlatformProduct::withTrashed()
+            ->where('id', $id)
+            ->restore();
+
+        // 先 下线
+        PlatformProduct::where('id', $id)->update(['is_online' => 0]);
+
+        return response()->json([
+            'status' => true,
+            'message' => '恢复成功',
+        ]);
     }
 }

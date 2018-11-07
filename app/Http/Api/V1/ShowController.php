@@ -414,9 +414,11 @@ class ShowController extends BaseController
 //            dd($d);
 //        }
 
-        $f = new FlowService();
+        $p = PlatformProduct::all();
 
-        $f->updateTotalCount();
+        foreach ($p as $item) {
+            var_dump($item['is_online']);
+        }
 
         dd('ok');
 //        $api_count = new RedisScanService(['count' => 5]);
@@ -520,6 +522,13 @@ class ShowController extends BaseController
 //        $ips = Redis::keys('ip_api_count_*');
 
 //        return ['as'=>'dfd'];
+        $p = PlatformProduct::all();
+
+        foreach ($p as $item) {
+            var_dump($item['is_online']);
+        }
+
+
         dd(Redis::keys('services_map*'));
 //        dd(Redis::exists(User::APP_KEY_FLAG . 'd7fbc1f0f38c3ee95fb7cdc17f7f9401'));
 

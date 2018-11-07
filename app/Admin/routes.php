@@ -41,5 +41,6 @@ Route::group([
         $router->delete('unbindServicePlatformProduct/{service_id}/{product_id}', NodeServicesController::class . '@unbindServicePlatformProduct');
         $router->delete('unbindAppKeyPlatformProduct/{app_key_id}/{product_id}', AppUserController::class . '@unbindAppKeyPlatformProduct');
         $router->get('searchAppKeyUser/{kw}', UserController::class . '@searhAppKeyUser');
+        $router->get('recoveryPlatformProduct/{id}', PlatformProductController::class . '@recovery');
     });
 });

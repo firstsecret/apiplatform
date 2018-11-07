@@ -168,7 +168,7 @@ class AppUserController extends Controller
             $products->actions(function ($actions) use ($app_key_id) {
                 $platform_product_id = $actions->getKey('id');
 
-                $btn = '<a data-href="/admin/api/unbindAppKeyPlatformProduct/' . $app_key_id . '/' . $platform_product_id . '" class="unbindAppKeyPlatformProduct"  title="移除该服务" href=""><i class="fa fa-eraser"></i></a>';
+                $btn = '<a data-href="/admin/api/unbindAppKeyPlatformProduct/' . $app_key_id . '/' . $platform_product_id . '" class="unbindAppKeyPlatformProduct"  title="移除该服务" href="#"><i class="fa fa-eraser"></i></a>';
                 $actions->disableDelete();
 //                $actions->disableEdit();
 //                $actions->disableView();

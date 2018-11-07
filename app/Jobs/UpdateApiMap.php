@@ -9,6 +9,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
 class UpdateApiMap implements ShouldQueue
@@ -65,10 +66,12 @@ class UpdateApiMap implements ShouldQueue
 
     public function updateAllMap()
     {
+        // without soft deleted
         PlatformProduct::chunk(200, function ($products) {
             foreach ($products as $item) {
 //                var_dump($u->type . ':' . $u->app_key . ',user_id:' . $u->id);
-                if (!$item['api_path'] || !$item['internal_api_path']) continue;
+                // without empty paths , downline products
+                if (!$item['api_path'] || !$item['internal_api_path'] || !$item['is_online'] || $item['is_online'] == PlatformProduct::DOWNLINE_STATUS) continue;
                 // clear old map
                 if ($item['last_old_api_path']) Redis::del($this->redis_prefix . $item['last_old_api_path']);
                 // map
@@ -85,7 +88,7 @@ class UpdateApiMap implements ShouldQueue
         if ($this->apiMap['last_old_api_path']) Redis::del($this->redis_prefix . $this->apiMap['last_old_api_path']);
 
         // 是否 删除
-        if ($this->apiMap['deleted_at']) {
+        if ($this->apiMap['deleted_at'] || $this->apiMap['is_online'] == PlatformProduct::DOWNLINE_STATUS) {
             Redis::del($this->redis_prefix . $this->apiMap['api_path']);
         } else {
             Redis::hset($this->redis_prefix . $this->apiMap['api_path'], 'internal_api_path', $this->apiMap['internal_api_path']);
